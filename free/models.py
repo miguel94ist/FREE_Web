@@ -1,6 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils.translation import gettext_lazy as _
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 class Experiment(models.Model):
     name = models.CharField(_('Name'), max_length=64)
@@ -18,18 +20,25 @@ class Experiment(models.Model):
         ordering = ['name']
 
 class Apparatus(models.Model):
-    experiment = models.ForeignKey(Experiment, on_delete=models.PROTECT) # or CASCADE?
-    localization = models.CharField(_('Localization'), max_length=32)
+    experiment = models.ForeignKey(Experiment, on_delete=models.PROTECT, help_text=_('After setting/changing the experiment, press "%(button_name)s" to see the list of protocols.') % {'button_name' : _('Save and continue editing')})
+    protocols = models.ManyToManyField('Protocol', blank=True)
+    location = models.CharField(_('Location'), max_length=64)
     secret = models.CharField(_('Secret'), max_length=32)
     owner = models.CharField(_('Owner'), max_length=32)
 
     def __str__(self):
-        return self.experiment.name + ' in ' + self.localization
+        return _('%(experiment)s in %(location)s') % {'experiment': self.experiment.name, 'location': self.location}
 
     class Meta:
-        verbose_name = _('Experimental apparatus')
-        verbose_name_plural = _('Experimental apparatuses')
-        ordering = ['localization']
+        verbose_name = _('Apparatus')
+        verbose_name_plural = _('Apparatuses')
+        ordering = ['location']
+
+@receiver(post_save, sender=Apparatus)
+def create_user_profile(sender, instance, created, **kwargs):
+    for protocol in instance.protocols.all():
+        if protocol.experiment != instance.experiment:
+            instance.protocols.remove(protocol)
 
 STATUS_CHOICES = (
     ('1', _('Online')),
@@ -38,52 +47,86 @@ STATUS_CHOICES = (
 )
 
 class Status(models.Model):
-    apparatus = models.OneToOneField(Apparatus, on_delete=models.CASCADE)
+    apparatus = models.ForeignKey(Apparatus, on_delete=models.PROTECT)
     time = models.DateTimeField(_('Time'), auto_now=True)
     status = models.CharField(_('Status'), max_length=1, choices=STATUS_CHOICES)
-
-    def __str__(self):
-        return str(self.apparatus) + ' ' + self.get_status_display() + ' at ' + str(self.time)
 
     class Meta:
         verbose_name = _('Status')
         verbose_name_plural = _('Statuses')
 
 class Protocol(models.Model):
-    apparatus = models.ForeignKey(Apparatus, on_delete=models.CASCADE)
+    experiment = models.ForeignKey(Experiment, on_delete=models.PROTECT)
     name = models.CharField(max_length=64)
     config = models.JSONField(_('Configuration'), default=dict, blank=True)
 
     def __str__(self):
-        return self.name + ' at ' + str(self.apparatus)
+        return self.name
 
     class Meta:
-        verbose_name = _('Experimental protocol')
-        verbose_name_plural = _('Experimental protocols')
+        verbose_name = _('Protocol')
+        verbose_name_plural = _('Protocols')
         ordering = ['name']
+
+EXECUTION_STATUS_CHOICES = (
+    ('R',_('Running')),
+    ('E',_('Error')),
+    ('C',_('Completed'))
+)
 
 class Execution(models.Model):
     user = models.ForeignKey(User, on_delete=models.PROTECT)
-    protocol = models.ForeignKey(Protocol, on_delete=models.DO_NOTHING) # Really do nothing?
+    apparatus = models.ForeignKey(Apparatus, on_delete=models.PROTECT)
+    protocol = models.ForeignKey(Protocol, on_delete=models.PROTECT)
     config = models.JSONField(_('Configuration'), default=dict, blank=True)
-    status = models.CharField(_('Status'), max_length=32)
+    status = models.CharField(_('Status'), max_length=1, choices=EXECUTION_STATUS_CHOICES)
+    start = models.DateTimeField()
+    end = models.DateTimeField()
 
     def __str__(self):
-        return str(self.protocol) + ' with ' + str(self.config)
+        return _('Execution of %(protocol)s') % {'protocol': str(self.protocol)}
 
     class Meta:
-        verbose_name = _('Protocol execution')
-        verbose_name_plural = _('Protocol executions')
+        verbose_name = _('Execution')
+        verbose_name_plural = _('Executions')
+
+RESULT_TYPES = {
+    ('p', _('Partial')),
+    ('f', _('Final')),
+}
 
 class Result(models.Model):
     execution = models.OneToOneField(Execution, on_delete=models.CASCADE)
     time = models.DateTimeField(_('Time'), auto_now=True)
-    result_type = models.CharField(_('Result type'), max_length=64)
+    result_type = models.CharField(_('Result type'), max_length=1, choices=RESULT_TYPES)
     value = models.JSONField(_('Value'), default=dict, blank=True)
 
     def __str__(self):
-        return str(self.execution) + ' at ' + str(self.time)
+        return _('Result of %(execution)s') % {'execution': str(self.execution) }
 
     class Meta:
-        verbose_name = _('Experiment result')
-        verbose_name_plural = _('Experiment results')
+        verbose_name = _('Result')
+        verbose_name_plural = _('Results')
+
+USER_TYPES = (
+    ('s', _('Student')),
+    ('t', _('Teacher')),
+    ('a', _('Administrator'))
+)
+
+class UserProfile(models.Model):
+    user = models.OneToOneField(User, on_delete = models.CASCADE, related_name='profile')
+    type = models.CharField(max_length=1, choices=USER_TYPES)
+
+    def __str__(self):
+        return _('Profile of ') + self.user.username
+
+@receiver(post_save, sender=User)
+def create_user_profile(sender, instance, created, **kwargs):
+    if created:
+        UserProfile.objects.create(user = instance, type='s')
+    instance.profile.save()
+
+@receiver(post_save, sender=User)
+def save_user_profile(sender, instance, **kwargs):
+    instance.profile.save()
