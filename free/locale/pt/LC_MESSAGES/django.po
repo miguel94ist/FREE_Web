@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-08-24 18:48+0200\n"
+"POT-Creation-Date: 2021-09-01 15:13+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,98 +18,176 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: .\models.py:6
+#: .\admin.py:9 .\admin.py:10 .\admin.py:11
+msgid "FREE Administration"
+msgstr ""
+
+#: .\models.py:8
 msgid "Name"
 msgstr ""
 
-#: .\models.py:7
+#: .\models.py:9
 msgid "Description"
 msgstr ""
 
-#: .\models.py:8 .\models.py:48 .\models.py:61
+#: .\models.py:10 .\models.py:61 .\models.py:81
 msgid "Configuration"
 msgstr ""
 
-#: .\models.py:9
+#: .\models.py:11
 msgid "Scientific area"
 msgstr ""
 
-#: .\models.py:10
+#: .\models.py:12
 msgid "Lab type"
 msgstr ""
 
-#: .\models.py:16
+#: .\models.py:18
 msgid "Experiment"
 msgstr ""
 
-#: .\models.py:17
+#: .\models.py:19
 msgid "Experiments"
 msgstr ""
 
-#: .\models.py:22
-msgid "Localization"
+#: .\models.py:23
+#, python-format
+msgid ""
+"After setting/changing the experiment, press \"%(button_name)s\" to see the "
+"list of protocols."
 msgstr ""
 
 #: .\models.py:23
+msgid "Save and continue editing"
+msgstr ""
+
+#: .\models.py:25
+msgid "Location"
+msgstr ""
+
+#: .\models.py:26
 msgid "Secret"
 msgstr ""
 
-#: .\models.py:24
+#: .\models.py:27
 msgid "Owner"
 msgstr ""
 
 #: .\models.py:30
-msgid "Experimental apparatus"
+#, python-format
+msgid "%(experiment)s in %(location)s"
 msgstr ""
 
-#: .\models.py:31
-msgid "Experimental apparatuses"
+#: .\models.py:33
+msgid "Apparatus"
 msgstr ""
 
-#: .\models.py:35
+#: .\models.py:34
+msgid "Apparatuses"
+msgstr ""
+
+#: .\models.py:44
 msgid "Online"
 msgstr ""
 
-#: .\models.py:36
+#: .\models.py:45
 msgid "Offline"
 msgstr ""
 
-#: .\models.py:37
+#: .\models.py:46 .\models.py:72
 msgid "Running"
 msgstr ""
 
-#: .\models.py:42 .\models.py:72
+#: .\models.py:51 .\models.py:100
 msgid "Time"
 msgstr ""
 
-#: .\models.py:43 .\models.py:62
+#: .\models.py:52 .\models.py:55 .\models.py:82
 msgid "Status"
 msgstr ""
 
-#: .\models.py:54
-msgid "Experimental protocol"
+#: .\models.py:56
+msgid "Statuses"
 msgstr ""
 
-#: .\models.py:55
-msgid "Experimental protocols"
+#: .\models.py:67
+msgid "Protocol"
 msgstr ""
 
 #: .\models.py:68
-msgid "Protocol execution"
-msgstr ""
-
-#: .\models.py:69
-msgid "Protocol executions"
+msgid "Protocols"
 msgstr ""
 
 #: .\models.py:73
-msgid "Result type"
+msgid "Error"
 msgstr ""
 
 #: .\models.py:74
+msgid "Completed"
+msgstr ""
+
+#: .\models.py:87
+#, python-format
+msgid "Execution of %(protocol)s"
+msgstr ""
+
+#: .\models.py:90
+msgid "Execution"
+msgstr ""
+
+#: .\models.py:91
+msgid "Executions"
+msgstr ""
+
+#: .\models.py:94
+msgid "Partial"
+msgstr ""
+
+#: .\models.py:95
+msgid "Final"
+msgstr ""
+
+#: .\models.py:101
+msgid "Result type"
+msgstr ""
+
+#: .\models.py:102
 msgid "Value"
+msgstr ""
+
+#: .\models.py:105
+#, python-format
+msgid "Result of %(execution)s"
+msgstr ""
+
+#: .\models.py:108
+msgid "Result"
+msgstr ""
+
+#: .\models.py:109
+msgid "Results"
+msgstr ""
+
+#: .\models.py:112
+msgid "Student"
+msgstr ""
+
+#: .\models.py:113
+msgid "Teacher"
+msgstr ""
+
+#: .\models.py:114
+msgid "Administrator"
+msgstr ""
+
+#: .\models.py:122
+msgid "Profile of "
 msgstr ""
 
 #: .\templates\free\index.html:8
 msgid "Test translated heading"
 msgstr "Título traduzido do teste"
+
+#: .\templates\free\index.html:10
+msgid "Select language"
+msgstr ""
