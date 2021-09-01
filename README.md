@@ -51,6 +51,20 @@ Create a superuser for administrative access:
 python manage.py createsuperuser
 ```
 
+Compile translation files:
+```
+cd free
+django-admin compilemessages
+```
+
+The application is configured with environment variables stored in the deployment environment in the `.env` file. Template for this file is in the `deploy\` directory. Fill in the individual configuration items, rename the file to `.env` and place it into the `freeweb\` directory.
+
+After all this, you can run the django development webservery with:
+```
+python manage.py runserver
+```
+
+In the production environment, the application should be bound to a production webserver using the WSGI interface.
 
 ## Development guidelines
 

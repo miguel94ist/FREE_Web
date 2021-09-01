@@ -1,2 +1,4 @@
 /free-env
 __pycache__
+.env
+*.mo
