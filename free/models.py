@@ -35,7 +35,7 @@ class Apparatus(models.Model):
         ordering = ['location']
 
 @receiver(post_save, sender=Apparatus)
-def create_user_profile(sender, instance, created, **kwargs):
+def cleanup_protocols(sender, instance, created, **kwargs):
     for protocol in instance.protocols.all():
         if protocol.experiment != instance.experiment:
             instance.protocols.remove(protocol)

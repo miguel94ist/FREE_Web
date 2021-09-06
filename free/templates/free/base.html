@@ -1,0 +1,17 @@
+{% load static %}
+{% load render_bundle from webpack_loader %}
+{% load react_component from django_react_components %}
+{% load i18n %}
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>{% trans 'FREE' %} - {% block title %}{% endblock %}</title>
+        {% render_bundle 'common' %} 
+        {% block head %}{% endblock %}
+    </head>
+    <body>          
+        {% block content %}
+        {% endblock %}
+    </body>
+</html>

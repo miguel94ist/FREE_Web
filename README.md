@@ -59,6 +59,15 @@ django-admin compilemessages
 
 The application is configured with environment variables stored in the deployment environment in the `.env` file. Template for this file is in the `deploy\` directory. Fill in the individual configuration items, rename the file to `.env` and place it into the `freeweb\` directory.
 
+Install Node.js (https://nodejs.org/en/) and Yarn (https://yarnpkg.com/getting-started/install)
+Navigate into `free/assets` folder and run:
+```
+yarn install
+```
+
+This should download all javascript dependencies for the project. 
+
+
 After all this, you can run the django development webservery with:
 ```
 python manage.py runserver
@@ -79,6 +88,8 @@ After any changes were made to texts displayed in the application, regenerate tr
 cd free
 django-admin makemessages -a
 ```
+
+To execute this command, you need to have gettext installed. See https://mlocati.github.io/articles/gettext-iconv-windows.html
 
 In `free/locale/<lang_code>` you should be able to see `.po` files containing strings extracted from the source code. Translate those strings. After changes to `.po` files run compilation (also in `free` directory):
 ```

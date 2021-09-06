@@ -2,3 +2,7 @@
 __pycache__
 .env
 *.mo
+/free/assets/semantic-ui/themes
+/free/assets/node_modules
+/static/bundles
+/.vscode

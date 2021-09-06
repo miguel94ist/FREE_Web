@@ -1,15 +1,36 @@
-<html>
-    <head>
-        <title>FREE | Test page</title>
-    </head>
-    <body>
-        {% load i18n %}
+{% extends 'free/base.html' %}
+{% load i18n %}
+{% load render_bundle from webpack_loader %}
+{% load react_component from django_react_components %}
 
-        <h1>{% trans 'Test translated heading' %}</h1>
+{% block title %}Main Page{% endblock %}
 
-        <h2>{% trans 'Select language' %}</h2>
-        <ul>
+{% block head%}
+    {% render_bundle 'components' %}
+
+    <style type="text/css">
+        #head {
+            margin-top: 3em;
+            margin-bottom: 2em;
+            font-size: 4em;
+        }
+    </style>
+
+{% endblock %}  
+
+{% block content%}
+    <div class="ui inverted vertical center aligned segment" >
+        <div class="ui text container">
+            <h1 id="head">{% trans 'This is a test page' %}</h1>
             
-        </ul>
-    <body>
-</html>
+            
+        </div>
+
+    </div>
+
+    <div class="ui center aligned segment">
+        <div class="ui text container">
+            {% react_component 'ExampleReactComponent' count=154 %}
+        </div>
+    </div>
+{% endblock %}
