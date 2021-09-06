@@ -65,10 +65,17 @@ Navigate into `free/assets` folder and run:
 yarn install
 ```
 
-This should download all javascript dependencies for the project. 
+This should download all javascript dependencies for the project.
 
+Manually download Semantic UI theme files from https://github.com/Semantic-Org/Semantic-UI-LESS and place them into the `free/assets/semantic-ui/themes` folder. Due to their size, they are not included in the repository.
 
-After all this, you can run the django development webservery with:
+Now you need to compile and package the theme and javascript files into bundles, so that the django website is able to use them. For this, you have three options what to execute in the `free/assets` folder:
+
+- `yarn run build` - one-time dev build. Useful for running in the local environment, as the source codes are not obfuscated and minified.
+- `yarn run watch` - continuous build. Used for javascript development, will automatically repackage the bundled files whenever source files are saved.
+- `yarn run buildprod` - **PRODUCTION BUILD** - Use this if you want to publish the website to the external world. The source files will be obfuscated, minified, optimised for size etc.
+
+After all this, you can run the django development webserver with:
 ```
 python manage.py runserver
 ```
@@ -77,11 +84,15 @@ In the production environment, the application should be bound to a production w
 
 ## Development guidelines
 
+### Python development
+
 When adding python library, please update the `REQUIREMENTS.txt` file by running:
 
 ```
 pip freeze > REQUIREMENTS.txt
 ```
+
+### Internationalisation
 
 After any changes were made to texts displayed in the application, regenerate translation files:
 ```
@@ -100,9 +111,17 @@ This will create `.mo` files that will be used for translating strings in-app.
 
 *TODO: Javascript internationalisation*
 
+### API
+
 If any changes to API definition is made, the OpenAPI `.yml` schema needs to be regenerated:
 ```
 python manage.py generateschema --file free-openapi-schema.yml
 ```
 
 This `.yml` file can be then imported to https://editor.swagger.io or other API documentation generator tool. 
+
+### Front-end development
+
+To develop code of individual react components, place them as source files into the `free/assets/src/components` folder. All those files will be bundled into `common` bundle by webpack. 
+
+It is recommended to use React hooks. To package a functional component for use in django templates, you need to prefix the function name with `/**/`. This is an annotation that the django loader system uses to distinguish internal functions and components. Class-based components should be recognised automatically. 

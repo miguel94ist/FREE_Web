@@ -6,3 +6,4 @@ __pycache__
 /free/assets/node_modules
 /static/bundles
 /.vscode
+/free/assets/webpack-stats.json
