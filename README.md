@@ -4,6 +4,8 @@
 
 **-----  Unstructured, will be polished gradually. -----**
 
+### General
+
 Install Python 3+.
 
 Checkout the git repository into a directory. Create a python virtual environment (let's call it `free-env`):
@@ -27,19 +29,17 @@ Install python's dependent packages:
 pip install -r REQUIREMENTS.txt
 ```
 
+
+
+### Database configuration
+
 *TODO: Configure DB*
 
-Configure available languages for translation by setting `LANGUAGES` constant in `freeweb/settings.py`. The template is:
-```
-LANGUAGES = [
-    ('en', _('English')),
-    ('pt', _('Portugese')),
-]
-```
-
-If you increase the set of available languages, make sure you provide translations for applications' strings (described in the *Development guidelines* below).
+There is an example sqlite database included in the repository. No additional config needed to use it.
 
 If using SQLite as database, enable JSONField extension as described here: https://code.djangoproject.com/wiki/JSON1Extension
+
+**ONLY FOR NON-SQLITE DATABASES**
 
 After the database is configured, we need to initialize it:
 ```
@@ -51,13 +51,11 @@ Create a superuser for administrative access:
 python manage.py createsuperuser
 ```
 
-Compile translation files:
-```
-cd free
-django-admin compilemessages
-```
+### Configuration
 
 The application is configured with environment variables stored in the deployment environment in the `.env` file. Template for this file is in the `deploy\` directory. Fill in the individual configuration items, rename the file to `.env` and place it into the `freeweb\` directory.
+
+### Compilation of CSS & JavaScript bundles
 
 Install Node.js (https://nodejs.org/en/) and Yarn (https://yarnpkg.com/getting-started/install)
 Navigate into `free/assets` folder and run:
@@ -74,6 +72,8 @@ Now you need to compile and package the theme and javascript files into bundles,
 - `yarn run build` - one-time dev build. Useful for running in the local environment, as the source codes are not obfuscated and minified.
 - `yarn run watch` - continuous build. Used for javascript development, will automatically repackage the bundled files whenever source files are saved.
 - `yarn run buildprod` - **PRODUCTION BUILD** - Use this if you want to publish the website to the external world. The source files will be obfuscated, minified, optimised for size etc.
+
+### Development run
 
 After all this, you can run the django development webserver with:
 ```
@@ -93,6 +93,16 @@ pip freeze > REQUIREMENTS.txt
 ```
 
 ### Internationalisation
+
+Configure available languages for translation by setting `LANGUAGES` constant in `freeweb/settings.py`. The template is:
+```
+LANGUAGES = [
+    ('en', _('English')),
+    ('pt', _('Portugese')),
+]
+```
+
+If you increase the set of available languages, make sure you provide translations for applications' strings.
 
 After any changes were made to texts displayed in the application, regenerate translation files:
 ```
