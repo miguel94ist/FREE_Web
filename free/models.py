@@ -58,7 +58,7 @@ class Status(models.Model):
 class Protocol(models.Model):
     experiment = models.ForeignKey(Experiment, on_delete=models.PROTECT)
     name = models.CharField(max_length=64)
-    config = models.JSONField(_('Configuration'), default=dict, blank=True)
+    config = models.JSONField(_('Configuration'), default=dict, blank=True) # JSON SCHEMA
 
     def __str__(self):
         return self.name
@@ -69,9 +69,10 @@ class Protocol(models.Model):
         ordering = ['name']
 
 EXECUTION_STATUS_CHOICES = (
+    ('C',_('Configured')),
     ('R',_('Running')),
     ('E',_('Error')),
-    ('C',_('Completed'))
+    ('F',_('Finished'))
 )
 
 class Execution(models.Model):
@@ -80,8 +81,8 @@ class Execution(models.Model):
     protocol = models.ForeignKey(Protocol, on_delete=models.PROTECT)
     config = models.JSONField(_('Configuration'), default=dict, blank=True)
     status = models.CharField(_('Status'), max_length=1, choices=EXECUTION_STATUS_CHOICES)
-    start = models.DateTimeField()
-    end = models.DateTimeField()
+    start = models.DateTimeField(null=True)
+    end = models.DateTimeField(null=True)
 
     def __str__(self):
         return _('Execution of %(protocol)s') % {'protocol': str(self.protocol)}

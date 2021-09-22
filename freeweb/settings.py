@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'webpack_loader',
     'django_react_components',
+    'drf_yasg',
 ]
 
 MIDDLEWARE = [

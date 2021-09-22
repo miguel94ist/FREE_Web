@@ -123,12 +123,15 @@ This will create `.mo` files that will be used for translating strings in-app.
 
 ### API
 
-If any changes to API definition is made, the OpenAPI `.yml` schema needs to be regenerated:
-```
-python manage.py generateschema --file free-openapi-schema.yml
-```
+The API documentation is automatically generated on `/free-api.json`, `/free-api.yaml` (machine-readable formats),
+or `/api/swagger` and `/api/redoc` (human-readable formats).
 
-This `.yml` file can be then imported to https://editor.swagger.io or other API documentation generator tool. 
+### Testing
+
+Tests for the app should be located in the `free\tests` folder. You can run the tests using 
+```
+python manage.py test free
+```
 
 ### Front-end development
 
