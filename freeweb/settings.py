@@ -120,7 +120,6 @@ LANGUAGES = [
     ('pt', _('Portugese')),
 ]
 
-
 TIME_ZONE = 'Europe/Prague'
 
 USE_I18N = True

@@ -1,3 +1,4 @@
+from free.views.api import ChangeExecutionStatus, NextExecution
 from free.views.base import LoginView, LogoutView
 from django.urls import path, re_path
 from rest_framework import permissions
@@ -34,6 +35,16 @@ urlpatterns = [
     # REST API
     path('api/v1/experiments', views.ExperimentListAPI.as_view(), name='api-experiment-list'),
     path('api/v1/execution', views.ExecutionConfigure.as_view(), name='api-execution-configure' ),
-    path('api/v1/execution/<int:id>', views.ExecutionStart.as_view(), name='api-execution-start'),
-    path('api/v1/execution/<int:id>/status', views.ExecutionStatus.as_view(), name='api-execution-status'),
+    path('api/v1/execution/<int:id>/start', views.ExecutionStart.as_view(), name='api-execution-start'),
+    path('api/v1/execution/<int:id>', views.ExecutionView.as_view(), name='api-execution'),
+    path('api/v1/apparatus/<int:apparatus_id>/nextexecution', views.NextExecution.as_view(), name='api-execution-next'),
+    path('api/v1/execution/<int:id>/status', views.ChangeExecutionStatus.as_view(), name='api-execution-status-change'),
+    #path('api/v1/results/<int:execution_id>/partial', )
+
+    path('api/v1/apparatus/<int:apparatus_id>/config', views.ProtocolList.as_view(), name='api-protocols-list'),
+    path('api/v1/result/partial', views.AddPartialResult.as_view(), name='api-result-partial-add'),
+    path('api/v1/result/final', views.AddFinalResult.as_view(), name='api-result-final-add')
+
+
+
 ]

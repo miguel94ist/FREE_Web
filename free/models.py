@@ -70,9 +70,11 @@ class Protocol(models.Model):
 
 EXECUTION_STATUS_CHOICES = (
     ('C',_('Configured')),
-    ('R',_('Running')),
     ('E',_('Error')),
-    ('F',_('Finished'))
+    ('R',_('Running')),
+    ('F',_('Finished')),
+    ('A',_('Aborted')),
+    ('T',_('Timeout'))
 )
 
 class Execution(models.Model):
@@ -97,7 +99,7 @@ RESULT_TYPES = {
 }
 
 class Result(models.Model):
-    execution = models.OneToOneField(Execution, on_delete=models.CASCADE)
+    execution = models.ForeignKey(Execution, on_delete=models.CASCADE)
     time = models.DateTimeField(_('Time'), auto_now=True)
     result_type = models.CharField(_('Result type'), max_length=1, choices=RESULT_TYPES)
     value = models.JSONField(_('Value'), default=dict, blank=True)

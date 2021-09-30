@@ -92,14 +92,13 @@ class ExecutionAPI(TestCase):
         execution_id = response["id"]
 
         # Check if status = C
-        response = self.client.get('/api/v1/execution/' + str(execution_id) + '/status')
+        response = self.client.get('/api/v1/execution/' + str(execution_id))
         self.assertEqual(response.status_code, 200)
         response = json.loads(response.content)
         self.assertEqual(response["status"], 'C')
-        self.assertEqual(len(response),1)
 
         # Run execution
-        response = self.client.put('/api/v1/execution/' + str(execution_id))
+        response = self.client.put('/api/v1/execution/' + str(execution_id) + '/start')
         self.assertEqual(response.status_code, 200)
 
         # Check if status is R in database
@@ -107,20 +106,62 @@ class ExecutionAPI(TestCase):
         self.assertEqual(execution.status, 'R')
 
         # Check that it cannot be run again
-        response = self.client.put('/api/v1/execution/' + str(execution_id))
+        response = self.client.put('/api/v1/execution/' + str(execution_id) + '/start')
         self.assertEqual(response.status_code, 400)
 
         # Check that we fail on non-existing execution id
-        response = self.client.put('/api/v1/execution/999')
+        response = self.client.put('/api/v1/execution/999/start')
         self.assertEqual(response.status_code, 404)
 
-        response = self.client.get('/api/v1/execution/' + str(execution_id) + '/status')
+        response = self.client.get('/api/v1/execution/' + str(execution_id))
         self.assertEqual(response.status_code, 200)
         response = json.loads(response.content)
         self.assertEqual(response["status"], 'R')
-        self.assertEqual(len(response),1)
 
         response = self.client.get('/api/v1/execution/999/status')
         self.assertEqual(response.status_code, 404)
+
+        response = self.client.post('/api/v1/execution', {
+            'apparatus': self.apparatus.pk, 
+            'protocol': self.basic_protocol.pk, 
+            'config': {}}
+        )
+        self.assertEqual(response.status_code, 201)
+        response = json.loads(response.content)
+        next_execution_id = response["id"]
+
+        response = self.client.get('/api/v1/apparatus/' + str(self.apparatus.pk) + '/nextexecution')
+        self.assertEqual(response.status_code, 200)
+        response = json.loads(response.content)
+        self.assertEqual(response["id"], execution_id)
+
+        response = self.client.post('/api/v1/result/partial', {
+            'execution': execution_id,
+            'value': json.dumps({'g': 9.81})
+        })
+        self.assertEqual(response.status_code, 201)
+        response = json.loads(response.content)
+        partial_result_id = response['id']
+        partial_result = Result.objects.get(pk=partial_result_id)
+        self.assertEqual(partial_result.result_type, 'p')
+
+        response = self.client.post('/api/v1/result/final', { 
+            'execution': execution_id,
+            'value': json.dumps({'g': 9.82})
+        })
+        self.assertEqual(response.status_code, 201)
+        response = json.loads(response.content)
+        final_result_id = response['id']
+        final_result = Result.objects.get(pk=final_result_id)
+        self.assertEqual(final_result.result_type, 'f')
+
+        response = self.client.put('/api/v1/execution/' + str(execution_id) + '/status', {
+            "status": "F"
+        }, content_type='application/json')
+        self.assertEqual(response.status_code, 200)
+        execution = Execution.objects.get(pk=execution_id)
+        self.assertEqual(execution.status, 'F')
+
+
 
 
