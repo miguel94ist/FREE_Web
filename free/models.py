@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from django.utils.translation import gettext_lazy as _
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from django.utils import timezone
 
 class Experiment(models.Model):
     name = models.CharField(_('Name'), max_length=64)
@@ -69,12 +70,13 @@ class Protocol(models.Model):
         ordering = ['name']
 
 EXECUTION_STATUS_CHOICES = (
-    ('C',_('Configured')),
-    ('E',_('Error')),
-    ('R',_('Running')),
-    ('F',_('Finished')),
-    ('A',_('Aborted')),
-    ('T',_('Timeout'))
+    ('C',_('Configured')), # After creation by user
+    ('Q',_('In queue')),   # After used approved that execution could be run 
+    ('R',_('Running')),    # After requesting /nextexecution from RPI
+    ('E',_('Error')),      # After request /execution/<int:id>/status change from RPI
+    ('F',_('Finished')),   # After request /execution/<int:id>/status from RPI, or writing final result
+    ('A',_('Aborted')),    # Not used now, in future triggered by user (needs endpoint)
+    ('T',_('Timeout'))     # Not used now, possibly in future triggered by django
 )
 
 class Execution(models.Model):
@@ -108,6 +110,7 @@ class Result(models.Model):
         return _('Result of %(execution)s') % {'execution': str(self.execution) }
 
     class Meta:
+        ordering = ['-time']
         verbose_name = _('Result')
         verbose_name_plural = _('Results')
 

@@ -1,10 +1,8 @@
-from typing_extensions import Final
-from django.db.models import query
-from django.utils import timezone
 from rest_framework import generics, serializers, views
 from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 from free.models import *
+from jsonschema import validate, ValidationError as JSONValidationError
 
 # Experiment
 class ExperimentSerializer(serializers.ModelSerializer):
@@ -26,12 +24,37 @@ class ExecutionConfigSerializer(serializers.ModelSerializer):
     user = serializers.HiddenField(default=serializers.CurrentUserDefault())
     status = serializers.HiddenField(default='C')
 
+    def validate(self, data):
+        try:
+            validate(instance = data['config'] if 'config' in data else {}, schema = data['protocol'].config)
+        except JSONValidationError as e:
+            raise serializers.ValidationError(e.message)
+        return data
+
     class Meta:
         model = Execution
         fields = ['id','apparatus', 'protocol', 'config', 'status', 'user']
 
-# TODO: Schema validation!
-# Maybe convert to APIView for more verbosity
+class ExecutionUpdateRetrieveSerializer(serializers.ModelSerializer):
+    id = serializers.IntegerField(read_only=True)
+    status = serializers.CharField(read_only=True)
+
+    def validate(self, data):
+        try:
+            validate(instance = data['config'] if 'config' in data else {}, schema = data['protocol'].config)
+        except JSONValidationError as e:
+            raise serializers.ValidationError(e.message)
+
+        if self.instance: # if updating
+            if self.instance.status != 'C':
+                raise serializers.ValidationError("Can only update configuration of not enqueued/runned executions.")
+        return data       
+
+    class Meta:
+        model = Execution
+        fields = ['id','apparatus', 'protocol', 'config', 'status']
+
+
 class ExecutionConfigure(generics.CreateAPIView):
     """
     Configures an execution of experiment for a given apparatus and protocol.
@@ -39,10 +62,18 @@ class ExecutionConfigure(generics.CreateAPIView):
     serializer_class = ExecutionConfigSerializer
     queryset = Execution.objects.all()
 
+class ExecutionUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
+    """
+    Retrieves or updates a given execution
+    """
+    serializer_class = ExecutionUpdateRetrieveSerializer
+    queryset = Execution.objects.all()
+    lookup_field = 'id'
+
 
 class ExecutionStart(views.APIView):
     """
-    Starts a configured execution
+    Starts a configured execution (status is changed to Q- "Queued")
     """
     def put(self, *args, **kwargs):
         try:
@@ -53,8 +84,7 @@ class ExecutionStart(views.APIView):
         if execution.status != 'C':
             return Response({'error': 'This execution has already been started'}, status = 400)
 
-        execution.status = 'R'
-        execution.start = timezone.now()
+        execution.status = 'Q'
         execution.save()
 
         return Response(status = 200)
@@ -102,36 +132,65 @@ class NextExecution(generics.RetrieveAPIView):
     """
     serializer_class = ExecutionSerializer
     def get_object(self):
-        return Execution.objects.filter(status='R').order_by('start').first()
+        return Execution.objects.filter(status='Q', apparatus_id=self.kwargs['apparatus_id']).order_by('start').first()
 
+class QueuedExecutions(generics.ListAPIView):
+    """
+    Returns all queued executions
+    """
+    serializer_class = ExecutionSerializer
+    def get_queryset(self):
+        return Execution.objects.filter()
 
-class PartialResultSerializer(serializers.ModelSerializer):
-    result_type = serializers.HiddenField(default='p')
+class ResultSerializer(serializers.ModelSerializer):
+    def validate(self, data):
+        if data['result_type'] == 'f':
+            if Result.objects.filter(execution=data['execution'], result_type='f').count()!=0:
+                raise ValidationError('Cannot add more than one final result!')
+            data['execution'].status = 'F'
+            data['execution'].save()
+        return data
+
     class Meta:
         model = Result
         fields = ['id', 'execution', 'value', 'result_type']
+    # TODO: ONLY ACCEPT REQUESTS IF STATE == 'R'
 
-class AddPartialResult(generics.CreateAPIView):
+class AddResult(generics.CreateAPIView):
     """
-    Adds a partial measurement result to a given execution
+    Add a measurement result to a given execution
     """
-    serializer_class = PartialResultSerializer
+    serializer_class = ResultSerializer
     queryset = Result.objects.all()
+    # TODO: validate that result can be posted only if status = 'R'
 
-class FinalResultSerializer(serializers.ModelSerializer):
-    result_type = serializers.HiddenField(default='f')
-    class Meta:
-        model = Result
-        fields = ['id', 'execution', 'value', 'result_type']
+class ResultList(generics.ListAPIView):
+    """
+    Returns a list of all results for a given execution_id, with id greater or equal to last_id
+    """
+    serializer_class = ResultSerializer
 
-class AddFinalResult(generics.CreateAPIView):
-    """
-    Add a final measurement result to a given execution
-    """
-    serializer_class = FinalResultSerializer
-    queryset = Result.objects.all()
+    def get_queryset(self):
+        if 'last_id' in self.kwargs:
+            return Result.objects.filter(execution_id=self.kwargs['execution_id'], pk__gte=self.kwargs['last_id'])
+        else:
+            return Result.objects.filter(execution_id=self.kwargs['execution_id'])
 
 class ExecutionStatusSerializer(serializers.ModelSerializer):
+    def validate(self, data):
+        valid_transitions = {
+            'R': ['F', 'E']
+        }
+
+        if self.instance: # if updating
+            if self.instance.status in valid_transitions:
+                if data['status'] not in valid_transitions[self.instance.status]:
+                    raise ValidationError('Execution in state ' + self.instance.status + ' can only change state to ' + ','.join(valid_transitions[self.instance.status]))
+            else:
+                raise ValidationError('Cannot change an execution with status ' + self.instance.status)
+
+        return data
+                
     class Meta:
         model = Execution
         fields = ['status']
@@ -143,3 +202,11 @@ class ChangeExecutionStatus(generics.RetrieveUpdateAPIView):
     serializer_class = ExecutionStatusSerializer
     queryset = Execution.objects.all()
     lookup_field='id'
+
+class ExecutionQueue(generics.ListAPIView):
+    """
+    Retrieves a current execution queue for the apparatus
+    """
+    serializer_class = ExecutionSerializer
+    def get_queryset(self):
+        return Execution.objects.filter(state='Q', apparatus_id=self.kwargs['apparatus_id'])
