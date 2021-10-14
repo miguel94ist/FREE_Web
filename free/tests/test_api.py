@@ -3,6 +3,7 @@ from django.test import Client
 from free.models import *
 import json
 from django.utils import timezone
+from django.utils.dateparse import parse_datetime
 
 def setup_fixtures(self):
     self.user = User.objects.create_user('user', 'em@a.il', 'password')
@@ -134,10 +135,14 @@ class ExecutionAPI(TestCase):
         response = json.loads(response.content)
         next_execution_id = response["id"]
 
-        response = self.client.get('/api/v1/apparatus/' + str(self.apparatus.pk) + '/nextexecution')
+        request_time = timezone.now()
+        response = self.client.get('/api/v1/apparatus/' + str(self.apparatus.pk) + '/nextexecution',
+        HTTP_AUTHENTICATION = 'Secret secret_code')
         self.assertEqual(response.status_code, 200)
         response = json.loads(response.content)
         self.assertEqual(response["id"], execution_id)
+        self.assertEqual(response["status"], "R")
+        self.assertLess((parse_datetime(response["start"])-request_time).total_seconds(),1)
 
         response = self.client.get('/api/v1/apparatus/999/nextexecution')
         self.assertEqual(response.status_code, 200)    
@@ -145,14 +150,23 @@ class ExecutionAPI(TestCase):
         # Cannot change status to invalid
         response = self.client.put('/api/v1/execution/' + str(execution_id) + '/status', {
             "status": "C"
-        }, content_type='application/json')
+        }, content_type='application/json', HTTP_AUTHENTICATION = 'Secret secret_code')
         self.assertEqual(response.status_code, 400)
 
+        # RESULT NO AUTH
         response = self.client.post('/api/v1/result', {
             'execution': execution_id,
             'value': json.dumps({'g': 9.81}),
             'result_type': 'p',
         })
+        self.assertEqual(response.status_code, 403)
+
+
+        response = self.client.post('/api/v1/result', {
+            'execution': execution_id,
+            'value': json.dumps({'g': 9.81}),
+            'result_type': 'p',
+        },HTTP_AUTHENTICATION = 'Secret secret_code')
         self.assertEqual(response.status_code, 201)
         response = json.loads(response.content)
         partial_result_id = response['id']
@@ -164,34 +178,34 @@ class ExecutionAPI(TestCase):
             'execution': execution_id,
             'value': json.dumps({'g': 9.815}),
             'result_type': 'p',
-        })
+        },HTTP_AUTHENTICATION = 'Secret secret_code')
         self.assertEqual(response.status_code, 201)
 
+        request_time = timezone.now()
         response = self.client.post('/api/v1/result', { 
             'execution': execution_id,
             'value': json.dumps({'g': 9.82}),
             'result_type':'f',
-        })
+        }, HTTP_AUTHENTICATION = 'Secret secret_code')
         self.assertEqual(response.status_code, 201)
         response = json.loads(response.content)
         final_result_id = response['id']
         final_result = Result.objects.get(pk=final_result_id)
         self.assertEqual(final_result.result_type, 'f')
-
         # Execution state changed to Finished
+        
         execution = Execution.objects.get(pk=execution_id)
         self.assertEqual(execution.status, 'F')
+        self.assertLess((execution.end - request_time).total_seconds(), 1)
 
         # NOT allow multiple final results
         response = self.client.post('/api/v1/result', { 
             'execution': execution_id,
             'value': json.dumps({'g': 9.82}),
             'result_type':'f',
-        })
+        },HTTP_AUTHENTICATION = 'Secret secret_code')
         self.assertEqual(response.status_code, 400)
 
-
-        
         # TEST INVALID SCHEMA
         response = self.client.post('/api/v1/execution', {
             'apparatus': self.apparatus.pk, 

@@ -154,3 +154,13 @@ WEBPACK_LOADER = {
         'STATS_FILE': BASE_DIR / 'free/assets/webpack-stats.json'
     }
 }
+
+SWAGGER_SETTINGS = {
+   'SECURITY_DEFINITIONS': {
+      'Bearer': {
+            'type': 'Secret',
+            'name': 'Authorization',
+            'in': 'header'
+      }
+   }
+}

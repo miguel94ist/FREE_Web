@@ -95,6 +95,15 @@ class Execution(models.Model):
         verbose_name = _('Execution')
         verbose_name_plural = _('Executions')
 
+    def save(self, *args, **kwargs):
+        if self.status == 'R' and not self.start:
+            self.start = timezone.now()
+
+        if self.status in ['F','A','E'] and not self.end:
+            self.end = timezone.now()
+        
+        super().save(*args, **kwargs)
+
 RESULT_TYPES = {
     ('p', _('Partial')),
     ('f', _('Final')),

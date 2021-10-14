@@ -4,6 +4,8 @@ from rest_framework.response import Response
 from free.models import *
 from jsonschema import validate, ValidationError as JSONValidationError
 
+from free.views.permissions import ApparatusOnlyAccess
+
 # Experiment
 class ExperimentSerializer(serializers.ModelSerializer):
     class Meta:
@@ -130,20 +132,30 @@ class NextExecution(generics.RetrieveAPIView):
     """
     Returns the earliest started execution
     """
+    permission_classes = [ApparatusOnlyAccess]
     serializer_class = ExecutionSerializer
     def get_object(self):
-        return Execution.objects.filter(status='Q', apparatus_id=self.kwargs['apparatus_id']).order_by('start').first()
+        obj = Execution.objects.filter(status='Q', apparatus_id=self.kwargs['apparatus_id']).order_by('start').first()
+        if obj:
+            self.check_object_permissions(self.request, obj)
+            obj.status = 'R'
+            obj.save()
+        return obj
+        
 
 class QueuedExecutions(generics.ListAPIView):
     """
     Returns all queued executions
     """
+    permission_classes = [ApparatusOnlyAccess]
     serializer_class = ExecutionSerializer
     def get_queryset(self):
         return Execution.objects.filter()
 
 class ResultSerializer(serializers.ModelSerializer):
     def validate(self, data):
+        if data['execution'].status != 'R':
+            raise ValidationError('Can only add resuls to a running execution!')
         if data['result_type'] == 'f':
             if Result.objects.filter(execution=data['execution'], result_type='f').count()!=0:
                 raise ValidationError('Cannot add more than one final result!')
@@ -154,15 +166,20 @@ class ResultSerializer(serializers.ModelSerializer):
     class Meta:
         model = Result
         fields = ['id', 'execution', 'value', 'result_type']
-    # TODO: ONLY ACCEPT REQUESTS IF STATE == 'R'
 
 class AddResult(generics.CreateAPIView):
     """
     Add a measurement result to a given execution
     """
+    permission_classes = [ApparatusOnlyAccess]
     serializer_class = ResultSerializer
     queryset = Result.objects.all()
-    # TODO: validate that result can be posted only if status = 'R'
+
+    def create(self, request, *args, **kwargs):
+        execution = Execution.objects.get(pk=request.data['execution'])
+        self.check_object_permissions(request, execution)  
+        return super().create(request, *args, **kwargs)
+
 
 class ResultList(generics.ListAPIView):
     """
@@ -177,6 +194,7 @@ class ResultList(generics.ListAPIView):
             return Result.objects.filter(execution_id=self.kwargs['execution_id'])
 
 class ExecutionStatusSerializer(serializers.ModelSerializer):
+    permission_classes = [ApparatusOnlyAccess]
     def validate(self, data):
         valid_transitions = {
             'R': ['F', 'E']
@@ -199,6 +217,7 @@ class ChangeExecutionStatus(generics.RetrieveUpdateAPIView):
     """
     Changes or retrieves the status of a given execution
     """
+    permission_classes = [ApparatusOnlyAccess]
     serializer_class = ExecutionStatusSerializer
     queryset = Execution.objects.all()
     lookup_field='id'
@@ -207,6 +226,7 @@ class ExecutionQueue(generics.ListAPIView):
     """
     Retrieves a current execution queue for the apparatus
     """
+    permission_classes = [ApparatusOnlyAccess]
     serializer_class = ExecutionSerializer
     def get_queryset(self):
         return Execution.objects.filter(state='Q', apparatus_id=self.kwargs['apparatus_id'])
