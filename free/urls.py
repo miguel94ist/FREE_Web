@@ -43,7 +43,7 @@ urlpatterns = [
     path('api/v1/execution/<int:id>/status', views.ChangeExecutionStatus.as_view(), name='api-execution-status-change'),
     path('api/v1/execution/<int:execution_id>/result', views.ResultList.as_view(), name='api-result-list'),
     path('api/v1/execution/<int:execution_id>/result/<int:last_id>', views.ResultList.as_view(), name='api-result-list-lastid'),
-
+    path('api/v1/apparatus/<int:id>', views.AppratusView.as_view(), name='api-apparatus-view'),
     path('api/v1/apparatus/<int:apparatus_id>/config', views.ProtocolList.as_view(), name='api-protocols-list'),
     path('api/v1/result', views.AddResult.as_view(), name='api-result-add'),
 ]

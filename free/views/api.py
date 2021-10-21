@@ -106,12 +106,24 @@ class ExecutionView(generics.RetrieveAPIView):
     queryset = Execution.objects.all()
     lookup_field='id'
 
-
 class ProtocolSerializer(serializers.ModelSerializer):
     read_only = True
     class Meta:
         model = Protocol
         fields = ['name', 'config']
+
+class ApparatusSerializer(serializers.ModelSerializer):
+    read_only = True
+    protocols = ProtocolSerializer(many=True)
+    experiment = ExperimentSerializer()
+    class Meta:
+        model = Apparatus
+        fields = ['experiment', 'protocols', 'location', 'owner']
+
+class AppratusView(generics.RetrieveAPIView):
+    serializer_class = ApparatusSerializer
+    queryset = Apparatus.objects.all()
+    lookup_field = 'id'
 
 class ProtocolList(generics.ListAPIView):
     """
