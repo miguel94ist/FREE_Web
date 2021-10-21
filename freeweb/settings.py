@@ -152,7 +152,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 WEBPACK_LOADER = {
     'DEFAULT': {
         'BUNDLE_DIR_NAME': 'bundles/',
-        'STATS_FILE': BASE_DIR / 'free/assets/webpack-stats.json'
+        'STATS_FILE': BASE_DIR / 'assets/webpack-stats.json'
     }
 }
 

@@ -8,3 +8,5 @@ __pycache__
 /.vscode
 /free/assets/webpack-stats.json
 /staticfiles
+/assets/node_modules
+/assets/semantic-ui/themes
