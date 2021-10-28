@@ -137,7 +137,7 @@ class ExecutionAPI(TestCase):
 
         request_time = timezone.now()
         response = self.client.get('/api/v1/apparatus/' + str(self.apparatus.pk) + '/nextexecution',
-        HTTP_AUTHENTICATION = 'Secret secret_code')
+        HTTP_AUTHENTICATION = 'secret_code')
         self.assertEqual(response.status_code, 200)
         response = json.loads(response.content)
         self.assertEqual(response["id"], execution_id)
@@ -150,7 +150,7 @@ class ExecutionAPI(TestCase):
         # Cannot change status to invalid
         response = self.client.put('/api/v1/execution/' + str(execution_id) + '/status', {
             "status": "C"
-        }, content_type='application/json', HTTP_AUTHENTICATION = 'Secret secret_code')
+        }, content_type='application/json', HTTP_AUTHENTICATION = 'secret_code')
         self.assertEqual(response.status_code, 400)
 
         # RESULT NO AUTH
@@ -166,7 +166,7 @@ class ExecutionAPI(TestCase):
             'execution': execution_id,
             'value': json.dumps({'g': 9.81}),
             'result_type': 'p',
-        },HTTP_AUTHENTICATION = 'Secret secret_code')
+        },HTTP_AUTHENTICATION = 'secret_code')
         self.assertEqual(response.status_code, 201)
         response = json.loads(response.content)
         partial_result_id = response['id']
@@ -178,7 +178,7 @@ class ExecutionAPI(TestCase):
             'execution': execution_id,
             'value': json.dumps({'g': 9.815}),
             'result_type': 'p',
-        },HTTP_AUTHENTICATION = 'Secret secret_code')
+        },HTTP_AUTHENTICATION = 'secret_code')
         self.assertEqual(response.status_code, 201)
 
         request_time = timezone.now()
@@ -186,7 +186,7 @@ class ExecutionAPI(TestCase):
             'execution': execution_id,
             'value': json.dumps({'g': 9.82}),
             'result_type':'f',
-        }, HTTP_AUTHENTICATION = 'Secret secret_code')
+        }, HTTP_AUTHENTICATION = 'secret_code')
         self.assertEqual(response.status_code, 201)
         response = json.loads(response.content)
         final_result_id = response['id']
@@ -203,7 +203,7 @@ class ExecutionAPI(TestCase):
             'execution': execution_id,
             'value': json.dumps({'g': 9.82}),
             'result_type':'f',
-        },HTTP_AUTHENTICATION = 'Secret secret_code')
+        },HTTP_AUTHENTICATION = 'secret_code')
         self.assertEqual(response.status_code, 400)
 
         # TEST INVALID SCHEMA
