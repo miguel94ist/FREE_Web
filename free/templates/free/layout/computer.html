@@ -1,0 +1,29 @@
+<!--computer-->
+<div class="computer only row">
+  <div class="left floated three wide computer column" id="computersidebar">
+      <div class="ui vertical fluid menu scrollable" id="simplefluid">
+          <div class="clearsidebar"></div>
+          <div class="ui top aligned  image">
+              <h2  class=" item"><img src="http://e-lab.ist.eu/rec.web/javax.faces.resource/elab_logo.png.faces?ln=images" id="logo-elab" ></h2> 
+          </div>
+          <a class="item" href="/"><i class="home icon"></i> Home</a>
+          <a class="item" href="protocols"><i class="table icon"></i> Protocols</a>
+          <a class="item" href="executions.html"><i class="home icon"></i> Executions</a>
+          <!-- Begin Simple Accordion -->
+          <div class="ui accordion simpleaccordion item">
+              <div class="title titleaccordion item"><i class="dropdown icon"></i> Results</div>
+              <div class="content contentaccordion">
+                  <a class="item itemaccordion" href="#"><i class="settings icon"></i> link1</a>
+                  <a class="item itemaccordion" href="#"><i class="settings icon"></i> link2</a>
+                  <a class="item itemaccordion" href="#"><i class="settings icon"></i> link3</a>
+                  <a class="item itemaccordion" href="#"><i class="settings icon"></i> link4</a>
+              </div>
+          </div>
+        {% if user.is_authenticated %}
+            <a href="logout" class="item"><i class="sign out alternate icon"></i> Logout</a>
+        {% else %}
+            <a href="login" class="item"><i class="sign in alternate icon"></i> Login</a>
+        {% endif %}
+      </div>
+  </div>
+</div>

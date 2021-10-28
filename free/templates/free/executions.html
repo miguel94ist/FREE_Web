@@ -1,0 +1,135 @@
+{% extends 'free/base.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block head %}
+{% endblock %}  
+
+{% block content %}
+    <!--content of this page-->
+    <div class="right floated thirteen wide computer sixteen wide phone column" id="content">
+        <div class="ui container grid">
+            <div class="row">
+                <div class="fifteen wide computer sixteen wide phone centered column">
+                    <h2><i class="home icon"></i> List of Executions</h2>
+                    <!--<div class="ui divider"></div>-->
+                    
+                        <!--<div class="item">
+                            <div class="ui small input"><input placeholder="Search..." /></div>
+                        </div>-->
+
+
+
+                        <div class="right floated thirteen wide computer sixteen wide phone column" id="content">
+                            <div class="ui container grid">
+                                <div class="row">
+                                    <div class="fifteen wide computer sixteen wide phone centered column">
+                                        
+                                        <div class="ui divider"></div>
+                                        <div class="ui grid">
+                                            <!--<div class="sixteen wide computer sixteen wide phone centered column">-->
+                                                <h4></h4>
+    
+                                                <!-- BEGIN DATATABLE -->
+                                                <div class="ui stacked segment">
+                                                    <div class="ui blue ribbon icon label">List of your Experiment</div>
+                                                    <br><br>
+                                                    <table id="list_of_experiment_id" class="ui celled table responsive nowrap unstackable" style="width:90%">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>Experiment Name</th>
+                                                                <th> Location </th>
+                                                                <th>Scientific Area</th>
+                                                                <th>Education Levels</th>
+                                                                <th>
+                                                                    State
+                                                                </th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                        
+                                                            <tr>
+                                                                <td>Condução de Calor</td>
+                                                                <td>Tecnico Lisboa</td>
+                                                                <td>Thermodynamics</td>
+                                                                <td>intermediate</td>
+                                                                <td>
+                                                                    <div class="ui buttons">
+                                                                        <a href="pendulum.html"><button class="ui positive button">Go</button></a>
+                                                                        <div class="or" data-text="or"></div>
+                                                                        <a href="new_protocol.html"><button class="ui negative button">New</button></a>
+                                                                        </div>
+                                                                </td>
+                                                                
+                                                            </tr>
+                                                            <tr>
+                                                                <td>Radiaactividade</td>
+                                                                <td>Tecnico Lisboa</td>
+                                                                <td>Fisica atomica</td>
+                                                                <td>intermediate</td>
+                                                                <td>
+                                                                    <div class="ui buttons">
+                                                                        <a href="pendulum.html"><button class="ui positive button">Go</button></a>
+                                                                        <div class="or" data-text="or"></div>
+                                                                        <a href="new_protocol.html"><button class="ui negative button">New</button></a>
+                                                                        </div>
+                                                                </td>
+                                                                
+                                                            </tr>
+                                                            <tr>
+                                                                <td>Experiencia de Planck</td>
+                                                                <td>Tecnico Lisboa</td>
+                                                                <td>Física básica</td>
+                                                                <td>Intermediate</td>
+                                                                <td>
+                                                                    <div class="ui buttons">
+                                                                        <a href="pendulum.html"><button class="ui positive button">Go</button></a>
+                                                                        <div class="or" data-text="or"></div>
+                                                                        <a href="new_protocol.html"><button class="ui negative button">New</button></a>
+                                                                        </div>
+                                                                </td>
+                                                                
+                                                            </tr>
+                                                            
+                                                            
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                                <!-- END DATATABLE -->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block script %}
+ 
+
+    <script>
+        $(document).ready(function(){
+            // - MESSAGES
+            $('.message .close').on('click', function() {
+                $(this).closest('.message').transition('fade');
+            });
+            // - DATATABLES
+            $(document).ready(function(){
+                $('#list_of_experiment_id').DataTable();
+            });
+            var table = $('#list_of_Experiment_id').DataTable({
+                lengthChange: false,
+                buttons: [ 'colvis', 'excel', 'pdf' ]
+            });
+            table.buttons().container().appendTo(
+                $('div.eight.column:eq(0)', table.table().container())
+            );
+        });
+    </script>
+
+{% endblock %}  

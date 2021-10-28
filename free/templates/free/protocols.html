@@ -1,0 +1,112 @@
+{% extends 'free/base.html' %}
+{% load i18n %}
+
+
+{% block head %}
+
+{% endblock %}  
+
+{% block content %}
+
+
+    <div class="right floated thirteen wide computer sixteen wide phone column" id="content">
+        <div class="ui container grid">
+            <div class="row"><div class="fifteen wide computer sixteen wide phone centered column">
+                
+                <div class="fifteen wide computer sixteen wide phone centered column">
+                    
+                    <h2><i class="table icon"></i> List of Protocols</h2>
+                    <div class="ui divider"></div>
+                    <div class="ui grid">
+                        <div class="sixteen wide computer sixteen wide phone centered column">
+                                <div class="ui positive message">
+                                    <i class="close icon"></i>
+                                    <div class="header">
+                                        Great News!
+                                    </div>
+                                    <p>Elab now has ....</p>
+                                </div>
+                                <h4></h4>
+                        </div>        
+                        <div class="ui stacked segment">
+                            <div class="ui green ribbon icon label">List Available Experiment</div>
+                            <div class="ui divider"></div>
+
+                            <table id="experiments" class="ui celled padded table" style="width:90%">
+                                <thead>
+                                    <tr>
+                                        <th>Experiment Name</th>
+                                        <th>Location</th>
+                                        <th>Scientific Area</th>
+                                        <th>Education Levels</th>
+                                        <th>State</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for experiment in free_experimentsjj %}
+                                        <tr>
+                                            <td> {{ experiment.name }} </td>
+                                            <td> {{ experiment.location }} </td>
+                                            <td> {{ experiment.scientific_area }} </td>
+                                            <td> {{ experiment.education_levels }} </td>
+                                            <td>
+                                                <div class="ui buttons">
+                                                    <!-- <a href="{% url 'free:'|add:experiment.name.lower %}?id={{experiment.id}}&location={{experiment.location | lower }}"><button class="ui positive button">Go</button></a> -->
+                                                    <a href="{{experiment.name | lower }}?id={{experiment.id}}&location={{experiment.location | lower }}"><button class="ui positive button">Go</button></a>
+                                                    <div class="or" data-text="or"></div>
+                                                    <a href="new_protocol.html"><button class="ui negative button">New</button></a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>  
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+{% endblock %}
+
+{% comment %} {% block script %}
+    <script>
+        /* $(document).ready(function(){
+            // - MESSAGES
+            $('.message .close').on('click', function() {
+                $(this)
+                .closest('.message')
+                .transition('fade')
+                ;
+            });
+            // - DATATABLES
+            $(document).ready(function(){
+                $('#example').DataTable();
+            });
+        
+            var table = $('#example').DataTable({
+                searchPanes: true
+            });
+
+            table.searchPanes.container().prependTo(table.table().container());
+            table.searchPanes.resizePanes()
+
+    
+        });*/
+
+        $(document).ready(function() {
+            var table = $('#experiments').DataTable({
+                searchPanes: true
+            });
+
+            if (table.searchPanes !== undefined) {
+                table.searchPanes.container().prependTo(table.table().container());
+                table.searchPanes.resizePanes();
+            }
+        });
+
+    </script>
+
+{% endblock %} {% endcomment %}

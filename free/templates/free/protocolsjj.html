@@ -1,0 +1,194 @@
+{% extends 'free/base.html' %}
+{% load i18n %}
+
+
+{% block head%}
+
+{% endblock %}  
+
+{% block content%}
+        <div class="ui grid">
+            <div class="ui row">
+                <div class="ui grid">
+                    <!--navbar-->
+                    <div class="computer only row">
+                        <div class=" column">
+                            <div class="ui top fixed massive menu navbar">
+                                <!--<div class="nav item">
+                                    <img src="static/images/eu.jpg">
+                                </div>-->
+                                <div class="left menu">
+                                    <div class="nav item">
+                                        <strong class="navtext">Elab</strong>
+                                    </div>
+                                
+                                </div>
+                                <div class="ui top pointing dropdown admindropdown link item right">
+                                    <img class="imgrad" src="static/images/eu.jpg" alt="">
+                                    <span class="clear navtext"><strong>Hi, José</strong></span>
+                                    <i class="dropdown icon navtext"></i>
+                                    <div class="menu">
+                                        <div class="item"><p><i class="settings icon"></i>Account Setting</p></div>
+                                        <a href="login.html" class="item"><i class="sign out alternate icon"></i> Logout</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                     <!--for mobile or table minimize your screen-->
+                    <div class="tablet mobile only row">
+                        <div class="column">
+                        <div class="ui top fixed menu navcolor">
+                            <a id="showmobiletabletsidebar" class="item navtext"><i class="content icon"></i></a>
+                            <div class="right menu">
+                                <div class="item">
+                                    <strong class="navtext">Elab</strong>
+                                   
+                                </div>
+                                <div class="item">
+                                    <img src="http://e-lab.ist.eu/rec.web/javax.faces.resource/elab_logo.png.faces?ln=images">
+                                </div>
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+
+                    <!--sidebar-->
+                    <div class="tablet mobile only row">
+                        <div id="mobiletabletsidebar" class="mobiletabletsidebar animate hidden">
+                            <div class="ui left fixed vertical menu scrollable">
+                                <div class="item">
+                                    <table>
+                                        <tr>
+                                            <td>
+                                                <img class="ui mini image" src="static/images/eu.jpg">
+                                            </td>
+                                            <td>
+                                                <span class="clear"><strong>Elab</strong></span>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+                                <a class="item" href="/"><i class="home icon"></i> Home</a>
+                                <a class="item" href="protocols"><i class="table icon"></i> Protocols</a>
+                                <a class="item" href="executions.html"><i class="home icon"></i> Executions</a>
+                                <!-- Begin Simple Accordion -->
+                                <div class="ui accordion simpleaccordion item">
+                                    <div class="title titleaccordion item"><i class="dropdown icon"></i> Results</div>
+                                    <div class="content contentaccordion">
+                                        <a class="item itemaccordion" href="#"><i class="settings icon"></i> link1</a>
+                                        <a class="item itemaccordion" href="#"><i class="settings icon"></i> link2</a>
+                                        <a class="item itemaccordion" href="#"><i class="settings icon"></i> link3</a>
+                                        <a class="item itemaccordion" href="#"><i class="settings icon"></i> link4</a>
+                                    </div>
+                                </div>
+                                <!-- End Simple Accordion -->
+                                <a class="item"><i class="settings icon"></i> Settings</a>	
+                                <a href="logout" class="item"><i class="sign out alternate icon"></i> Logout</a>
+                                <a class="item" href="https://fomantic-ui.com/"><i class="heart icon"></i>More Components</a>
+                                <div class="item" id="hidemobiletabletsidebar">
+                                    <button class="fluid ui button">
+                                        Close
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!--compuer-->
+                    <div class="computer only row">
+                        <div class="left floated three wide computer column" id="computersidebar">
+                            <div class="ui vertical fluid menu scrollable" id="simplefluid">
+                                <div class="clearsidebar"></div>
+                                <div class="ui top aligned  image">
+                                    <h2  class=" item"><img src="http://e-lab.ist.eu/rec.web/javax.faces.resource/elab_logo.png.faces?ln=images" id="logo-elab" ></h2> 
+                                </div>
+                                <a class="item" href="/"><i class="home icon"></i> Home</a>
+                                <a class="item" href="protocols"><i class="table icon"></i> Protocols</a>
+                                <a class="item" href="executions.html"><i class="home icon"></i> Executions</a>
+                                <!-- Begin Simple Accordion -->
+                                <div class="ui accordion simpleaccordion item">
+                                    <div class="title titleaccordion item"><i class="dropdown icon"></i> Results</div>
+                                    <div class="content contentaccordion">
+                                        <a class="item itemaccordion" href="#"><i class="settings icon"></i> link1</a>
+                                        <a class="item itemaccordion" href="#"><i class="settings icon"></i> link2</a>
+                                        <a class="item itemaccordion" href="#"><i class="settings icon"></i> link3</a>
+                                        <a class="item itemaccordion" href="#"><i class="settings icon"></i> link4</a>
+                                    </div>
+                                </div>
+                                <!-- End Simple Accordion -->
+                                <!--<a href="login.html" class="item"><i class="sign out alternate icon"></i> Logout</a>
+                                <a class="item" href="https://fomantic-ui.com/"><i class="heart icon"></i>More Components</a>
+                                <a class="item"></a>-->
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+             <div class="right floated nine wide computer sixteen wide phone column" id="content">
+                <div class="ui container grid">
+                    <div class="row"><div class="fifteen wide computer sixteen wide phone centered column">
+                       
+                        <div class="fifteen wide computer sixteen wide phone centered column">
+                            <h2><i class="table icon"></i> List of Protocols</h2>
+                            <div class="ui divider"></div>
+                            <div class="ui grid">
+                                <div class="sixteen wide computer sixteen wide phone centered column">
+                                <div class="ui stacked segment">
+                                    <div class="ui green ribbon icon label">List Available Experiment</div>
+                                    <div class="ui divider"></div>
+
+                                    <table id="experiments" class="ui celled padded table" style="width:90%">
+                                        <thead>
+                                            <tr>
+                                                <th>Experiment Name</th>
+                                                <th>Location</th>
+                                                <th>Scientific Area</th>
+                                                <th>Education Levels</th>
+                                                <th>State</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for experiment in free_experimentsjj %}
+                                                <tr>
+                                                    <td> {{ experiment.name }} </td>
+                                                    <td> {{ experiment.location }} </td>
+                                                    <td> {{ experiment.scientific_area }} </td>
+                                                    <td> {{ experiment.education_levels }} </td>
+                                                    <td>
+                                                        <div class="ui buttons">
+                                                            <a href="{{ experiment.name | lower }} "><button class="ui positive button">Go</button></a>
+                                                            <div class="or" data-text="or"></div>
+                                                            <a href="new_protocol.html"><button class="ui negative button">New</button></a>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            {% endfor %}
+                                         </tbody>
+                                    </table>  
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div> 
+            
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            
+                            
+                        </div>
+                       
+                    </div>
+                </div>
+                
+            </div>
+
+        </div>
+
+{% endblock %}

@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta content="IE=edge,chrome=1" http-equiv="X-UA-Compatible" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2, user-scalable=no"/>
+        <meta name="description" content="Template for ELAB app"/>
+        <meta name="keywords" content="ELab layout, template, web site" />
+        <meta name="author" content="José Veiga" />
+        <meta name="theme-color" content="#ffffff" />
+        <!--HTML title-->
+        <title>elab layout </title>
+        <!--Block styling-->
+
+        <link rel="stylesheet" href="vendors/fomantic-ui/semantic.min.css">
+        <link rel="stylesheet"  href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.css" type="text/css"/>
+        <link rel="stylesheet" href="css/style.css">
+        <!-- Put your external css file here-->
+
+        <!--Block javascript-->
+        <link rel="stylesheet" href="vendors/fomantic-ui/semantic.min.css">
+        <link rel="stylesheet" href="vendors/fomantic-ui/components/accordion.css">
+        <link rel="stylesheet" href="vendors/fomantic-ui/components/accordion.min.css">
+        
+
+
+        <!-- for semantic ui icon - follow this link
+             https://github.com/Semantic-Org/Semantic-UI-Docs/blob/master/server/partials/examples/icon.html-->
+
+
+    </head>
+    <body>
+        <div class="ui grid">
+            <div class="ui row">
+                <div class="ui grid">
+                    <!--navbar-->
+                    <div class="computer only row">
+                        <div class=" column">
+                            <div class="ui top fixed massive menu navbar">
+                                <!--<div class="nav item">
+                                    <img src="images/eu.jpg">
+                                </div>-->
+                                <div class="left menu">
+                                    <div class="nav item">
+                                        <strong class="navtext">Elab</strong>
+                                    </div>
+                                
+                                </div>
+                                <div class="ui top pointing dropdown admindropdown link item right">
+                                    <img class="imgrad" src="images/eu.jpg" alt="">
+                                    <span class="clear navtext"><strong>Hi, José</strong></span>
+                                    <i class="dropdown icon navtext"></i>
+                                    <div class="menu">
+                                        <div class="item"><p><i class="settings icon"></i>Account Setting</p></div>
+                                        <a href="/login" class="item"><i class="sign out alternate icon"></i> Logout</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                     <!--for mobile or table minimize your screen-->
+                    <div class="tablet mobile only row">
+                        <div class="column">
+                        <div class="ui top fixed menu navcolor">
+                            <a id="showmobiletabletsidebar" class="item navtext"><i class="content icon"></i></a>
+                            <div class="right menu">
+                                <div class="item">
+                                    <strong class="navtext">Elab</strong>
+                                   
+                                </div>
+                                <div class="item">
+                                    <img src="http://e-lab.ist.eu/rec.web/javax.faces.resource/elab_logo.png.faces?ln=images">
+                                </div>
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+
+                    <!--sidebar-->
+                    <div class="tablet mobile only row">
+                        <div id="mobiletabletsidebar" class="mobiletabletsidebar animate hidden">
+                            <div class="ui left fixed vertical menu scrollable">
+                                <div class="item">
+                                    <table>
+                                        <tr>
+                                            <td>
+                                                <img class="ui mini image" src="images/eu.jpg">
+                                            </td>
+                                            <td>
+                                                <span class="clear"><strong>Elab</strong></span>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+                                <a class="item" href="/"><i class="home icon"></i> Home</a>
+                                <a class="item" href="/protocols"><i class="table icon"></i> Protocols</a>
+                                <a class="item" href="/executions"><i class="home icon"></i> Executions</a>
+                                <!-- Begin Simple Accordion -->
+                                <div class="ui accordion simpleaccordion item">
+                                    <div class="title titleaccordion item"><i class="dropdown icon"></i> Results</div>
+                                    <div class="content contentaccordion">
+                                        <a class="item itemaccordion" href="#"><i class="settings icon"></i> coisa1</a>
+                                        <a class="item itemaccordion" href="#"><i class="settings icon"></i> coisa2</a>
+                                        <a class="item itemaccordion" href="#"><i class="settings icon"></i> coisa3</a>
+                                        <a class="item itemaccordion" href="#"><i class="settings icon"></i> coisa4</a>
+                                    </div>
+                                </div>
+                                <!-- End Simple Accordion -->
+                                <!--<a class="item"><i class="settings icon"></i> Settings</a>	
+                                <a href="login.html" class="item"><i class="sign out alternate icon"></i> Logout</a>
+                                <a class="item" href="https://fomantic-ui.com/"><i class="heart icon"></i>More Components</a>
+                                <div class="item" id="hidemobiletabletsidebar">
+                                    <button class="fluid ui button">
+                                        Close
+                                    </button>
+                                </div>-->
+                            </div>
+                        </div>
+                    </div>
+                    <!--compuer-->
+                    <div class="computer only row">
+                        <div class="left floated three wide computer column" id="computersidebar">
+                            <div class="ui vertical fluid menu scrollable" id="simplefluid">
+                                <div class="clearsidebar"></div>
+                                <div class="ui top aligned  image">
+                                    <h2  class=" item"><img src="http://e-lab.ist.eu/rec.web/javax.faces.resource/elab_logo.png.faces?ln=images" id="logo-elab" ></h2> 
+                                </div>
+                                <a class="item" href="/"><i class="home icon"></i> Home</a>
+                                <a class="item" href="/protocols"><i class="table icon"></i> Protocols</a>
+                                <a class="item" href="/executions"><i class="home icon"></i> Executions</a>
+                                <!-- Begin Simple Accordion -->
+                                <div class="ui accordion simpleaccordion item">
+                                    <div class="title titleaccordion item"><i class="dropdown icon"></i> Results</div>
+                                    <div class="content contentaccordion">
+                                        <a class="item itemaccordion" href="#"><i class="settings icon"></i> link1</a>
+                                        <a class="item itemaccordion" href="#"><i class="settings icon"></i> link2</a>
+                                        <a class="item itemaccordion" href="#"><i class="settings icon"></i> link3</a>
+                                        <a class="item itemaccordion" href="#"><i class="settings icon"></i> link4</a>
+                                    </div>
+                                </div>
+                                <!-- End Simple Accordion -->
+                                <!--<a href="login.html" class="item"><i class="sign out alternate icon"></i> Logout</a>
+                                <a class="item" href="https://fomantic-ui.com/"><i class="heart icon"></i>More Components</a>
+                                <a class="item"></a>-->
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!--content-->
+            <div class="right floated thirteen wide computer sixteen wide phone column" id="content">
+                <div class="ui container grid">
+                    <div class="row">
+                        <div class="fifteen wide computer sixteen wide phone centered column">
+                            <h2><i class="home icon"></i> Para Implementar Dashboard</h2>
+                            <div class="ui divider"></div>
+                            <div class="ui grid">
+                               
+                            </div>
+                        </div>
+                       
+                    </div>
+                </div>
+                
+            </div>
+
+        </div>
+    </body>
+
+    <script src="vendors/jquery/jquery.min.js"></script>
+    <script src="vendors/fomantic-ui/semantic.min.js"></script>
+    <script src="vendors/fomantic-ui/components/accordion.js"></script>
+    <script src="vendors/fomantic-ui/components/accordion.min.js"></script>
+    <script src="js/elab-layout.js"></script>
+</html>

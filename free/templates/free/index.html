@@ -1,47 +1,60 @@
 {% extends 'free/base.html' %}
 {% load i18n %}
-{% load render_bundle from webpack_loader %}
-{% load react_component from django_react_components %}
 
-{% block title %}Main Page{% endblock %}
 
-{% block head%}
-    {% render_bundle 'components' %}
-
-    <style type="text/css">
-        #head {
-            margin-top: 3em;
-            margin-bottom: 2em;
-            font-size: 4em;
-        }
-    </style>
+{% block head %}
 
 {% endblock %}  
 
-{% block content%}
-    <div class="ui inverted vertical center aligned segment" >
-        <div class="ui text container">
-            <h1 id="head">{% trans 'This is a test page' %}</h1>
-        </div>
+{% block content %}
 
-    </div>
 
-    <div class="ui center aligned segment">
-        <div class="ui text container">
-            {% react_component 'ExampleReactComponent' count=154 %}
+<!--content-->
+<div class="right floated thirteen wide computer sixteen wide phone column" id="content">
+    <div class="ui container grid">
+        <div class="row">
+            <div class="fifteen wide computer sixteen wide phone centered column">
+                <h2><i class="home icon"></i> Para Implementar Dashboard</h2>
+                <div class="ui divider"></div>
+                <div class="ui grid">
+                    <div class="center aligned row">
+                        <div class="eight wide mobile four wide tablet four wide computer column">
+                            <img class="ui centered small circular image"
+                            src="static/images/limo.jpg"/>
+                            <div class="ui large basic label">Go!</div>
+                            <p>Pendulum Experiment</p>
+                        </div>
+                        <!-- Repeat-->
+                        <div class="eight wide mobile four wide tablet four wide computer column">
+                            <img class="ui centered small circular image"
+                            src="static/images/solar_tuk.png"/>
+                            <div class="ui large basic label">Go!</div>
+                            <p>Langmuir Experiment</p>
+                            </div>
+                            <div class="eight wide mobile four wide tablet four wide computer column">
+                            <img class="ui centered small circular image"
+                            src="static/images/limo.jpg"/>
+                            <div class="ui large basic label">Go!</div>
+                            <p>Photovoltaics</p>
+                            </div>
+                            <div class="eight wide mobile four wide tablet four wide computer column">
+                            <img class="ui centered small circular image"
+                            src="static/images/limo.jpg"/>
+                            <div class="ui large basic button">Go!</div>
+                            <p>Waves</p>
+                            </div>
+                    </div>
+                </div>
+            </div>
+            
         </div>
     </div>
+    
+</div>
 
-    <div class="ui center aligned segment">
-        <div class="ui text container">
-            {% if user.is_authenticated %}
-                <a class="ui large button" href="{% url 'free:logout' %}">{% trans 'Logout' %} {{user.username}}</a>
-                {% if user.is_staff %}
-                    <a class="ui large button" href="{% url 'admin:index' %}">{% trans 'Administration' %}</a>
-                {% endif %}
-            {% else %}
-                <a class="ui large button" href="{% url 'free:login' %}">{% trans 'Login' %}</a>
-            {% endif %}
-        </div>
-    </div>
 {% endblock %}
+
+
+
+{% block script %}
+{% endblock %}  

@@ -5,8 +5,10 @@ from rest_framework import permissions
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 
+
 from . import views
 
+from .views.layoutpages import ProtocolsView, ExecutionsView 
 # Helper function to generate API documentation
 schema_view = get_schema_view(
    openapi.Info(
@@ -31,6 +33,15 @@ urlpatterns = [
     re_path(r'^free-api(?P<format>\.json|\.yaml)$', schema_view.without_ui(cache_timeout=0), name='schema-json'),
     re_path(r'^api/swagger/$', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
     re_path(r'^api/redoc/$', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
+
+    path('protocols', ProtocolsView.as_view(), name='protocols'),
+    path('executions', ExecutionsView.as_view(), name='executions'),
+
+    path('experiment', views.ExperimentView.as_view(), name='experiment'),
+    path('cavity', views.CavityView.as_view(), name='cavity'),
+    path('pendulum', views.PendulumView.as_view(), name='pendulum'),
+    path('montecarlo', views.PendulumView.as_view(), name='montecarlo'),
+    path('wp_lis_ist', views.PendulumView.as_view(), name='wp_lis_ist'),
 
     # REST API
     path('api/v1/experiments', views.ExperimentListAPI.as_view(), name='api-experiment-list'),
