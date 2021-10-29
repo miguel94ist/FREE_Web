@@ -40,6 +40,8 @@
                                         <th>Scientific Area</th>
                                         <th>Education Levels</th>
                                         <th>State</th>
+                                        <th>New</th>
+                                        
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -54,8 +56,11 @@
                                                     <!-- <a href="{% url 'free:'|add:experiment.name.lower %}?id={{experiment.id}}&location={{experiment.location | lower }}"><button class="ui positive button">Go</button></a> -->
                                                     <a href="{{experiment.name | lower }}?id={{experiment.id}}&location={{experiment.location | lower }}"><button class="ui positive button">Go</button></a>
                                                     <div class="or" data-text="or"></div>
-                                                    <a href="new_protocol.html"><button class="ui negative button">New</button></a>
+                                                    {% comment %} <a href="new_protocol.html"><button class="ui negative button">New</button></a> {% endcomment %}
                                                 </div>
+                                            </td>
+                                            <td>
+                                                    <a href="new_execution?experiment_id={{experiment.id}}"><button class="ui negative button">New Execution</button></a>
                                             </td>
                                         </tr>
                                     {% endfor %}

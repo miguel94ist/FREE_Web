@@ -2,46 +2,43 @@
 {% load i18n %}
 
 
-{% block head %}
 
-{% endblock %}  
 
 {% block content %}
-
 
 <!--content-->
 <div class="right floated thirteen wide computer sixteen wide phone column" id="content">
     <div class="ui container grid">
         <div class="row">
             <div class="fifteen wide computer sixteen wide phone centered column">
-                <h2><i class="home icon"></i> Para Implementar Dashboard</h2>
+                <h2><i class="home icon"></i> {% trans 'Dashboard' %}</h2>
                 <div class="ui divider"></div>
                 <div class="ui grid">
                     <div class="center aligned row">
                         <div class="eight wide mobile four wide tablet four wide computer column">
                             <img class="ui centered small circular image"
                             src="static/images/limo.jpg"/>
-                            <div class="ui large basic label">Go!</div>
-                            <p>Pendulum Experiment</p>
+                            <div class="ui large basic label">{% trans 'Go' %}!</div>
+                            <p>{% trans 'Pendulum Experiment' %}</p>
                         </div>
                         <!-- Repeat-->
                         <div class="eight wide mobile four wide tablet four wide computer column">
                             <img class="ui centered small circular image"
                             src="static/images/solar_tuk.png"/>
-                            <div class="ui large basic label">Go!</div>
-                            <p>Langmuir Experiment</p>
+                            <div class="ui large basic label">{% trans 'Go' %}!</div>
+                            <p>{% trans 'Langmuir Experiment' %}</p>
                             </div>
                             <div class="eight wide mobile four wide tablet four wide computer column">
                             <img class="ui centered small circular image"
                             src="static/images/limo.jpg"/>
-                            <div class="ui large basic label">Go!</div>
-                            <p>Photovoltaics</p>
+                            <div class="ui large basic label">{% trans 'Go' %}!</div>
+                            <p>{% trans 'Photovoltaics' %}</p>
                             </div>
                             <div class="eight wide mobile four wide tablet four wide computer column">
                             <img class="ui centered small circular image"
                             src="static/images/limo.jpg"/>
-                            <div class="ui large basic button">Go!</div>
-                            <p>Waves</p>
+                            <div class="ui large basic button">{% trans 'Go' %}!</div>
+                            <p>{% trans 'Waves' %}</p>
                             </div>
                     </div>
                 </div>
@@ -54,7 +51,3 @@
 
 {% endblock %}
 
-
-
-{% block script %}
-{% endblock %}  

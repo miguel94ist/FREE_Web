@@ -36,4 +36,7 @@ class ProtocolsView(TemplateView):
 
 
 class ExecutionsView(TemplateView):
-    template_name='free/executions.html'    
+    template_name='free/executions.html'   
+
+class ExecutionView(TemplateView):
+    template_name='free/new_execution.html' 

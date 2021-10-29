@@ -8,7 +8,7 @@ from drf_yasg import openapi
 
 from . import views
 
-from .views.layoutpages import ProtocolsView, ExecutionsView 
+from .views.layoutpages import ProtocolsView, ExecutionsView, ExecutionView
 # Helper function to generate API documentation
 schema_view = get_schema_view(
    openapi.Info(
@@ -36,6 +36,7 @@ urlpatterns = [
 
     path('protocols', ProtocolsView.as_view(), name='protocols'),
     path('executions', ExecutionsView.as_view(), name='executions'),
+    path('new_execution', ExecutionView.as_view(), name='new_execution'),
 
     path('experiment', views.ExperimentView.as_view(), name='experiment'),
     path('cavity', views.CavityView.as_view(), name='cavity'),

@@ -2,7 +2,7 @@
 {% load static %}
 {% load i18n %}
 
-<html lang="en">
+<html lang="pt">
     <head>
         <meta charset="utf-8" />
         <meta content="IE=edge,chrome=1" http-equiv="X-UA-Compatible" />
@@ -12,27 +12,21 @@
         <meta name="author" content="José Veiga" />
         <meta name="theme-color" content="#ffffff" />
         <!--HTML title-->
-        <title>elab layout </title>
+        <title>{% trans 'FREE' %} - {% block title %} {% endblock %}</title>
         <!--Block styling-->
 
-        <link rel="stylesheet" href="{% static 'vendors/fomantic-ui/semantic.min.css'%}">
         <link rel="stylesheet"  href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.css" type="text/css"/>
-        <link rel="stylesheet" href="static/css/style.css">
-        <!-- Put your external css file here-->
 
-        <!--Block javascript-->
-        <link rel="stylesheet" href="static/vendors/fomantic-ui/semantic.min.css">
-        <link rel="stylesheet" href="static/vendors/fomantic-ui/components/accordion.css">
-        <link rel="stylesheet" href="static/vendors/fomantic-ui/components/accordion.min.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/components/accordion.min.css">
 
-        <link rel="stylesheet" href="static/vendors/datatables.net/datatables.net-se/css/dataTables.semanticui.min.css">
-        <link rel="stylesheet" href="static/vendors/datatables.net/datatables.net-responsive-se/css/responsive.semanticui.min.css">
-        <link rel="stylesheet" href="static/vendors/datatables.net/datatables.net-buttons-se/css/buttons.semanticui.min.css">
-
+        <link rel="stylesheet" href="https://cdn.datatables.net/1.11.3/css/dataTables.semanticui.min.css">
+        <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.2.9/css/responsive.semanticui.min.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/datatables.net-buttons-se/1.5.3/buttons.semanticui.min.css">
+        <link rel="stylesheet" href="{% static 'css/style.css' %}">
 
 
         <link rel="shortcut icon" type="image/png" href="">
-        <link rel="shortcut icon" href="http://e-lab.ist.eu/rec.web/faviconElab.ico">
+        <link rel="shortcut icon" href="{% static  'images/faviconElab.ico' %}">
 
         {% block head %}
         {% endblock %}
