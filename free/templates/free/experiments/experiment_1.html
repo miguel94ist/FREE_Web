@@ -1,0 +1,146 @@
+{% load static %}
+
+
+                <!--div com menus de descrição e new protcol-->
+                <div class="ui top attached tabular menu">
+                    <a class="active item" data-tab="description">Description</a>
+                    <a class="item" data-tab="configuration">Configuration</a>
+                    <a class="item " data-tab="execution">Execution</a>
+                    <a class="item " data-tab="results">Results</a>
+                </div>
+
+                <div class="ui bottom attached active tab segment" data-tab="description">
+                            <!--descrição geral da experiencia-->
+                        <section class="intro">
+                            <figure class="">
+                            <img
+                                {% comment %} src="{% static 'images/pendulo.png' %}" {% endcomment %}
+                                alt="pendulo"
+                                width="60%">
+                            </figure>
+                            <h2 id="about-the-Monte-Carlo">Experiencia de Pendulo </h2>
+                            <p>
+                            Com este aplicação <strong>FLASK</strong>, pode se realizar a experiência de pendulo gravitico. Para efeito
+                            deve-se seguir os seguintes passos:
+                            <ul>
+                            <li>
+                                Prencher os inputs (l - comprimento inicial e N - número de amostras a recolher) na tab <strong>controller</strong>
+                            </li>
+                            <li>
+                                Submeter o pedido clicando no botão "play" e ver começar a receber os dados em tempo real na tab <strong>Results</strong>
+                            </li>
+                            </ul>
+                            <h2> Detalhes do Pendulo - isto vai tabela</h2>
+                            <!--tabela com informações do pendulo-->
+                            
+                            </p>
+
+                        </section>
+                <!--end of the description-->
+                </div>
+
+                <!-- Begin of the configuration tab-->
+                <div class="ui bottom attached tab segment" data-tab="configuration">
+                    <div class="ui two column stackable center aligned grid ">
+                        <div class="column">
+                            <h2>Initial Displacement</h2>
+                            <div class="ui segment">
+                                <div class="ui range" id="range1"></div>
+                                    <br>
+                                    <div class="ui input">
+                                        <input type="text" id="DeltaX">
+                                    </div>
+                                </div>
+                                <h2>Number of Samples N</h2>
+                                <div class="ui segment">
+                                <div class="ui labeled range" id="range2"></div>
+                                    <br>
+                                    <div class="ui input">
+                                        <input type="text" id="Samples">
+                                    </div>
+                                </div>
+                                <div class="ui hidden divider"></div>
+                                <div class="ui blue button" onclick="queue()">Submit</div>
+                                {% comment %} <a href="execution">  {% endcomment %}
+                                <div class="ui green button" onclick="start()">Play</div>
+                                {% comment %} </a> {% endcomment %}
+                                <div class="ui red button">Clear All</div>
+                        </div>
+                        <div class="ui vertical divider"></div>
+                        <div class="column">
+                            <h2>Video stream </h2>
+                            <div class="url video">
+                                <div class="ui embed" data-url="https://www.youtube.com/embed/O6Xo21L0ybE" data-placeholder="https://semantic-ui.com/images/bear-waving.jpg">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                        
+                </div>
+                <!-- End of the configuration tab-->
+
+                <!-- Begin of the execution tab-->
+                <div class="ui bottom attached tab segment" data-tab="execution" id="cena">
+                    <div class="ui two column stackable center aligned grid ">
+                        <div class = "ui vertical divider"></div>
+                                <div class="two column row">
+                                    <div class="column">
+                                        <h2>Gráfico</h2>
+                                    </div>
+                                
+                                    <div class="column">
+                                        <h2>Video stream </h2>
+                                        <div class="url video">
+                                            <div class="ui embed" data-url="https://www.youtube.com/embed/O6Xo21L0ybE" data-placeholder="https://semantic-ui.com/images/bear-waving.jpg">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="two column row">
+                                    <div class="column">
+                                        <h2>Gráfico</h2>
+                                    </div>
+                                    <div cl ass="column">
+                                        <h2>Gráfico</h2>
+                                    </div>
+
+                                </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- End of the execution tab-->
+
+                <!-- Begin of the results tab-->
+                <div class="ui bottom attached tab segment" data-tab="results" id="cena1">
+                        Resultados da experiencia
+                </div>
+                <!-- End of the results tab-->
+
+ 
+
+{% block script %}
+    {% comment %} <script>
+        var minValue = 0;
+        var maxValue = 0;
+        var exp_parameters = [];
+
+        $(function(){
+            var my_str = "{{ min }}";
+            var my_dict = {{ deltaX | safe }}; // no quotes here
+            var my_list = {{ config.protocols | safe }}; // no quotes here
+
+            console.log('DeltaX : ', my_dict);
+            console.log('List : ', my_list[0].exp_paremeters);
+            exp_parameters = my_list[0].exp_paremeters;
+
+            minValue = parseInt("{{ min }}", 10);
+            maxValue = parseInt("{{ max }}", 10);
+            console.log('Min : ', minValue);
+            console.log('Max : ', maxValue);
+        });
+    </script> {% endcomment %}
+    <script src="{% static 'vendors/fomantic-ui/components/range.js' %}"></script>
+    <script src="{% static 'js/tab_.js' %}"></script>
+    <script src="{% static 'js/plotly_results.js' %}"></script>
+{% endblock%}
+
+
