@@ -7,6 +7,7 @@ from django.utils import timezone
 
 class Experiment(models.Model):
     name = models.CharField(_('Name'), max_length=64)
+    slug = models.SlugField(_('Slug name'), max_length=64)
     description = models.TextField(_('Description'))
     config = models.JSONField(_('Configuration'), default=dict, blank=True)
     scientific_area = models.CharField(_('Scientific area'), max_length=64)

@@ -11,7 +11,7 @@ admin.site.site_header = _('FREE Administration')
 admin.site.index_title = _('FREE Administration')
 
 class ExperimentAdmin(TabbedTranslationAdmin):
-    pass
+    prepopulated_fields = {"slug": ("name",)}
 admin.site.register(Experiment, ExperimentAdmin)
 
 class ApparatusAdminForm(ModelForm):
