@@ -15,8 +15,7 @@ schema_view = get_schema_view(
       title="FREE API",
       default_version='v1',
       description="Documentation for FREE API endpoints",
-      terms_of_service="https://#/",
-      contact=openapi.Contact(email="pavel.kuriscak@gmail.com"),
+      contact=openapi.Contact(email="kurispav@fjfi.cvut.cz"),
       license=openapi.License(name="MIT License"),
    ),
    public=True,
@@ -46,16 +45,17 @@ urlpatterns = [
 
     # REST API
     path('api/v1/experiments', views.ExperimentListAPI.as_view(), name='api-experiment-list'),
+
     path('api/v1/execution', views.ExecutionConfigure.as_view(), name='api-execution-configure' ),
-    path('api/v1/execution/<int:id>', views.ExecutionUpdateDestroy().as_view(), name='api-execution-updatedestroy'),
+    path('api/v1/execution/<int:id>', views.ExecutionRetrieveUpdateDestroy().as_view(), name='api-execution'),
     path('api/v1/execution/<int:id>/start', views.ExecutionStart.as_view(), name='api-execution-start'),
-    path('api/v1/execution/<int:id>', views.ExecutionView.as_view(), name='api-execution'),
-    path('api/v1/apparatus/<int:apparatus_id>/nextexecution', views.NextExecution.as_view(), name='api-execution-next'),
-    path('api/v1/apparatus/<int:apparatus_id>/queue', views.ExecutionQueue.as_view(), name='api-execution-queue'),
     path('api/v1/execution/<int:id>/status', views.ChangeExecutionStatus.as_view(), name='api-execution-status-change'),
-    path('api/v1/execution/<int:execution_id>/result', views.ResultList.as_view(), name='api-result-list'),
-    path('api/v1/execution/<int:execution_id>/result/<int:last_id>', views.ResultList.as_view(), name='api-result-list-lastid'),
+    path('api/v1/execution/<int:id>/result', views.ResultList.as_view(), name='api-result-list'),
+    path('api/v1/execution/<int:id>/result/<int:last_id>', views.ResultListFiltered.as_view(), name='api-result-list-filtered'),
+    
     path('api/v1/apparatus/<int:id>', views.AppratusView.as_view(), name='api-apparatus-view'),
-    path('api/v1/apparatus/<int:apparatus_id>/config', views.ProtocolList.as_view(), name='api-protocols-list'),
+    path('api/v1/apparatus/<int:id>/nextexecution', views.NextExecution.as_view(), name='api-execution-next'),
+    path('api/v1/apparatus/<int:id>/queue', views.ExecutionQueue.as_view(), name='api-execution-queue'),
+
     path('api/v1/result', views.AddResult.as_view(), name='api-result-add'),
 ]

@@ -159,7 +159,7 @@ WEBPACK_LOADER = {
 SWAGGER_SETTINGS = {
    'SECURITY_DEFINITIONS': {
       'Bearer': {
-            'type': 'Secret',
+            'type': 'apiKey',
             'name': 'Authorization',
             'in': 'header'
       }
