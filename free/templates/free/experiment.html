@@ -1,0 +1,55 @@
+{% extends 'free/base.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block headscript%}
+{{object.config|json_script:"experiment-config"}}
+{% if execution %}
+    {{execution|json_script:"execution-config"}}
+{% endif %}
+{% endblock %}
+
+{% block content %}
+    <div class="right floated thirteen wide computer sixteen wide phone column" id="content">
+            <div class="ui container grid">
+                <div class="row">
+
+                <div class="ui top attached tabular menu">
+                    <a class="active item" data-tab="description">{% trans 'Description' %}</a>
+                    {% block tabheaders %}
+                        <!-- TAB HEADERS WILL BE INJECTED HERE -->
+                    {% endblock %}
+                </div>
+
+                <!-- MANDATORY EXPERIMENT DESCRIPTION FROM DB -->
+                <div class="ui bottom attached active tab segment" data-tab="description">
+                    <section class="intro">
+                        <figure class="">
+                        <img
+                            src="{% with '/images/'|add:object.slug|add:'.png' as image_static %}
+                                {% static image_static %}
+                            {% endwith %}"
+
+                            alt="{{object.name}}"
+                            width="60%">
+                        </figure>
+                        <!-- TODO: CHANGE THE MONTE-CARLO HERE, PROBABLY TO object.slug -->
+                        <h2 id="about-the-Monte-Carlo">{{object.name}}</h2>
+
+                        {{object.description|safe}}
+                    </section>
+                    <!--end of the description-->
+                </div>
+
+               {% block tabs %}
+                    <!-- TAB CONTENT WILL BE INJECTED HERE -->
+               {% endblock %}
+
+
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% include 'free/layout/scripts.html' %}

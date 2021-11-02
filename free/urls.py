@@ -33,15 +33,13 @@ urlpatterns = [
     re_path(r'^api/swagger/$', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
     re_path(r'^api/redoc/$', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
 
+    # PAGES
     path('protocols', ProtocolsView.as_view(), name='protocols'),
     path('executions', ExecutionsView.as_view(), name='executions'),
     path('new_execution', ExecutionView.as_view(), name='new_execution'),
 
-    path('experiment', views.ExperimentView.as_view(), name='experiment'),
-    path('cavity', views.CavityView.as_view(), name='cavity'),
-    path('pendulum', views.PendulumView.as_view(), name='pendulum'),
-    path('montecarlo', views.PendulumView.as_view(), name='montecarlo'),
-    path('wp_lis_ist', views.PendulumView.as_view(), name='wp_lis_ist'),
+    path('experiment/<slug:slug>', views.ExperimentView.as_view(), name='experiment'),
+    path('experiment/<slug:slug>/<int:execution>', views.ExperimentExecutionView.as_view(), name='experiment-execution'),
 
     # REST API
     path('api/v1/experiments', views.ExperimentListAPI.as_view(), name='api-experiment-list'),
