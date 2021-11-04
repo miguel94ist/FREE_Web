@@ -88,9 +88,9 @@ class Execution(models.Model):
     protocol = models.ForeignKey(Protocol, on_delete=models.PROTECT)
     config = models.JSONField(_('Configuration'), default=dict, blank=True)
     status = models.CharField(_('Status'), max_length=1, choices=EXECUTION_STATUS_CHOICES)
-    queue_time = models.DateTimeField(null=True)
-    start = models.DateTimeField(null=True)
-    end = models.DateTimeField(null=True)
+    queue_time = models.DateTimeField(null=True, blank=True)
+    start = models.DateTimeField(null=True, blank=True)
+    end = models.DateTimeField(null=True, blank=True)
 
     def __str__(self):
         return _('Execution of %(protocol)s') % {'protocol': str(self.protocol)}

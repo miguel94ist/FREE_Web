@@ -30,11 +30,11 @@ urlpatterns = [
 
     # PAGES
     path('apparatuses', views.ApparatusesView.as_view(), name='apparatuses'),
-    #path('executions', ExecutionsView.as_view(), name='executions'),
-    #path('new_execution', ExecutionView.as_view(), name='new_execution'),
+    path('executions/configured', views.ExecutionsConfiguredListView.as_view(), name='executions-configured'),
+    path('executions/finished', views.ExecutionsFinishedListView.as_view(), name='executions-finished'),
 
-    path('experiment/<slug:slug>', views.ExperimentView.as_view(), name='experiment'),
-    path('experiment/<slug:slug>/<int:execution>', views.ExperimentExecutionView.as_view(), name='experiment-execution'),
+    path('execution/create/<int:apparatus_id>/<int:protocol_id>', views.CreateExecutionView.as_view(), name='execution-create'),
+    path('execution/<int:pk>', views.ExecutionView.as_view(), name='execution'),
 
     # REST API
     path('api/v1/experiments', views.ExperimentListAPI.as_view(), name='api-experiment-list'),
