@@ -1,14 +1,9 @@
-from free.views.api import ChangeExecutionStatus, ExecutionQueue, NextExecution
-from free.views.base import LoginView, LogoutView
+from free import views
 from django.urls import path, re_path
 from rest_framework import permissions
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 
-
-from . import views
-
-from .views.layoutpages import ProtocolsView, ExecutionsView, ExecutionView
 # Helper function to generate API documentation
 schema_view = get_schema_view(
    openapi.Info(
@@ -34,9 +29,9 @@ urlpatterns = [
     re_path(r'^api/redoc/$', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
 
     # PAGES
-    path('protocols', ProtocolsView.as_view(), name='protocols'),
-    path('executions', ExecutionsView.as_view(), name='executions'),
-    path('new_execution', ExecutionView.as_view(), name='new_execution'),
+    path('apparatuses', views.ApparatusesView.as_view(), name='apparatuses'),
+    #path('executions', ExecutionsView.as_view(), name='executions'),
+    #path('new_execution', ExecutionView.as_view(), name='new_execution'),
 
     path('experiment/<slug:slug>', views.ExperimentView.as_view(), name='experiment'),
     path('experiment/<slug:slug>/<int:execution>', views.ExperimentExecutionView.as_view(), name='experiment-execution'),

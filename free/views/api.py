@@ -38,6 +38,20 @@ class ExecutionConfigSerializer(serializers.ModelSerializer):
         model = Execution
         fields = ['id','apparatus', 'protocol', 'config']
 
+class ProtocolSerializer(serializers.ModelSerializer):
+    read_only = True
+    class Meta:
+        model = Protocol
+        fields = ['name', 'config']
+
+class ApparatusSerializer(serializers.ModelSerializer):
+    read_only = True
+    protocols = ProtocolSerializer(many=True)
+    experiment = ExperimentSerializer()
+    class Meta:
+        model = Apparatus
+        fields = ['experiment', 'protocols', 'location', 'owner', 'video_config']
+
 class ExecutionSerializer(serializers.ModelSerializer):
 
     def validate(self, data):
@@ -55,8 +69,8 @@ class ExecutionSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Execution
-        fields = ['id','apparatus', 'protocol', 'config', 'status', 'start', 'end']
-        read_only_fields = ('id', 'apparatus', 'protocol', 'status', 'start', 'end')
+        fields = ['id','apparatus', 'protocol', 'config', 'status', 'queue_time', 'start', 'end']
+        read_only_fields = ('id', 'apparatus', 'protocol', 'status', 'queue_time', 'start', 'end')
 
 
 class ExecutionConfigure(generics.CreateAPIView):
@@ -102,20 +116,6 @@ class ExecutionStart(views.APIView):
         execution.save()
 
         return Response(status = 200)
-
-class ProtocolSerializer(serializers.ModelSerializer):
-    read_only = True
-    class Meta:
-        model = Protocol
-        fields = ['name', 'config']
-
-class ApparatusSerializer(serializers.ModelSerializer):
-    read_only = True
-    protocols = ProtocolSerializer(many=True)
-    experiment = ExperimentSerializer()
-    class Meta:
-        model = Apparatus
-        fields = ['experiment', 'protocols', 'location', 'owner']
 
 class AppratusView(generics.RetrieveAPIView):
     """
@@ -187,7 +187,7 @@ class ResultList(generics.ListAPIView):
     serializer_class = ResultSerializer
     
     def get_queryset(self):
-        return Result.objects.filter(execution_id=self.kwargs['id'])
+        return Result.objects.filter(execution_id=self.kwargs['id'], result_type='f')
 
 class ResultListFiltered(generics.ListAPIView):
     """
@@ -242,4 +242,4 @@ class ExecutionQueue(generics.ListAPIView):
     permission_classes = [ApparatusOnlyAccess]
     serializer_class = ExecutionSerializer
     def get_queryset(self):
-        return Execution.objects.filter(state='Q', apparatus_id=self.kwargs['apparatus_id'])
+        return Execution.objects.filter(state='Q', apparatus_id=self.kwargs['apparatus_id']).order_by('queue_time')

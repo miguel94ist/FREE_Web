@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'webpack_loader',
     'django_react_components',
     'drf_yasg',
+    'django_tables2',
 ]
 
 MIDDLEWARE = [
@@ -129,6 +130,7 @@ USE_L10N = True
 
 USE_TZ = True
 
+DJANGO_TABLES2_TEMPLATE = 'django_tables2/semantic.html'
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
