@@ -181,6 +181,11 @@ class ExecutionAPI(TestCase):
         },HTTP_AUTHENTICATION = 'secret_code')
         self.assertEqual(response.status_code, 201)
 
+        response = self.client.get('/api/v1/execution/' + str(execution_id) + '/result')
+        self.assertEqual(response.status_code, 200)
+        response = json.loads(response.content)
+        self.assertEqual(len(response), 0)
+
         request_time = timezone.now()
         response = self.client.post('/api/v1/result', { 
             'execution': execution_id,
@@ -252,6 +257,11 @@ class ExecutionAPI(TestCase):
         response = self.client.get('/api/v1/execution/' + str(execution_id) + '/result')
         self.assertEqual(response.status_code, 200)
         response = json.loads(response.content)
+        self.assertEqual(len(response), 1)
+        
+        response = self.client.get('/api/v1/execution/' + str(execution_id) + '/result/0')
+        self.assertEqual(response.status_code, 200)
+        response = json.loads(response.content)
         self.assertEqual(len(response), 3)
         second_id = response[1]['id']
 
@@ -259,6 +269,12 @@ class ExecutionAPI(TestCase):
         response = self.client.get('/api/v1/execution/' + str(execution_id) + '/result/' + str(second_id))
         response = json.loads(response.content)
         self.assertEqual(len(response), 2)
+
+        # Check 404
+        response = self.client.get('/api/v1/execution/' + str(execution_id) + '/result/154')
+        self.assertEqual(response.status_code, 200)
+        response = json.loads(response.content)
+        self.assertEqual(len(response), 0)
         
 
 

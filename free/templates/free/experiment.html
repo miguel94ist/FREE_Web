@@ -3,10 +3,8 @@
 {% load i18n %}
 
 {% block headscript%}
-{{object.config|json_script:"experiment-config"}}
-{% if execution %}
-    {{execution|json_script:"execution-config"}}
-{% endif %}
+{{object.apparatus.experiment.config|json_script:"experiment-config"}}
+{{execution_json|json_script:"execution-config"}}
 {% endblock %}
 
 {% block content %}
@@ -26,7 +24,7 @@
                     <section class="intro">
                         <figure class="">
                         <img
-                            src="{% with '/images/'|add:object.slug|add:'.png' as image_static %}
+                            src="{% with '/images/'|add:object.apparatus.experiment.slug|add:'.png' as image_static %}
                                 {% static image_static %}
                             {% endwith %}"
 
@@ -34,9 +32,9 @@
                             width="60%">
                         </figure>
                         <!-- TODO: CHANGE THE MONTE-CARLO HERE, PROBABLY TO object.slug -->
-                        <h2 id="about-the-Monte-Carlo">{{object.name}}</h2>
+                        <h2 id="about-the-Monte-Carlo">{{object.apparatus.experiment.name}}</h2>
 
-                        {{object.description|safe}}
+                        {{object.apparatus.experiment.description|safe}}
                     </section>
                     <!--end of the description-->
                 </div>
