@@ -26,7 +26,12 @@ if env.bool('FREE_PRODUCTION'):
     SECRET_KEY = env.str('FREE_SECRET')
 else:
     DEBUG = True
-    ALLOWED_HOSTS = []
+    ALLOWED_HOSTS = ['localhost', '127.0.0.1','10.2.32.114','194.210.159.110']
+    CORS_ORIGIN_ALLOW_ALL = False
+    CORS_ALLOWED_ORIGINS = [
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+    ]
     SECRET_KEY = 'this-is-totally-insecure-secret-key'
 
 # Application definition

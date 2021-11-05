@@ -60,6 +60,7 @@ function getCookie(name)
 
 
 
+
 // This function receive as input the parameters and send them to the experiment and send back the data to browser*/
 
 function queue() {
@@ -70,12 +71,12 @@ function queue() {
     Samples = $("#Samples").val();
 
   
-  data_send = {"apparatus": apparatus, "protocol": protocol, "config": {"deltaX": DeltaX, "samples":Samples}}
+  data_send = {"apparatus": apparatus, "protocol": protocol, "config": {"deltaX": parseInt (DeltaX), "samples":parseInt (Samples)}}
   // '{"experiment_name": "Pendulo", "config_experiment": {"DeltaX":'+ String(DeltaX)+', "Samples":'+String(Samples)+' }}'
   HEADERS = {
     "X-CSRFToken": getCookie("csrftoken"),
     }
-  var endpoint="api/v1/execution";
+  var endpoint="/api/v1/execution";
   // print out
   console.log('JSON : ' +  endpoint);
   console.log('JSON : ' +  data_send);
@@ -110,8 +111,97 @@ function queue() {
 
 }
 
+
+function myStopFunction() {
+  clearInterval(Results);
+  console.log(Results);
+}
+
+let last_result_id =0 
+// Receive data from experiment
+function getData(){
+  let endpoint_result =  "/api/v1/execution/"+execution_id+"/result";
+  if (frist === 0)
+  {
+    endpoint_result = "/api/v1/execution/"+execution_id+"/result";
+  }
+  else{
+    endpoint_result = "/api/v1/execution/"+execution_id+"/result/"+last_result_id
+  }
+
+  axios({
+    method: 'get', //you can set what request you want to be
+    url: endpoint_result,
+    headers: HEADERS,
+  }).then(response => {
+    console.log('plotly_results', response.data);
+    if (frist === 0)
+    {
+      if (response.data !== "")
+      {
+        console.log('ola', response.data[0].value);
+        res = Object.keys(response.data[0].value);
+        buildPlot1(res);
+        buildPlot2(res);  // grafico de temperatura não 
+        buildPlot3(res);
+        last_result_id = response.data[0].id+1
+        frist = 1;
+      }
+    }
+    console.log(response);
+    // check for ending of the experiment
+    if (response.data.result_type !== 'undefined' && response.data[0].result_type === 'f'){
+        myStopFunction();
+    }
+    else{
+      if (typeof response.data[0] === 'object'){
+        console.log('plotly_results', response.data.value);
+        
+        receive_error_velocity = 0.1;
+        receive_error_period = 0.0005;//response.data.value.e_period;
+        
+        Plotly.extendTraces('myplot', {x: [[response.data[0].value.Sample_number]],y: [[response.data[0].value.Val3]],
+          'error_y.array': [[ receive_error_velocity ]]}, [0]);
+        last_result_id = response.data[0].id+1
+        Plotly.extendTraces('myplot1', {x: [[response.data[0].value.Val1]]}, [0]);
+        Plotly.extendTraces('myplot2', {x: [[response.data[0].value.Sample_number]],y: [[response.data[0].value.Val1]],
+        'error_y.array': [[receive_error_period]]}, [0]);
+  
+  //       // tabela 
+  //       mytable.push(response.data);
+  //      // create a table
+  //       var html = "<table>";
+       
+  //        mytable.forEach(function(data) {
+  //        for (var i in data ){
+  //              html += "<td>" + data[i]  +  "</td>";
+  //        }
+  //        html += "</tr >";
+  //        });
+  //        html += "</table>";
+  // // assumes <div id="result"></div>
+  //        document.getElementById("result").innerHTML = html;
+      }
+      // getData();
+    }
+   
+  }).catch(error => {
+    if (error.response !== undefined) {
+    console.error('Error : ', error.response.data);
+    }
+  });
+  
+}
+
+function myStartFunction() {
+  Results = setInterval(getData,500)
+  console.log("Valor da função");
+  console.log(Results);
+}
+
+
 function start() {
-  var endpoint_2="api/v1/execution/"+execution_id+"/start";
+  var endpoint_2="/api/v1/execution/"+execution_id+"/start";
   // print out
   console.log('JSON : ' +  endpoint_2);
   // console.log('JSON : ' +  JSON);
@@ -139,95 +229,10 @@ function start() {
   });
   
   $('.menu .item').tab('change tab','execution');
+  myStartFunction();
 }
 
 
-
-
-// Receive data from experiment
-function getData(){
-  var endpoint =  base_url + '/resultpoint';
-  $.ajax({
-    url: endpoint,   //Your api url
-    type: 'GET',   //type is any HTTP method
-    contentType: 'application/json;charset=UTF-8',
-    success: function (response){
-      if (frist == 0)
-		{
-			res = Object.keys(response.Data);
-			buildPlot1(res);
-                       buildPlot2(res);  // grafico de temperatura não 
-                       buildPlot3(res);
-			frist = 1;
-		}
-      console.log(response);
-      // check for ending of the experiment
-      if (response.status !== 'undefined' && response.status === 'Experiment Ended'){
-          myStopFunction();
-      }
-      else{
-       
-        if (typeof response.Data === 'object'){
-          
-          receive_error_velocity = response.Data.e_velocity;
-          receive_error_period = response.Data.e_period;
-          
-          Plotly.extendTraces('myplot', {x: [[response.Data.Sample_number]],y: [[response.Data.velocity]],
-            'error_y.array': [[ receive_error_velocity ]]}, [0]);
-          Plotly.extendTraces('myplot1', {x: [[response.Data.period]]}, [0]);
-          Plotly.extendTraces('myplot2', {x: [[response.Data.Sample_number]],y: [[response.Data.period]],
-          'error_y.array': [[receive_error_period]]}, [0]);
-    
-          // tabela 
-          mytable.push(response.Data);
-         // create a table
-          var html = "<table>";
-         
-           mytable.forEach(function(data) {
-           for (var i in data ){
-                 html += "<td>" + data[i]  +  "</td>";
-           }
-           html += "</tr >";
-           });
-           html += "</table>";
-		// assumes <div id="result"></div>
-           document.getElementById("result").innerHTML = html;
-        }
-        getData();
-      }
-     
-    }
-  });
-}
-
-
-/*
-Não percebo porquê que não funciona com o nosso endpoint...... 'https://127.0.0.1:5000/resultpoint'!
-$.ajax({
-  url: base_url + '/resultpoint',
-  type: "get",
-  dataType: "json",
-
-  success: function(results) {
-      drawTable(results.Data);
-  }
-});
-
-function drawTable(data){
-  for (var i = 0; i < data.length; i++){
-      drawRow(data[i]);
-  }
-}
-
-function drawRow(rowData){
-  var row = $("<tr />")
-  $("#result").append(row);
-  row.append($("<td>" + rowData.Sample_number + "</td>"));
-    row.append($("<td>" + rowData.period + "</td>"));
-    row.append($("<td>" + rowData.e_period + "</td>"));
- 
-
-}*/
 
 
 
@@ -373,10 +378,7 @@ function buildPlot1(res) {
 
 
 
-function myStopFunction() {
-  clearInterval(Results);
-  console.log(Results);
-}
+
 
 
 
@@ -392,15 +394,16 @@ function buildPlot2(res) {
     visible: true,
    // mode: 'lines+markers',
     type: 'histogram',
-    xbins: {
+    nbins: 50,
+    // xbins: {
 
-      end: 1000, 
+    //   end: 1000, 
   
-      size: 0.06, 
+    //   size: 0.06, 
   
-      start: .5
+    //   start: .5
   
-    },
+    // },
 		line: {
 		  color: '#80CAF6',
 		  shape: 'linear'
@@ -416,7 +419,7 @@ function buildPlot2(res) {
       title: 'Histograma de Periodo de movimento',
       height: 500, // os valores são todos em pixels
       bargap: 0.05, 
-  bargroupgap: 0.2,
+      bargroupgap: 0.2,
      
       font: {
       family: 'Lato',
