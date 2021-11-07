@@ -1,3 +1,4 @@
+    {% load i18n %}
     <div class="ui grid">
       <!--navbar-->
       <div class="computer only row">
@@ -8,19 +9,19 @@
                 </div>-->
                 <div class="left menu">
                     <div class="nav item">
-                        <strong class="navtext">Elab</strong>
+                        <strong class="navtext">{% trans 'Elab'%}</strong>
                     </div>
                 
                 </div>
                 <div class="ui top pointing dropdown admindropdown link item right">
                     <img class="imgrad" src="/static/images/eu.jpg" alt="">
                     {% if user.is_authenticated %}
-                        <span class="clear navtext"><strong>Hi, {{ user }}</strong></span>
+                        <span class="clear navtext"><strong>{% trans 'Hi'%}, {{ user }}</strong></span>
                     {% endif %}
                     <i class="dropdown icon navtext"></i>
                     <div class="menu">
-                        <div class="item"><p><i class="settings icon"></i>Account Setting</p></div>
-                        <a href="logout" class="item"><i class="sign out alternate icon"></i> Logout</a>
+                        <div class="item"><p><i class="settings icon"></i>{% trans 'Account Setting'%}</p></div>
+                        <a href="logout" class="item"><i class="sign out alternate icon"></i> {% trans 'Logout'%}</a>
                     </div>
                 </div>
             </div>
@@ -34,7 +35,7 @@
                 <a id="showmobiletabletsidebar" class="item navtext"><i class="content icon"></i></a>
                 <div class="right menu">
                     <div class="item">
-                        <strong class="navtext">Elab</strong>
+                        <strong class="navtext">{% trans 'Elab' %}</strong>
                         
                     </div>
                     <div class="item">

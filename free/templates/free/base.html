@@ -35,7 +35,11 @@
         {% endblock %}
     </head>
     <body>  
-        {% include 'free/layout/layout.html' %}
+        {% if user.is_authenticated %}
+            {% include 'free/layout/layout.html' %}
+        {% else %}
+            {% include 'free/login.html' %}
+        {% endif %} 
 
         {% block content %}
         {% endblock %}

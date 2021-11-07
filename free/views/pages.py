@@ -13,19 +13,23 @@ class IndexView(TemplateView):
 
 class ExecutionView(DetailView):
     model = Execution
-
+    
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['execution_json'] = ExecutionSerializer(self.object).data
         return context
 
     def get_template_names(self):
+        if not self.request.user.is_authenticated:
+            return ['free/login.html']
         return ['free/experiments/' + self.object.apparatus.experiment.slug + '.html']
 
 class CreateExecutionView(ExecutionView):    
     model = Execution
 
     def get_object(self):
+        if not self.request.user.is_authenticated:
+            return ['free/login.html']
         return Execution.objects.get_or_create(
             user = self.request.user,
             apparatus_id = self.kwargs['apparatus_id'],
@@ -46,6 +50,8 @@ class ExecutionsListView(SingleTableView):
     table_class = ExecutionsTable
 
     def get_queryset(self):
+        if not self.request.user.is_authenticated:
+            return ['free/login.html']
         return Execution.objects.filter(user=self.request.user, status=self.status_filter)
 
 class ExecutionsConfiguredListView(ExecutionsListView):

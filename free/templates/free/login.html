@@ -32,62 +32,63 @@
       height: 100%;
     }
     .column {
-      max-width: 55%;
+      max-width: 75%;
     }
   </style>
         
 {% endblock %}
 
 {% block content %}
-    <!--content-->
-    <div class="right floated thirteen wide computer sixteen wide phone column" id="content">
-      <div class="ui container grid">
-        <div class="ui column">
+<!--content-->
+<div class="right floated thirteen wide computer sixteen wide phone column" id="content">
+    <div class="ui container grid">
+        <div class="ui column" style="margin-left: 50%; margin-top: 10%;">
             <div class="ui column"> 
-            <!-- <h2 class="ui blue image header">
-              <div class="content">
-                  {% trans 'Log-in to FREE' %}
-              </div>
-            </h2> -->
-            <form class="ui large form" method="POST" action="{% url 'free:login'%}">
-              {% csrf_token %}
-              <div class="ui segment">
-                <img class="ui centered medium image" src="http://e-lab.ist.eu/rec.web/javax.faces.resource/elab_logo.png.faces?ln=images" alt=""><br>
-                  <div class="field">
-                  <div class="ui left icon input">
-                      <i class="user icon"></i>
-                      <input type="text" name="username" placeholder="{% trans 'Username' %}">
-                      <input type="hidden" name="next" value="{{next}}">
+                <!-- <h2 class="ui blue image header">
+                  <div class="content">
+                      {% trans 'Log-in to FREE' %}
                   </div>
+                </h2> -->
+                <form class="ui large form" method="POST" action="{% url 'free:login'%}">
+                  {% csrf_token %}
+                  <div class="ui segment">
+                    <img class="ui centered medium image" src="http://e-lab.ist.eu/rec.web/javax.faces.resource/elab_logo.png.faces?ln=images" alt=""><br>
+                      <div class="field">
+                      <div class="ui left icon input">
+                          <i class="user icon"></i>
+                          <input type="text" name="username" placeholder="{% trans 'Username' %}" >
+                          <input type="hidden" name="next" value="{{next}}">
+                      </div>
+                      </div>
+                      <div class="field">
+                      <div class="ui left icon input">
+                          <i class="lock icon"></i>
+                          <input type="password" name="password" placeholder="{% trans 'Password' %}" >
+                      </div>
+                      </div>
+                      <input type="submit" value="{% trans 'Login' %}" class="ui fluid large blue submit button">
                   </div>
-                  <div class="field">
-                  <div class="ui left icon input">
-                      <i class="lock icon"></i>
-                      <input type="password" name="password" placeholder="{% trans 'Password' %}">
-                  </div>
-                  </div>
-                  <input type="submit" value="{% trans 'Login' %}" class="ui fluid large blue submit button">
-              </div>
-              
-              {% if form.errors %}
-                  <div class="ui error message">
-                    {% trans 'Your username and password didn\'t match. Please try again' %}
-                  </div>
-              {% endif %}
-
-              {% if next and next != '/' %}
-                  {% if user.is_authenticated %}
-                  <div class="ui error message">
-                      Your account doesn't have access to this page. To proceed,
-                      please login with an account that has access.
-                  </div>
-                  {% else %}
-                  <div class="ui error message">
-                      Please login to see this page.
-                  </div>
+                  
+                  {% if form.errors %}
+                      <div class="ui error message">
+                        {% trans 'Your username and password didn\'t match. Please try again' %}
+                      </div>
                   {% endif %}
-              {% endif %}
-            </form>
+
+                  {% if next and next != '/' %}
+                      {% if user.is_authenticated %}
+                      <div class="ui error message">
+                          Your account doesn't have access to this page. To proceed,
+                          please login with an account that has access.
+                      </div>
+                      {% else %}
+                      <div class="ui error message">
+                          Please login to see this page.
+                      </div>
+                      {% endif %}
+                  {% endif %}
+                </form>
+            </div>
         </div>
     </div>
 </div>

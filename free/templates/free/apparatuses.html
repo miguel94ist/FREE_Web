@@ -8,6 +8,8 @@
 
 {% block content %}
 
+{% if user.is_authenticated %}
+
 
     <div class="right floated thirteen wide computer sixteen wide phone column" id="content">
         <div class="ui container grid">
@@ -19,7 +21,7 @@
                     <div class="ui divider"></div>
                     <div class="ui grid">       
                         <div class="ui stacked segment">
-                            <div class="ui green ribbon icon label">List of available Experiments</div>
+                            <div class="ui green ribbon icon label">{% trans 'List of available Experiments'%}</div>
                             <div class="ui divider"></div>
 
                             {% render_table table %}
@@ -30,5 +32,5 @@
         </div>
     </div>
 
-
+{% endif %}
 {% endblock %}

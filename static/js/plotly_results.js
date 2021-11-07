@@ -120,10 +120,10 @@ function myStopFunction() {
 let last_result_id =0 
 // Receive data from experiment
 function getData(){
-  let endpoint_result =  "/api/v1/execution/"+execution_id+"/result";
+  let endpoint_result =  "/api/v1/execution/"+execution_id+"/result/0";
   if (frist === 0)
   {
-    endpoint_result = "/api/v1/execution/"+execution_id+"/result";
+    endpoint_result = "/api/v1/execution/"+execution_id+"/result/0";
   }
   else{
     endpoint_result = "/api/v1/execution/"+execution_id+"/result/"+last_result_id
@@ -518,40 +518,6 @@ function buildPlot3(res) {
     }
     
 
-// ga
-    var gauge_temp = new Gauge({
-        renderTo    : 'gauge1',
-        width       : 300,
-        height      : 300,
-        glow        : true,
-        units       : '°C',
-        valueFormat : { int : 2, dec : 0 },
-        title       : "Temperature",
-        minValue    : -30,
-        maxValue    : 50,
-        majorTicks  : ['-30','-20','-10','0','10','20','30','40','50'],
-        minorTicks  : 10,
-        strokeTicks : false,
-        highlights  : [
-            { from : -30,   to : -20, color : 'rgba(0, 0, 255, 1)' },
-            { from : -20,   to : -10, color : 'rgba(0, 0, 255, .5)' },
-            { from : -10, to : 0, color : 'rgba(0, 0, 255, .25)' },
-            { from : 0,   to : 10, color : 'rgba(0, 255, 0, .1)' },
-            { from : 10, to : 20, color : 'rgba(0, 255, 0, .25)' },
-            { from : 20, to : 30, color : 'rgba(255, 0,  0, .25)' },
-            { from : 30, to : 40, color : 'rgba(255, 0,  0, .5)' },
-            { from : 40, to : 50, color : 'rgba(255, 0,  0, 1)' }
-        ],
-        colors      : {
-            plate      : '#fff',
-            majorTicks : '#000',
-            minorTicks : '#444',
-            title      : '#000',
-            units      : '#f00',
-            numbers    : '#777',
-            needle     : { start : 'rgba(240, 128, 128, 1)', end : 'rgba(255, 160, 122, .9)' }
-        }
-    });
 
 
 

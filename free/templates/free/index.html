@@ -2,9 +2,9 @@
 {% load i18n %}
 
 
-
-
 {% block content %}
+
+{% if user.is_authenticated %}
 
 <!--content-->
 <div class="right floated thirteen wide computer sixteen wide phone column" id="content">
@@ -49,5 +49,8 @@
     
 </div>
 
+{% endif %}
+
 {% endblock %}
+
 
