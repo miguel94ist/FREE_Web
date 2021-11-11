@@ -32,6 +32,14 @@ class Apparatus(models.Model):
     def __str__(self):
         return _('%(experiment)s in %(location)s') % {'experiment': self.experiment.name, 'location': self.location}
 
+    @property
+    def current_status(self):
+        try:
+            return Status.objects.filter(apparatus=self).order_by('-time')[0].get_status_display()
+        except:
+            return Status(status='0').get_status_display()
+            
+
     class Meta:
         verbose_name = _('Apparatus')
         verbose_name_plural = _('Apparatuses')
