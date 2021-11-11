@@ -42,7 +42,7 @@ class ProtocolSerializer(serializers.ModelSerializer):
     read_only = True
     class Meta:
         model = Protocol
-        fields = ['name', 'config']
+        fields = ['id', 'name', 'config']
 
 class ApparatusSerializer(serializers.ModelSerializer):
     read_only = True
@@ -53,6 +53,7 @@ class ApparatusSerializer(serializers.ModelSerializer):
         fields = ['experiment', 'protocols', 'location', 'owner', 'video_config']
 
 class ExecutionSerializer(serializers.ModelSerializer):
+    protocol = ProtocolSerializer()
 
     def validate(self, data):
         data = super().validate(data)
