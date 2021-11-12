@@ -1,9 +1,9 @@
 from django.utils.translation import gettext_lazy as _
 from django.urls import reverse_lazy
 from django.views.generic import TemplateView, DetailView
-from free.views.api import ExecutionSerializer
+from free.views.api import ExecutionSerializer, ResultSerializer
 from free.models import *
-from django_tables2 import Table, TemplateColumn
+from django_tables2 import Table, TemplateColumn, Column
 from django_tables2.views import SingleTableView
 
 class IndexView(TemplateView):
@@ -17,6 +17,10 @@ class ExecutionView(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['execution_json'] = ExecutionSerializer(self.object).data
+        try:
+            context['final_result'] = ResultSerializer(Result.objects.get(result_type='f', execution=self.object)).data
+        except:
+            context['final_result'] = {}
         return context
 
     def get_template_names(self):
@@ -65,11 +69,11 @@ class ExecutionsFinishedListView(ExecutionsListView):
 class ApparatusTable(Table):
 
     protocols = TemplateColumn(template_name='free/protocols.html')
+    current_status = Column(verbose_name=_('Current status'))
 
     class Meta:
         model = Apparatus
-        fields = ['experiment', 'location', 'experiment__scientific_area', 'experiment__lab_type', 'status', 'protocols']
-    
+        fields = ['experiment', 'location', 'experiment__scientific_area', 'experiment__lab_type', 'current_status', 'protocols']    
 class ApparatusesView(SingleTableView):
     template_name = 'free/apparatuses.html'
     table_class = ApparatusTable
