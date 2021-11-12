@@ -10,4 +10,5 @@ __pycache__
 /staticfiles
 /assets/node_modules
 /assets/semantic-ui/themes
+db.sqlite3
 

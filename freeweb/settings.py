@@ -26,7 +26,7 @@ if env.bool('FREE_PRODUCTION'):
     SECRET_KEY = env.str('FREE_SECRET')
 else:
     DEBUG = True
-    ALLOWED_HOSTS = ['localhost', '127.0.0.1','10.2.12.94','194.210.159.110']
+    ALLOWED_HOSTS = ['localhost', '127.0.0.1','10.2.12.50','194.210.159.110']
     CORS_ORIGIN_ALLOW_ALL = False
     CORS_ALLOWED_ORIGINS = [
         "http://localhost:3000",
