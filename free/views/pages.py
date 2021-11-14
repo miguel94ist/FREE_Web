@@ -17,6 +17,7 @@ class ExecutionView(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['execution_json'] = ExecutionSerializer(self.object).data
+        context['video_config'] = Apparatus.objects.get(id=self.object.apparatus.id).video_config
         try:
             context['final_result'] = ResultSerializer(Result.objects.get(result_type='f', execution=self.object)).data
         except:

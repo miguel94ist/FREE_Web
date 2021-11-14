@@ -7,8 +7,10 @@ Last updated out 9 11:12 , 2021*/
 
 // starting all the variables
 var base_url = "http://10.2.12.86:8000";
-var apparatus = 4
-var protocol = 5
+
+result_data = JSON.parse(document.getElementById('final-result').textContent);
+var apparatus = JSON.parse(document.getElementById('execution-config').textContent).apparatus;
+var protocol = JSON.parse(document.getElementById('execution-config').textContent).protocol.id;
 // {
 //   "apparatus": 0,
 //   "protocol": 0,
@@ -31,7 +33,7 @@ var receive_error_period = [];
 var mytable = [];
 var DeltaX = document.getElementById('DeltaX');
 var Samples = document.getElementById('Samples');
-
+let save_table = ""
 
 function getCookie(name) 
 {
@@ -58,7 +60,28 @@ function getCookie(name)
   return decodeURI(dc.substring(begin + prefix.length, end));
 }
 
+$(".menu .item").click(function() {
+  var tab_description = $(this).attr("data-tab");
+  // console.log('Description : ', tab_description);
+  if (tab_description === 'results')
+  {
+    Show_data()
+  }
+  });
 
+function Show_data(){
+  result_data = JSON.parse(document.getElementById('final-result').textContent);
+  buildPlot1(0);
+  buildPlot2(0);
+  buildPlot3(0);
+  receive_error_velocity = 0.1;
+  receive_error_period = 0.0005;//response.data.value.e_period;
+  Plotly.extendTraces('myplot', {x: [result_data.value.map(data => data.Sample_number)],y: [result_data.value.map(data => data.Val3)],'error_y.array': [Array(result_data.value.length).fill(receive_error_velocity)]}, [0]);
+  Plotly.extendTraces('myplot1', {x:  [result_data.value.map(data => data.Val1)]}, [0]);
+  Plotly.extendTraces('myplot2', {x: [result_data.value.map(data => data.Sample_number)],y: [result_data.value.map(data => data.Val1)],'error_y.array': [Array(result_data.value.length).fill(receive_error_period)]}, [0]);
+
+
+}
 
 
 // This function receive as input the parameters and send them to the experiment and send back the data to browser*/
@@ -167,20 +190,24 @@ function getData(){
         Plotly.extendTraces('myplot2', {x: [[response.data[0].value.Sample_number]],y: [[response.data[0].value.Val1]],
         'error_y.array': [[receive_error_period]]}, [0]);
   
-  //       // tabela 
-  //       mytable.push(response.data);
-  //      // create a table
-  //       var html = "<table>";
-       
-  //        mytable.forEach(function(data) {
-  //        for (var i in data ){
-  //              html += "<td>" + data[i]  +  "</td>";
-  //        }
-  //        html += "</tr >";
-  //        });
-  //        html += "</table>";
-  // // assumes <div id="result"></div>
-  //        document.getElementById("result").innerHTML = html;
+
+      html = save_table
+      // console.log("ola",save_table) 
+      keys  = Object.keys(response.data[0].value);
+      html += "<tr>";
+      keys.forEach(function(data) 
+      {
+        // console.log("pppp ",data)
+        
+        html += "<td>" + response.data[0].value[data]  +  "</td>";
+        
+        
+      });
+      html += "</tr>";
+      save_table = html
+  // assumes <div id="result"></div>
+         document.getElementById("table_result").innerHTML = html;
+        //  console.log("coisas html table ",html);
       }
       // getData();
     }
@@ -237,28 +264,21 @@ function start() {
 
 
 //// nao usado
-function tablebind() {  
-  $.ajax({  
-      type: "GET",  
-      contentType: "application/json; charset=utf-8",  
-      url: base_url + '/resultpoint',  
-      data: "{}",  
-      contentType: 'application/json;charset=UTF-8',
-      success: function (response) {  
-          var obj = $.parseJSON(response.d);  
+function tablebind(response) {  
           if (obj.length > 0) {  
 
-              var data = obj[0].Table1;  
               var table = $("<table />");  
               table[0].border = "1";  
 
               var row$;  
 
-              var columns = addAllColumnHeaders(data);  
-              for (var i = 0; i < data.length; i++) {  
+              var columns = addAllColumnHeaders(["S"]);  
+              for (var i = 0; i < data.length; i++)
+               {  
                   row$ = $('<tr/>');  
            
-                  for (var colIndex = 0; colIndex < columns.length; colIndex++) {  
+                  for (var colIndex = 0; colIndex < columns.length; colIndex++) 
+                  {  
                       var cellValue = data[i][columns[colIndex]];  
 
                       if (cellValue == null) { cellValue = ""; }  
@@ -266,15 +286,8 @@ function tablebind() {
                       row$.append($('<td/>').html(cellValue));  
                   }  
                   $("#jsonTable").append(row$);  
-              }  
-               
+              }      
           }  
-
-      },  
-      error: function (response) {  
-          //                      
-      }  
-  });  
 
 }  
 
