@@ -37,6 +37,13 @@ The application is configured using environment variables. You can set them usin
 
 In future, this file will contain database configurations/passwords etc.
 
+Right now, the application release is shipped with pre-filled example database in `sqlite` format. This database contains a Pendulum experiment, as long as two example user accounts.
+
+- `wp-admin` - superuser account with access to admin interface
+- `guest` - guest account
+
+Both have a password `temporary123`. This password can be changed through admin interface.
+
 Finally, run the application:
 ```
 daphne freeweb.asgi:application
