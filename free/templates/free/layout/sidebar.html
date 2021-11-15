@@ -1,0 +1,23 @@
+<!--computer-->
+{% load i18n %}
+<div class="computer only row ">
+<div class = "mobiletabletsidebar animate" id = "mobiletabletsidebar">
+  <div class="left floated three wide computer column" id="computersidebar">
+        <div class="ui vertical fluid menu scrollable" id="simplefluid">
+            <div class="clearsidebar"></div>
+            <div class="ui top aligned  image">
+                <h2  class=" item"><img src="http://e-lab.ist.eu/rec.web/javax.faces.resource/elab_logo.png.faces?ln=images" id="logo-elab" ></h2> 
+            </div>
+                <a class="item" href="{% url 'free:index' %}"><i class="home icon"></i>{% trans 'Home' %}</a>
+                <a class="item" href="{% url 'free:apparatuses' %}"><i class="table icon"></i>{% trans 'Protocols' %}</a>
+                <a class="item" href="{% url 'free:executions-configured' %}"><i class="home icon"></i>{% trans 'Configured Executions' %}</a>
+                <a class="item" href="{% url 'free:executions-finished' %}"><i class="home icon"></i>{% trans 'Finished Executions' %}</a>
+                {% if user.is_authenticated %}
+                    <a href="{% url 'free:login' %}" class="item"><i class="sign out alternate icon"></i>{% trans 'Logout' %}</a>
+                {% else %}
+                    <a href="{% url 'free:logout' %}" class="item"><i class="sign in alternate icon"></i>{% trans 'Login' %}</a>
+                {% endif %}
+            </div>
+        </div>    
+    </div>
+</div>

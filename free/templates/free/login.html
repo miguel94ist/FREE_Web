@@ -1,12 +1,30 @@
-{% extends 'free/base.html' %}
+{% load static %}
 {% load i18n %}
-{% load render_bundle from webpack_loader %}
-{% load react_component from django_react_components %}
 
-{% block title %}Login{% endblock %}
 
-{% block head%}
-  <style type="text/css">
+{% block head %}
+        <meta charset="utf-8" />
+        <meta content="IE=edge,chrome=1" http-equiv="X-UA-Compatible" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2, user-scalable=no"/>
+        <meta name="description" content="Template for ELAB app"/>
+        <meta name="keywords" content="ELab layout, template, web site" />
+        <meta name="author" content="José Veiga" />
+        <meta name="theme-color" content="#ffffff" />
+        <!--HTML title-->
+        <title>elab layout </title>
+        <!--Block styling-->
+
+        {% comment %} <link rel="stylesheet" href="vendors/fomantic-ui/semantic.min.css"> {% endcomment %}
+        <link rel="stylesheet"  href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.css" type="text/css"/>
+        <link rel="stylesheet" href="{% static 'css/style.css' %}">
+        <!-- Put your external css file here-->
+        
+
+
+        <!-- for semantic ui icon - follow this link
+             https://github.com/Semantic-Org/Semantic-UI-Docs/blob/master/server/partials/examples/icon.html-->
+
+<style type="text/css">
     body {
       background-color: #DADADA;
     }
@@ -14,63 +32,72 @@
       height: 100%;
     }
     .column {
-      max-width: 350px;
+      max-width: 75%;
     }
   </style>
-{% endblock %}  
+        
+{% endblock %}
 
-{% block content%}
+{% block content %}
+<!--content-->
+<div class="right floated thirteen wide computer sixteen wide phone column" id="content">
+    <div class="ui container grid">
+        <div class="ui column" style="margin-left: 50%; margin-top: 10%;">
+            <div class="ui column"> 
+                <!-- <h2 class="ui blue image header">
+                  <div class="content">
+                      {% trans 'Log-in to FREE' %}
+                  </div>
+                </h2> -->
+                <form class="ui large form" method="POST" action="{% url 'free:login'%}">
+                  {% csrf_token %}
+                  <div class="ui segment">
+                    <img class="ui centered medium image" src="http://e-lab.ist.eu/rec.web/javax.faces.resource/elab_logo.png.faces?ln=images" alt=""><br>
+                      <div class="field">
+                      <div class="ui left icon input">
+                          <i class="user icon"></i>
+                          <input type="text" name="username" placeholder="{% trans 'Username' %}" >
+                          <input type="hidden" name="next" value="{{next}}">
+                      </div>
+                      </div>
+                      <div class="field">
+                      <div class="ui left icon input">
+                          <i class="lock icon"></i>
+                          <input type="password" name="password" placeholder="{% trans 'Password' %}" >
+                      </div>
+                      </div>
+                      <input type="submit" value="{% trans 'Login' %}" class="ui fluid large blue submit button">
+                  </div>
+                  
+                  {% if form.errors %}
+                      <div class="ui error message">
+                        {% trans 'Your username and password didn\'t match. Please try again' %}
+                      </div>
+                  {% endif %}
 
-    <div class="ui middle aligned center aligned grid">
-        <div class="column">
-            <h2 class="ui blue image header">
-            <div class="content">
-                {% trans 'Log-in to FREE' %}
+                  {% if next and next != '/' %}
+                      {% if user.is_authenticated %}
+                      <div class="ui error message">
+                          Your account doesn't have access to this page. To proceed,
+                          please login with an account that has access.
+                      </div>
+                      {% else %}
+                      <div class="ui error message">
+                          Please login to see this page.
+                      </div>
+                      {% endif %}
+                  {% endif %}
+                </form>
             </div>
-            </h2>
-            <form class="ui large form" method="POST" action="{% url 'free:login'%}">
-            {% csrf_token %}
-            <div class="ui stacked segment">
-                <div class="field">
-                <div class="ui left icon input">
-                    <i class="user icon"></i>
-                    <input type="text" name="username" placeholder="{% trans 'Username' %}">
-                    <input type="hidden" name="next" value="{{next}}">
-                </div>
-                </div>
-                <div class="field">
-                <div class="ui left icon input">
-                    <i class="lock icon"></i>
-                    <input type="password" name="password" placeholder="{% trans 'Password' %}">
-                </div>
-                </div>
-                <input type="submit" value="{% trans 'Login' %}" class="ui fluid large blue submit button">
-            </div>
-
-            
-            {% if form.errors %}
-                <div class="ui error message">
-                  {% trans 'Your username and password didn\'t match. Please try again' %}
-                </div>
-            {% endif %}
-
-            {% if next and next != '/' %}
-                {% if user.is_authenticated %}
-                <div class="ui error message">
-                    Your account doesn't have access to this page. To proceed,
-                    please login with an account that has access.
-                </div>
-                {% else %}
-                <div class="ui error message">
-                    Please login to see this page.
-                </div>
-                {% endif %}
-            {% endif %}
-
-            </div>
-
-            </form>
         </div>
     </div>
+</div>
+
 
 {% endblock %}
+
+
+
+{% block script %}
+
+{% endblock %}    

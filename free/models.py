@@ -7,6 +7,7 @@ from django.utils import timezone
 
 class Experiment(models.Model):
     name = models.CharField(_('Name'), max_length=64)
+    slug = models.SlugField(_('Slug name'), max_length=64)
     description = models.TextField(_('Description'))
     config = models.JSONField(_('Configuration'), default=dict, blank=True)
     scientific_area = models.CharField(_('Scientific area'), max_length=64)
@@ -26,9 +27,18 @@ class Apparatus(models.Model):
     location = models.CharField(_('Location'), max_length=64)
     secret = models.CharField(_('Secret'), max_length=32)
     owner = models.CharField(_('Owner'), max_length=32)
+    video_config = models.JSONField(_('Video configuration'), null=True, blank=True)
 
     def __str__(self):
         return _('%(experiment)s in %(location)s') % {'experiment': self.experiment.name, 'location': self.location}
+
+    @property
+    def current_status(self):
+        try:
+            return Status.objects.filter(apparatus=self).order_by('-time')[0].get_status_display()
+        except:
+            return Status(status='0').get_status_display()
+            
 
     class Meta:
         verbose_name = _('Apparatus')
@@ -70,6 +80,7 @@ class Protocol(models.Model):
         ordering = ['name']
 
 EXECUTION_STATUS_CHOICES = (
+    ('N',_('New')),        # After clicking on start execution
     ('C',_('Configured')), # After creation by user
     ('Q',_('In queue')),   # After used approved that execution could be run 
     ('R',_('Running')),    # After requesting /nextexecution from RPI
@@ -85,8 +96,9 @@ class Execution(models.Model):
     protocol = models.ForeignKey(Protocol, on_delete=models.PROTECT)
     config = models.JSONField(_('Configuration'), default=dict, blank=True)
     status = models.CharField(_('Status'), max_length=1, choices=EXECUTION_STATUS_CHOICES)
-    start = models.DateTimeField(null=True)
-    end = models.DateTimeField(null=True)
+    queue_time = models.DateTimeField(null=True, blank=True)
+    start = models.DateTimeField(null=True, blank=True)
+    end = models.DateTimeField(null=True, blank=True)
 
     def __str__(self):
         return _('Execution of %(protocol)s') % {'protocol': str(self.protocol)}
@@ -96,6 +108,9 @@ class Execution(models.Model):
         verbose_name_plural = _('Executions')
 
     def save(self, *args, **kwargs):
+        if self.status == 'Q' and not self.queue_time:
+            self.queue_time = timezone.now()
+
         if self.status == 'R' and not self.start:
             self.start = timezone.now()
 
