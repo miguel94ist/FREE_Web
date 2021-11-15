@@ -13,9 +13,9 @@
                 <a class="item" href="{% url 'free:executions-configured' %}"><i class="home icon"></i>{% trans 'Configured Executions' %}</a>
                 <a class="item" href="{% url 'free:executions-finished' %}"><i class="home icon"></i>{% trans 'Finished Executions' %}</a>
                 {% if user.is_authenticated %}
-                    <a href="/logout" class="item"><i class="sign out alternate icon"></i>{% trans 'Logout' %}</a>
+                    <a href="{% url 'free:login' %}" class="item"><i class="sign out alternate icon"></i>{% trans 'Logout' %}</a>
                 {% else %}
-                    <a href="/login" class="item"><i class="sign in alternate icon"></i>{% trans 'Login' %}</a>
+                    <a href="{% url 'free:logout' %}" class="item"><i class="sign in alternate icon"></i>{% trans 'Login' %}</a>
                 {% endif %}
             </div>
         </div>    

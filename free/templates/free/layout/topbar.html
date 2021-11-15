@@ -20,8 +20,10 @@
                     {% endif %}
                     <i class="dropdown icon navtext"></i>
                     <div class="menu">
-                        <div class="item"><p><i class="settings icon"></i>{% trans 'Account Setting'%}</p></div>
-                        <a href="/logout" class="item"><i class="sign out alternate icon"></i> {% trans 'Logout'%}</a>
+                        {% if user.is_staff %}
+                            <a href="{% url 'admin:index' %}" class="item"><p><i class="settings icon"></i>{% trans 'Administration'%}</p></a>
+                        {% endif %}
+                        <a href="{% url 'free:logout' %}" class="item"><i class="sign out alternate icon"></i> {% trans 'Logout'%}</a>
                     </div>
                 </div>
             </div>
