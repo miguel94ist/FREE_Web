@@ -37,7 +37,14 @@ The application is configured using environment variables. You can set them usin
 
 In future, this file will contain database configurations/passwords etc.
 
-Right now, the application release is shipped with pre-filled example database in `sqlite` format. This database contains a Pendulum experiment, as long as two example user accounts.
+Right now, the application release is shipped with pre-filled example database in `sqlite` format. 
+
+Download the database and put it into the project root:
+```
+wget https://github.com/e-lab-FREE/FREE_Web/releases/latest/download/db.sqlite3
+```
+
+This database contains a Pendulum experiment, as long as two example user accounts.
 
 - `wp-admin` - superuser account with access to admin interface
 - `guest` - guest account
