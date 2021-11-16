@@ -142,12 +142,7 @@ DJANGO_TABLES2_TEMPLATE = 'django_tables2/semantic.html'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATIC_URL = '/static/'
 
-STATICFILES_DIRS = [
-    BASE_DIR / 'static',
-]
-
-
-STATIC_URL = '/static/'
+STATICFILES_DIRS = []
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field

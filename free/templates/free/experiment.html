@@ -26,7 +26,7 @@
                     <section class="intro">
                         <figure class="">
                         <img
-                            src="{% with '/images/'|add:object.apparatus.experiment.slug|add:'.png' as image_static %}
+                            src="{% with 'free/images/'|add:object.apparatus.experiment.slug|add:'.png' as image_static %}
                                 {% static image_static %}
                             {% endwith %}"
 

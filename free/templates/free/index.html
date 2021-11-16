@@ -1,6 +1,8 @@
 {% extends 'free/base.html' %}
 {% load i18n %}
+{% load static %}
 
+{% block title %} Home page {% endblock %}
 
 {% block content %}
 
@@ -9,7 +11,7 @@
 <!--content-->
 <div class="right floated thirteen wide computer sixteen wide phone column" id="content">
 
-     <img class="imgrad" src="/static/images/WPA.jpeg" alt="">
+     <img class="imgrad" src="{% static 'free/images/WPA.jpeg' %}" alt="">
     {% comment %} <div class="ui container grid">
         <div class="row">
             <div class="fifteen wide computer sixteen wide phone centered column">

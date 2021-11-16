@@ -133,7 +133,7 @@
                 <div class="ui vertical divider"></div>
                 <div class="column">
                     <figure class="">
-                        <img src="/static/images/pendulum.png" alt=""  width="100%">
+                        <img src="{% static 'free/images/pendulum.png' %}" alt=""  width="100%">
                     </figure>
                 </div>
             </div>
@@ -218,8 +218,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/components/tab.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/datatables.net-se/1.11.3/dataTables.semanticui.min.js"></script>
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
-    <script src="/static/js/tab_.js?v=00001"></script>
-    <script src="/static/js/plotly_results.js?v=00001"></script>
+    <script src="{% static 'free/js/tab_.js' %}"></script>
+    <script src="{% static 'free/js/plotly_results.js' %}"></script>
 
     <script>
         var selectedStream =  document.getElementById('video-config').textContent;
@@ -228,7 +228,7 @@
     </script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/webrtc-adapter/8.0.0/adapter.min.js" ></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/spin.js/2.3.2/spin.min.js"></script>
-    <script type="text/javascript" src="/static/js/janus.js?v=00001" ></script>
-    <script type="text/javascript" src="/static/js/streaming_simple.js?v=00001"></script>
+    <script type="text/javascript" src="{% static 'free/js/janus.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'free/js/streaming_simple.js' %}"></script>
 
 {% endblock%}

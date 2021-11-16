@@ -22,11 +22,12 @@
         <link rel="stylesheet" href="https://cdn.datatables.net/1.11.3/css/dataTables.semanticui.min.css">
         <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.2.9/css/responsive.semanticui.min.css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/datatables.net-buttons-se/1.5.3/buttons.semanticui.min.css">
-        <link rel="stylesheet" href="{% static 'css/style.css' %}">
+        <link rel="stylesheet" href="{% static 'free/css/style.css' %}">
 
 
         <link rel="shortcut icon" type="image/png" href="">
-        <link rel="shortcut icon" href="{% static  'images/faviconElab.ico' %}">
+        <link rel="shortcut icon" href="{% static  'free/images/faviconElab.ico' %}">
+        <script src="{% url 'javascript-catalog' %}"></script>
 
         {% block headscript %}
         {% endblock %}

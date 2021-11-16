@@ -7,7 +7,6 @@ Last updated out 9 11:12 , 2021*/
 
 // starting all the variables
 var base_url = "http://10.2.12.86:8000";
-
 result_data = JSON.parse(document.getElementById('final-result').textContent);
 var apparatus = JSON.parse(document.getElementById('execution-config').textContent).apparatus;
 var protocol = JSON.parse(document.getElementById('execution-config').textContent).protocol.id;
@@ -355,7 +354,7 @@ function buildPlot1(res) {
     var output_data = [trace1];
 
     var layout = {
-      title: 'velocidade linear em função de número de amostras',
+      title: gettext('velocidade linear em função de número de amostras'),
       height: 500, // os valores são todos em pixels
       font: {
       family: 'Lato',
