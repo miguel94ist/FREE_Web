@@ -7,9 +7,10 @@ Last updated out 9 11:12 , 2021*/
 
 // starting all the variables
 var base_url = "http://10.2.12.86:8000";
+let new_execution = JSON.parse(document.getElementById('execution-config').textContent);
 result_data = JSON.parse(document.getElementById('final-result').textContent);
-var apparatus = JSON.parse(document.getElementById('execution-config').textContent).apparatus;
-var protocol = JSON.parse(document.getElementById('execution-config').textContent).protocol.id;
+var apparatus = new_execution.apparatus;
+var protocol = new_execution.protocol.id;
 // {
 //   "apparatus": 0,
 //   "protocol": 0,
@@ -98,7 +99,7 @@ function queue() {
   HEADERS = {
     "X-CSRFToken": getCookie("csrftoken"),
     }
-  var endpoint="/api/v1/execution";
+  var endpoint="/api/v1/execution/"+new_execution.id;
   // print out
   console.log('JSON : ' +  endpoint);
   console.log('JSON : ' +  data_send);

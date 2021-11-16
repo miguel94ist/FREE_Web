@@ -188,17 +188,17 @@
         }
 
         // If the url contains execution id at the end, the execution information will be also injected into the page
-        execution_element = document.getElementById('execution-config');
+        execution_element = JSON.parse(document.getElementById('execution-config').textContent);
         if (execution_element.status === 'F') {
             // The execution is present
-            execution = JSON.parse(execution_element.textContent);
+            
             // console.log(execution.config)
             final_result = document.getElementById('final-result');
             finalresult = JSON.parse(final_result.textContent);
             // console.log('Final Result : ', finalresult.id);
             if (final_result.id !== 'undefined') {
-                exp_parameters[0].start = execution.config.deltaX;
-                exp_parameters[1].start = execution.config.samples;
+                exp_parameters[0].start = execution_element.config.deltaX;
+                exp_parameters[1].start = execution_element.config.samples;
             }
             else{
 
