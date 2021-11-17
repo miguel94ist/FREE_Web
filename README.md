@@ -4,12 +4,12 @@
 Navigate to your preferred folder and download the latest release of the application:
 
 ```
-wget https://github.com/e-lab-FREE/FREE_Web/releases/latest/download/FREE_Web.zip 
+wget https://github.com/e-lab-FREE/FREE_Web/releases/latest/download/FREE_Web.zip -O FREE_Web.zip
 ```
 
 Unzip the package:
 ```
-unzip FREE_Web.zip
+unzip -o FREE_Web.zip
 ```
 
 Create a new python virtual environment, we will be calling it `free-env`.
@@ -61,3 +61,7 @@ daphne freeweb.asgi:application
 ```
 
 By default, the webserver will be available at port 8000. To change the port, pass `-p <portnumber>` parameter to the `daphne` command. You can also force binding to specific addres by `-b <address>`.
+
+## Update guide
+
+Follow the first two steps of the installation guide. The commands already contain overwrite switches so that the old version will be overwritten, while `.env` and `.sqlite` files won't be touched.
