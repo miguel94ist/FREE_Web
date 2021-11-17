@@ -124,6 +124,7 @@ LANGUAGE_CODE = 'en'
 LANGUAGES = [
     ('en', _('English')),
     ('pt', _('Portugese')),
+    ('es', _('Spanish')),
 ]
 
 TIME_ZONE = 'Europe/Prague'

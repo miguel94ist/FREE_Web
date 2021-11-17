@@ -21,4 +21,5 @@ urlpatterns = [
     path('', include('free.urls')),
     path('admin/', admin.site.urls, name='administration'),
     path('jsi18n/',JavaScriptCatalog.as_view(), name='javascript-catalog'),
+    path('i18n/', include('django.conf.urls.i18n')),
 ]
