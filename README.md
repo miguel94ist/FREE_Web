@@ -45,10 +45,10 @@ Right now, the application release is shipped with pre-filled example database i
 
 Download the database and put it into the project root:
 ```
-wget https://github.com/e-lab-FREE/FREE_Web/releases/latest/download/db.sqlite3
+wget https://github.com/e-lab-FREE/FREE_Web/releases/latest/download/db.sqlite3 -O db.sqlite3
 ```
 
-This database contains a Pendulum experiment, as long as two example user accounts.
+This database contains a Pendulum experiment, as well as two example user accounts.
 
 - `wp-admin` - superuser account with access to admin interface
 - `wp-guest` - guest account
