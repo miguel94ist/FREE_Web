@@ -29,6 +29,10 @@ pip install -r REQUIREMENTS.txt
 
 The application is configured using environment variables. You can set them using the `/freeweb/.env` file. For your convenience, there is a `.env-template` file in the same folder, that you can rename to `.env` and alter the contents.
 
+```
+mv freeweb/.env-template freeweb/.env
+```
+
 **Available settings so far**
 
 - `FREE_PRODUCTION` - set to `on` to enable production mode (disables sensitive error messages etc.)
@@ -56,4 +60,4 @@ Finally, run the application:
 daphne freeweb.asgi:application
 ```
 
-By default, the webserver will be available at port 8000. To change the port, pass `-p <portnumber>` parameter to the `daphne` command.
+By default, the webserver will be available at port 8000. To change the port, pass `-p <portnumber>` parameter to the `daphne` command. You can also force binding to specific addres by `-b <address>`.
