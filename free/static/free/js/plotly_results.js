@@ -94,7 +94,7 @@ function queue() {
     Samples = $("#Samples").val();
 
   
-  data_send = {"apparatus": apparatus, "protocol": protocol, "config": {"deltaX": parseInt (DeltaX), "samples":parseInt (Samples)}}
+  data_send = {"id":new_execution.id,"apparatus": apparatus, "protocol": protocol, "config": {"deltaX": parseInt (DeltaX), "samples":parseInt (Samples)}}
   // '{"experiment_name": "Pendulo", "config_experiment": {"DeltaX":'+ String(DeltaX)+', "Samples":'+String(Samples)+' }}'
   HEADERS = {
     "X-CSRFToken": getCookie("csrftoken"),
@@ -116,7 +116,7 @@ function queue() {
   // });
 
   axios({
-    method: 'post', //you can set what request you want to be
+    method: 'put', //you can set what request you want to be
     url: endpoint,
     headers: HEADERS,
     data: data_send,

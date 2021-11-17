@@ -94,9 +94,12 @@ class ExecutionRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
     Update and delete are only possible for executions, that have not been enqueued (are in configured state - C).
     It is only possble to update config of the execution.
     """
-    serializer_class = ExecutionSerializer
+    serializer_class = ExecutionConfigSerializer
     queryset = Execution.objects.all()
     lookup_field = 'id'
+
+    def perform_update(self, serializer):
+        serializer.save(status = 'C')
 
 class ExecutionStart(views.APIView):
     """
@@ -111,7 +114,7 @@ class ExecutionStart(views.APIView):
             return Response({'error': 'Execution with given ID does not exist!'}, status = 404)
 
         if execution.status != 'C':
-            return Response({'error': 'This execution has already been started'}, status = 400)
+            return Response({'error': 'You can only start executions with Configured (C) state.'}, status = 400)
 
         execution.status = 'Q'
         execution.save()
