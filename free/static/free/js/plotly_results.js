@@ -355,7 +355,7 @@ function buildPlot1(res) {
     var output_data = [trace1];
 
     var layout = {
-      title: gettext('velocidade linear em função de número de amostras'),
+      title: gettext('Linear velocity vs sample number'),
       height: 500, // os valores são todos em pixels
       font: {
       family: 'Lato',
@@ -364,7 +364,7 @@ function buildPlot1(res) {
       },
 
       xaxis: {
-            title: 'Amostra[N]',
+            title: gettext('# Samples'),
             titlefont:{
                   color: 'black',
                   size: 14
@@ -375,7 +375,7 @@ function buildPlot1(res) {
                  //rangeslider: {}
             },
       yaxis: {
-            title: 'velocidade linear[m/s]',
+            title: gettext('Linear velocity [m/s]'),
             fixedrange: true,
             titlefont:{
                   color: 'black',
@@ -403,7 +403,7 @@ function buildPlot2(res) {
     // no histograma so é x ou é y.
 		x: [],
 		//y: [],
-    name:'Histograma de Periodo de movimento',
+    name: gettext('Histogram of the pendulum periods'),
     visible: true,
    // mode: 'lines+markers',
     type: 'histogram',
@@ -429,7 +429,7 @@ function buildPlot2(res) {
     var output_data = [trace2];
 
     var layout = {
-      title: 'Histograma de Periodo de movimento',
+      title: gettext('Histogram of the pendulum periods'),
       height: 500, // os valores são todos em pixels
       bargap: 0.05, 
       bargroupgap: 0.2,
@@ -442,7 +442,7 @@ function buildPlot2(res) {
 
       xaxis: {
             
-            title: 'periodo[s]',
+            title: gettext('Period [s]'),
             titlefont:{
                   color: 'black',
                   size: 14
@@ -451,7 +451,7 @@ function buildPlot2(res) {
             },
       yaxis: {
         //range:[0.19,0.21],
-            title: '# de Eventos',
+            title: gettext('# Samples'),
             titlefont:{
                   color: 'black',
                   size: 14
@@ -498,7 +498,7 @@ function buildPlot3(res) {
     var output_data = [trace3];
 
     var layout = {
-      title: 'Periodo em função do número de amostras',
+      title: gettext('Period vs. number of samples'),
       height: 500, // os valores são todos em pixels
       font: {
       family: 'Lato',
@@ -508,7 +508,7 @@ function buildPlot3(res) {
 
       xaxis: {
             
-            title: 'Amostra[N]',
+            title: gettext('# Samples'),
             titlefont:{
                   color: 'black',
                   size: 14
@@ -517,7 +517,7 @@ function buildPlot3(res) {
             },
       yaxis: {
         //range:[0.19,0.21],
-            title: 'Periodo[s]',
+            title: gettext('Period [s]'),
             titlefont:{
                   color: 'black',
                   size: 14

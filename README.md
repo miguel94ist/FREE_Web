@@ -47,7 +47,7 @@ wget https://github.com/e-lab-FREE/FREE_Web/releases/latest/download/db.sqlite3
 This database contains a Pendulum experiment, as long as two example user accounts.
 
 - `wp-admin` - superuser account with access to admin interface
-- `guest` - guest account
+- `wp-guest` - guest account
 
 Both have a password `temporary123`. This password can be changed through admin interface.
 

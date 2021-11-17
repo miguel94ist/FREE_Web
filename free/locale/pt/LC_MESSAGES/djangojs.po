@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-11-16 11:42-0500\n"
+"POT-Creation-Date: 2021-11-16 21:10-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,10 +18,30 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: .\static\js\plotly_results.js:10
-msgid "Test"
+#: .\static\free\js\plotly_results.js:358
+msgid "Linear velocity vs sample number"
 msgstr ""
 
-#: .\static\js\plotly_results.js:358
-msgid "velocidade linear em função de número de amostras"
+#: .\static\free\js\plotly_results.js:367
+#: .\static\free\js\plotly_results.js:454
+#: .\static\free\js\plotly_results.js:511
+msgid "# Samples"
+msgstr ""
+
+#: .\static\free\js\plotly_results.js:378
+msgid "Linear velocity [m/s]"
+msgstr ""
+
+#: .\static\free\js\plotly_results.js:406
+#: .\static\free\js\plotly_results.js:432
+msgid "Histogram of the pendulum periods"
+msgstr ""
+
+#: .\static\free\js\plotly_results.js:445
+#: .\static\free\js\plotly_results.js:520
+msgid "Period [s]"
+msgstr ""
+
+#: .\static\free\js\plotly_results.js:501
+msgid "Period vs. number of samples"
 msgstr ""

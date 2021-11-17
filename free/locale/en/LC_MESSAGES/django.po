@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-11-16 15:42-0500\n"
+"POT-Creation-Date: 2021-11-16 21:10-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -274,32 +274,28 @@ msgid "Video stream "
 msgstr ""
 
 #: .\templates\free\experiments\pendulum.html:108
-#: .\templates\free\experiments\pendulum.html:156
+#: .\templates\free\experiments\pendulum.html:155
 msgid "Sample Number"
 msgstr ""
 
 #: .\templates\free\experiments\pendulum.html:109
-#: .\templates\free\experiments\pendulum.html:157
+#: .\templates\free\experiments\pendulum.html:156
 msgid "Period [s]"
 msgstr ""
 
 #: .\templates\free\experiments\pendulum.html:110
-#: .\templates\free\experiments\pendulum.html:158
+#: .\templates\free\experiments\pendulum.html:157
 msgid "g [m/s^2]"
 msgstr ""
 
 #: .\templates\free\experiments\pendulum.html:111
-#: .\templates\free\experiments\pendulum.html:159
+#: .\templates\free\experiments\pendulum.html:158
 msgid "Velocity [m/s]"
 msgstr ""
 
 #: .\templates\free\experiments\pendulum.html:112
-#: .\templates\free\experiments\pendulum.html:160
+#: .\templates\free\experiments\pendulum.html:159
 msgid "Temperature [ºC]"
-msgstr ""
-
-#: .\templates\free\experiments\pendulum.html:125
-msgid "Experiment Result"
 msgstr ""
 
 #: .\templates\free\layout\sidebar.html:11
