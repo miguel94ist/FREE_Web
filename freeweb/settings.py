@@ -26,7 +26,7 @@ if env.bool('FREE_PRODUCTION'):
     SECRET_KEY = env.str('FREE_SECRET')
 else:
     DEBUG = True
-    ALLOWED_HOSTS = ['localhost', '127.0.0.1','10.2.28.14','194.210.159.110']
+    ALLOWED_HOSTS = ['*']
     SECRET_KEY = 'this-is-totally-insecure-secret-key'
 
 CORS_ORIGIN_ALLOW_ALL = False

@@ -134,7 +134,7 @@ class Result(models.Model):
         return _('Result of %(execution)s') % {'execution': str(self.execution) }
 
     class Meta:
-        ordering = ['-time']
+        ordering = ['-id']
         verbose_name = _('Result')
         verbose_name_plural = _('Results')
 

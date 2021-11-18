@@ -135,13 +135,22 @@ class ExecutionAPI(TestCase):
         response = json.loads(response.content)
         next_execution_id = response["id"]
 
-        request_time = timezone.now()
+        
         response = self.client.get('/api/v1/apparatus/' + str(self.apparatus.pk) + '/nextexecution',
         HTTP_AUTHENTICATION = 'secret_code')
         self.assertEqual(response.status_code, 200)
         response = json.loads(response.content)
         self.assertEqual(response["id"], execution_id)
-        self.assertEqual(response["status"], "R")
+        self.assertEqual(response["status"], "Q")
+        
+        request_time = timezone.now()
+        response = self.client.put('/api/v1/execution/' + str(execution_id) + '/status', {
+            'status': 'R'
+        }, content_type='application/json', HTTP_AUTHENTICATION = 'secret_code')
+        self.assertEqual(response.status_code, 200)
+        response = self.client.get('/api/v1/execution/' + str(execution_id))
+        self.assertEqual(response.status_code, 200)
+        response = json.loads(response.content)
         self.assertLess((parse_datetime(response["start"])-request_time).total_seconds(),1)
 
         response = self.client.get('/api/v1/apparatus/999/nextexecution')
@@ -263,6 +272,7 @@ class ExecutionAPI(TestCase):
         self.assertEqual(response.status_code, 200)
         response = json.loads(response.content)
         self.assertEqual(len(response), 3)
+        print(response)
         second_id = response[1]['id']
 
         # Read part of results
