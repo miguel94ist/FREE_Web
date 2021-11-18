@@ -27,6 +27,7 @@ class Apparatus(models.Model):
     location = models.CharField(_('Location'), max_length=64)
     secret = models.CharField(_('Secret'), max_length=32)
     owner = models.CharField(_('Owner'), max_length=32)
+    config = models.JSONField(_('Configuration'), default=dict, blank=True)
     video_config = models.JSONField(_('Video configuration'), null=True, blank=True)
 
     def __str__(self):
