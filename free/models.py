@@ -4,6 +4,7 @@ from django.utils.translation import gettext_lazy as _
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils import timezone
+from datetime import timedelta
 
 class Experiment(models.Model):
     name = models.CharField(_('Name'), max_length=64)
@@ -27,6 +28,7 @@ class Apparatus(models.Model):
     location = models.CharField(_('Location'), max_length=64)
     secret = models.CharField(_('Secret'), max_length=32)
     owner = models.CharField(_('Owner'), max_length=32)
+    timeout = models.IntegerField(_('Connection timeout'), default = 60)
     config = models.JSONField(_('Configuration'), default=dict, blank=True)
     video_config = models.JSONField(_('Video configuration'), null=True, blank=True)
 
@@ -35,11 +37,7 @@ class Apparatus(models.Model):
 
     @property
     def current_status(self):
-        try:
-            return Status.objects.filter(apparatus=self).order_by('-time')[0].get_status_display()
-        except:
-            return Status(status='0').get_status_display()
-            
+        return Status.last_status(self).get_status_display()
 
     class Meta:
         verbose_name = _('Apparatus')
@@ -53,15 +51,25 @@ def cleanup_protocols(sender, instance, created, **kwargs):
             instance.protocols.remove(protocol)
 
 STATUS_CHOICES = (
-    ('1', _('Online')),
-    ('0', _('Offline')),
-    ('R', _('Running')),
+    ('online', _('Online')),
+    ('hardware-error', _('Hardware error')),
+    ('maintenance', _('Maintenance')),
+    ('reserved', _('Reserved'))
+    ('offline', _('Offline'))
 )
 
 class Status(models.Model):
     apparatus = models.ForeignKey(Apparatus, on_delete=models.PROTECT)
     time = models.DateTimeField(_('Time'), auto_now=True)
-    status = models.CharField(_('Status'), max_length=1, choices=STATUS_CHOICES)
+    status = models.CharField(_('Status'), max_length=128, choices=STATUS_CHOICES)
+    is_last = models.BooleanField(_('Is first?'))
+
+    @classmethod
+    def last_status(cls, apparatus):
+        try:
+            cls.objects.filter(apparatus=apparatus, time__geq=timezone.now() - timedelta(seconds=apparatus.timeout)).order_by('-time')[0]
+        except:
+            return Status(status='offline', time=timezone.now(), apparatus=apparatus, is_last=True)
 
     class Meta:
         verbose_name = _('Status')

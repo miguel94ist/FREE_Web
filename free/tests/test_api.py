@@ -24,6 +24,13 @@ def setup_fixtures(self):
         owner = 'Somebody'
     )
     self.apparatus.save()
+    
+    Apparatus(
+        experiment = self.experiment,
+        location = 'Dummy',
+        secret = 'no',
+        owner = 'Nobody'
+    ).save()
 
     self.basic_protocol = Protocol(
         experiment = self.experiment,
@@ -51,6 +58,12 @@ def setup_fixtures(self):
 class ExecutionAPI(TestCase):
     def setUp(self):
         setup_fixtures(self)
+        
+    def test_apparatus_list(self):
+        response = self.client.get('/api/v1/apparatus')
+        self.assertEqual(response.status_code, 200)
+        response = json.loads(response.content)
+        self.assertEqual(len(response), 2)
 
     def test_configure_execution_success(self):
         response = self.client.post('/api/v1/execution', {
@@ -272,7 +285,6 @@ class ExecutionAPI(TestCase):
         self.assertEqual(response.status_code, 200)
         response = json.loads(response.content)
         self.assertEqual(len(response), 3)
-        print(response)
         second_id = response[1]['id']
 
         # Read part of results

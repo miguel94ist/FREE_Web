@@ -137,6 +137,15 @@ class AppratusView(generics.RetrieveAPIView):
     serializer_class = ApparatusSerializer
     queryset = Apparatus.objects.all()
     lookup_field = 'id'
+    
+class ApparatusListAPI(generics.ListAPIView):
+    """
+    Returns a list of all apparatuses.
+
+    Returns a list of all apparatuses.
+    """
+    queryset = Apparatus.objects.all()
+    serializer_class = ApparatusSerializer
 
 class NextExecution(generics.RetrieveAPIView):
     """
@@ -254,3 +263,22 @@ class ExecutionQueue(generics.ListAPIView):
     serializer_class = ExecutionSerializer
     def get_queryset(self):
         return Execution.objects.filter(state='Q', apparatus_id=self.kwargs['apparatus_id']).order_by('queue_time')
+    
+# APPARATUS STATUS
+
+class ApparatusStatusSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Status
+        fields = ['apparatus', 'status']
+        
+class AddApparatusStatus(generics.CreateAPIView):
+    """
+    Writes an apparatus heartbeat status.
+    
+    **APPARATUS AUTHENTICATION REQUIRED**
+    """
+    permission_classes = [ApparatusOnlyAccess]
+    serializer_class = ApparatusStatusSerializer
+    
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user, status = 'C')

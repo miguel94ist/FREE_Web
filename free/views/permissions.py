@@ -1,5 +1,5 @@
 from rest_framework import permissions
-from free.models import Execution, Result
+from free.models import Execution, Result, Apparatus
 
 class ApparatusOnlyAccess(permissions.BasePermission):
     message = 'Please provide a valid secret in the Authentication HTTP header.'
@@ -10,5 +10,7 @@ class ApparatusOnlyAccess(permissions.BasePermission):
                 return request.headers['Authentication'] == obj.apparatus.secret
             if isinstance(obj, Result):
                 return request.headers['Authentication'] == obj.execution.apparatus.secret
+            if isinstance(obj, Apparatus):
+                return request.headers['Authentication'] == obj.secret
         return False
         
