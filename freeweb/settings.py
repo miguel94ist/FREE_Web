@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 import environ
+import os
 from pathlib import Path
 from django.utils.translation import gettext_lazy as _
 
@@ -49,6 +50,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'drf_yasg',
     'django_tables2',
+    'django_summernote',
 ]
 
 MIDDLEWARE = [
@@ -142,6 +144,9 @@ DJANGO_TABLES2_TEMPLATE = 'django_tables2/semantic.html'
 
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATIC_URL = '/static/'
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
 
 STATICFILES_DIRS = []
 
