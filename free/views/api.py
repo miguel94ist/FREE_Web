@@ -2,6 +2,8 @@ from rest_framework import generics, serializers, views
 from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 from free.models import *
+import json
+import decimal
 from jsonschema import validate, ValidationError as JSONValidationError
 
 from free.views.permissions import ApparatusOnlyAccess
@@ -48,9 +50,12 @@ class ExecutionSerializer(serializers.ModelSerializer):
 class ExecutionCreateSerializer(serializers.ModelSerializer):
     def validate(self, data):
         data = super().validate(data)
+        adjusted_schema = json.loads(json.dumps(data['protocol'].config), parse_float=decimal.Decimal)
+        instance = data['config'] if 'config' in data else {}
+        adjusted_instance = json.loads(json.dumps(instance), parse_float=decimal.Decimal)
         
         try:
-            validate(instance = data['config'] if 'config' in data else {}, schema = data['protocol'].config)
+            validate(instance = adjusted_instance, schema = adjusted_schema)
         except JSONValidationError as e:
             raise serializers.ValidationError(e.message)
             

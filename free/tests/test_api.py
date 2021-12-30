@@ -43,7 +43,7 @@ def setup_fixtures(self):
     self.protocol_with_schema = Protocol(
         experiment = self.experiment,
         name = 'Test',
-        config = {"type": "object", "properties": {"displacement": {"type": "number", "description": "user name", "minimum": 5, "maximum": 20}, "enumerator": {"type": "string", "enum": ["A", "B"]}}, "required": ["displacement", "enumerator"]}
+        config = {"type": "object", "properties": {"displacement": {"type": "number", "description": "displacement", "minimum": 5, "maximum": 20, "multipleOf": 0.1}, "enumerator": {"type": "string", "enum": ["A", "B"]}}, "required": ["displacement", "enumerator"]}
     )
     self.protocol_with_schema.save()
 
@@ -241,6 +241,16 @@ class ExecutionAPI(TestCase):
             'config': {'a':'b'}}
         )
         self.assertEqual(response.status_code, 400)
+
+        # TEST MultipleOf validation
+        response = self.client.post('/api/v1/execution', {
+            'apparatus': self.apparatus.pk, 
+            'protocol': self.protocol_with_schema.pk, 
+            'config': {'displacement': 5.6, 'enumerator':'A'} }
+        , content_type='application/json')
+        self.assertEqual(response.status_code, 201)
+        response = json.loads(response.content)
+        new_exec_id = response['id']
 
         # TEST VALID SCHEMA
         response = self.client.post('/api/v1/execution', {
