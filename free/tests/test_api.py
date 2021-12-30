@@ -21,7 +21,8 @@ def setup_fixtures(self):
         experiment = self.experiment,
         location = 'Prague',
         secret = 'secret_code',
-        owner = 'Somebody'
+        owner = 'Somebody',
+        timeout = 1,
     )
     self.apparatus.save()
     
@@ -29,7 +30,7 @@ def setup_fixtures(self):
         experiment = self.experiment,
         location = 'Dummy',
         secret = 'no',
-        owner = 'Nobody'
+        owner = 'Nobody',
     ).save()
 
     self.basic_protocol = Protocol(
@@ -297,6 +298,48 @@ class ExecutionAPI(TestCase):
         self.assertEqual(response.status_code, 200)
         response = json.loads(response.content)
         self.assertEqual(len(response), 0)
+        
+    def test_status_pings(self):
+        import time
+        
+        response = self.client.get(f'/api/v1/apparatus/{self.apparatus.pk}')
+        self.assertEqual(response.status_code, 200)
+        response = json.loads(response.content)
+        self.assertEqual(response['status'], 'offline')
+        
+        response = self.client.post(f'/api/v1/apparatus/{self.apparatus.pk}/setstatus', {
+            'apparatus': self.apparatus.pk, 
+            'status': 'online', 
+            }, content_type='application/json')
+        self.assertEqual(response.status_code, 201)
+        
+        self.assertEqual(Status.objects.filter(apparatus=self.apparatus).count(), 2)
+        
+        response = self.client.get(f'/api/v1/apparatus/{self.apparatus.pk}')
+        self.assertEqual(response.status_code, 200)
+        response = json.loads(response.content)
+        self.assertEqual(response['status'], 'online')
+        
+        response = self.client.post(f'/api/v1/apparatus/{self.apparatus.pk}/setstatus', {
+            'apparatus': self.apparatus.pk, 
+            'status': 'maintenance', 
+            }, content_type='application/json')
+        self.assertEqual(response.status_code, 201)
+        
+        self.assertEqual(Status.objects.filter(apparatus=self.apparatus).count(), 4)
+        
+        response = self.client.get(f'/api/v1/apparatus/{self.apparatus.pk}')
+        self.assertEqual(response.status_code, 200)
+        response = json.loads(response.content)
+        self.assertEqual(response['status'], 'maintenance')
+        
+        time.sleep(2)
+        
+        response = self.client.get(f'/api/v1/apparatus/{self.apparatus.pk}')
+        self.assertEqual(response.status_code, 200)
+        response = json.loads(response.content)
+        self.assertEqual(response['status'], 'offline')
+        
         
 
 

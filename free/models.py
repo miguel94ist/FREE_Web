@@ -36,8 +36,21 @@ class Apparatus(models.Model):
         return _('%(experiment)s in %(location)s') % {'experiment': self.experiment.name, 'location': self.location}
 
     @property
-    def current_status(self):
-        return Status.last_status(self).get_status_display()
+    def status(self):
+        return Status.last_status(self)
+    
+    @property
+    def status_display(self):
+        self.status.get_status_display()
+    
+    def update_status(self, status_name):
+        last_status = Status.last_status(self)
+        if last_status.status != status_name:
+            Status(apparatus=self, status=status_name, is_last=False).save()
+            Status(apparatus=self, status=status_name, is_last=True).save()
+        else:
+            last_status.time = timezone.now()
+            last_status.save()
 
     class Meta:
         verbose_name = _('Apparatus')
@@ -54,7 +67,7 @@ STATUS_CHOICES = (
     ('online', _('Online')),
     ('hardware-error', _('Hardware error')),
     ('maintenance', _('Maintenance')),
-    ('reserved', _('Reserved'))
+    ('reserved', _('Reserved')),
     ('offline', _('Offline'))
 )
 
@@ -62,12 +75,12 @@ class Status(models.Model):
     apparatus = models.ForeignKey(Apparatus, on_delete=models.PROTECT)
     time = models.DateTimeField(_('Time'), auto_now=True)
     status = models.CharField(_('Status'), max_length=128, choices=STATUS_CHOICES)
-    is_last = models.BooleanField(_('Is first?'))
-
+    is_last = models.BooleanField(_('Is last?'), default=True)
+    
     @classmethod
     def last_status(cls, apparatus):
         try:
-            cls.objects.filter(apparatus=apparatus, time__geq=timezone.now() - timedelta(seconds=apparatus.timeout)).order_by('-time')[0]
+            return cls.objects.filter(apparatus=apparatus, time__gte=timezone.now() + timedelta(seconds=-apparatus.timeout), is_last=True).latest('time')
         except:
             return Status(status='offline', time=timezone.now(), apparatus=apparatus, is_last=True)
 

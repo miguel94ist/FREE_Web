@@ -31,9 +31,11 @@ class ApparatusSerializer(serializers.ModelSerializer):
     read_only = True
     protocols = ProtocolSerializer(many=True)
     experiment = ExperimentSerializer()
+    status = serializers.SlugRelatedField(slug_field='status', read_only=True)
+    
     class Meta:
         model = Apparatus
-        fields = ['experiment', 'protocols', 'location', 'owner', 'video_config']
+        fields = ['experiment', 'protocols', 'location', 'owner', 'video_config', 'status']
 
 class ExecutionSerializer(serializers.ModelSerializer):
     protocol = ProtocolSerializer()
@@ -281,4 +283,4 @@ class AddApparatusStatus(generics.CreateAPIView):
     serializer_class = ApparatusStatusSerializer
     
     def perform_create(self, serializer):
-        serializer.save(user=self.request.user, status = 'C')
+        serializer.validated_data['apparatus'].update_status(serializer.validated_data['status'])

@@ -3,7 +3,7 @@
 {% load i18n %}
 
 {% block headscript%}
-{{object.apparatus.experiment.config|json_script:"experiment-config"}}
+{{object.apparatus.config|json_script:"apparatus-config"}}
 {{execution_json|json_script:"execution-config"}}
 {{final_result|json_script:"final-result"}}
 {{video_config|json_script:"video-config"}}
