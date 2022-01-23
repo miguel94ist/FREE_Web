@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 import environ
+import os
 from pathlib import Path
 from django.utils.translation import gettext_lazy as _
 
@@ -26,7 +27,7 @@ if env.bool('FREE_PRODUCTION'):
     SECRET_KEY = env.str('FREE_SECRET')
 else:
     DEBUG = True
-    ALLOWED_HOSTS = ['localhost', '127.0.0.1','10.2.28.14','194.210.159.110']
+    ALLOWED_HOSTS = ['*']
     SECRET_KEY = 'this-is-totally-insecure-secret-key'
 
 CORS_ORIGIN_ALLOW_ALL = False
@@ -49,6 +50,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'drf_yasg',
     'django_tables2',
+    'django_summernote',
 ]
 
 MIDDLEWARE = [
@@ -142,6 +144,9 @@ DJANGO_TABLES2_TEMPLATE = 'django_tables2/semantic.html'
 
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATIC_URL = '/static/'
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
 
 STATICFILES_DIRS = []
 

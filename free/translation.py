@@ -6,9 +6,9 @@ class ExperimentTranslationOptions(TranslationOptions):
 translator.register(Experiment, ExperimentTranslationOptions)
 
 class ApparatusTranslationOptions(TranslationOptions):
-    fields = ('location',)
+    fields = ('location','description',)
 translator.register(Apparatus, ApparatusTranslationOptions)
 
 class ProtocolTranslationOptions(TranslationOptions):
-    fields = ('name',)
+    fields = ('name','description',)
 translator.register(Protocol, ProtocolTranslationOptions)

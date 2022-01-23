@@ -21,9 +21,17 @@ def setup_fixtures(self):
         experiment = self.experiment,
         location = 'Prague',
         secret = 'secret_code',
-        owner = 'Somebody'
+        owner = 'Somebody',
+        timeout = 1,
     )
     self.apparatus.save()
+    
+    Apparatus(
+        experiment = self.experiment,
+        location = 'Dummy',
+        secret = 'no',
+        owner = 'Nobody',
+    ).save()
 
     self.basic_protocol = Protocol(
         experiment = self.experiment,
@@ -35,7 +43,7 @@ def setup_fixtures(self):
     self.protocol_with_schema = Protocol(
         experiment = self.experiment,
         name = 'Test',
-        config = {"type": "object", "properties": {"displacement": {"type": "number", "description": "user name", "minimum": 5, "maximum": 20}, "enumerator": {"type": "string", "enum": ["A", "B"]}}, "required": ["displacement", "enumerator"]}
+        config = {"type": "object", "properties": {"displacement": {"type": "number", "description": "displacement", "minimum": 5, "maximum": 20, "multipleOf": 0.1}, "enumerator": {"type": "string", "enum": ["A", "B"]}}, "required": ["displacement", "enumerator"]}
     )
     self.protocol_with_schema.save()
 
@@ -51,6 +59,12 @@ def setup_fixtures(self):
 class ExecutionAPI(TestCase):
     def setUp(self):
         setup_fixtures(self)
+        
+    def test_apparatus_list(self):
+        response = self.client.get('/api/v1/apparatus')
+        self.assertEqual(response.status_code, 200)
+        response = json.loads(response.content)
+        self.assertEqual(len(response), 2)
 
     def test_configure_execution_success(self):
         response = self.client.post('/api/v1/execution', {
@@ -135,13 +149,22 @@ class ExecutionAPI(TestCase):
         response = json.loads(response.content)
         next_execution_id = response["id"]
 
-        request_time = timezone.now()
+        
         response = self.client.get('/api/v1/apparatus/' + str(self.apparatus.pk) + '/nextexecution',
         HTTP_AUTHENTICATION = 'secret_code')
         self.assertEqual(response.status_code, 200)
         response = json.loads(response.content)
         self.assertEqual(response["id"], execution_id)
-        self.assertEqual(response["status"], "R")
+        self.assertEqual(response["status"], "Q")
+        
+        request_time = timezone.now()
+        response = self.client.put('/api/v1/execution/' + str(execution_id) + '/status', {
+            'status': 'R'
+        }, content_type='application/json', HTTP_AUTHENTICATION = 'secret_code')
+        self.assertEqual(response.status_code, 200)
+        response = self.client.get('/api/v1/execution/' + str(execution_id))
+        self.assertEqual(response.status_code, 200)
+        response = json.loads(response.content)
         self.assertLess((parse_datetime(response["start"])-request_time).total_seconds(),1)
 
         response = self.client.get('/api/v1/apparatus/999/nextexecution')
@@ -219,6 +242,16 @@ class ExecutionAPI(TestCase):
         )
         self.assertEqual(response.status_code, 400)
 
+        # TEST MultipleOf validation
+        response = self.client.post('/api/v1/execution', {
+            'apparatus': self.apparatus.pk, 
+            'protocol': self.protocol_with_schema.pk, 
+            'config': {'displacement': 5.6, 'enumerator':'A'} }
+        , content_type='application/json')
+        self.assertEqual(response.status_code, 201)
+        response = json.loads(response.content)
+        new_exec_id = response['id']
+
         # TEST VALID SCHEMA
         response = self.client.post('/api/v1/execution', {
             'apparatus': self.apparatus.pk, 
@@ -275,6 +308,48 @@ class ExecutionAPI(TestCase):
         self.assertEqual(response.status_code, 200)
         response = json.loads(response.content)
         self.assertEqual(len(response), 0)
+        
+    def test_status_pings(self):
+        import time
+        
+        response = self.client.get(f'/api/v1/apparatus/{self.apparatus.pk}')
+        self.assertEqual(response.status_code, 200)
+        response = json.loads(response.content)
+        self.assertEqual(response['status'], 'offline')
+        
+        response = self.client.post(f'/api/v1/apparatus/{self.apparatus.pk}/setstatus', {
+            'apparatus': self.apparatus.pk, 
+            'status': 'online', 
+            }, content_type='application/json')
+        self.assertEqual(response.status_code, 201)
+        
+        self.assertEqual(Status.objects.filter(apparatus=self.apparatus).count(), 2)
+        
+        response = self.client.get(f'/api/v1/apparatus/{self.apparatus.pk}')
+        self.assertEqual(response.status_code, 200)
+        response = json.loads(response.content)
+        self.assertEqual(response['status'], 'online')
+        
+        response = self.client.post(f'/api/v1/apparatus/{self.apparatus.pk}/setstatus', {
+            'apparatus': self.apparatus.pk, 
+            'status': 'maintenance', 
+            }, content_type='application/json')
+        self.assertEqual(response.status_code, 201)
+        
+        self.assertEqual(Status.objects.filter(apparatus=self.apparatus).count(), 4)
+        
+        response = self.client.get(f'/api/v1/apparatus/{self.apparatus.pk}')
+        self.assertEqual(response.status_code, 200)
+        response = json.loads(response.content)
+        self.assertEqual(response['status'], 'maintenance')
+        
+        time.sleep(2)
+        
+        response = self.client.get(f'/api/v1/apparatus/{self.apparatus.pk}')
+        self.assertEqual(response.status_code, 200)
+        response = json.loads(response.content)
+        self.assertEqual(response['status'], 'offline')
+        
         
 
 

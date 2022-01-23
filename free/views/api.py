@@ -2,6 +2,8 @@ from rest_framework import generics, serializers, views
 from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 from free.models import *
+import json
+import decimal
 from jsonschema import validate, ValidationError as JSONValidationError
 
 from free.views.permissions import ApparatusOnlyAccess
@@ -21,23 +23,6 @@ class ExperimentListAPI(generics.ListAPIView):
     queryset = Experiment.objects.all()
     serializer_class = ExperimentSerializer
 
-
-# Execution API
-
-class ExecutionConfigSerializer(serializers.ModelSerializer):
-
-    def validate(self, data):
-        try:
-            validate(instance = data['config'] if 'config' in data else {}, schema = data['protocol'].config)
-        except JSONValidationError as e:
-            raise serializers.ValidationError(e.message)
-
-        return data
-
-    class Meta:
-        model = Execution
-        fields = ['id','apparatus', 'protocol', 'config']
-
 class ProtocolSerializer(serializers.ModelSerializer):
     read_only = True
     class Meta:
@@ -48,31 +33,56 @@ class ApparatusSerializer(serializers.ModelSerializer):
     read_only = True
     protocols = ProtocolSerializer(many=True)
     experiment = ExperimentSerializer()
+    status = serializers.SlugRelatedField(slug_field='status', read_only=True)
+    
     class Meta:
         model = Apparatus
-        fields = ['experiment', 'protocols', 'location', 'owner', 'video_config']
+        fields = ['experiment', 'protocols', 'location', 'owner', 'video_config', 'status']
 
 class ExecutionSerializer(serializers.ModelSerializer):
     protocol = ProtocolSerializer()
-
-    def validate(self, data):
-        data = super().validate(data)
-
-        if self.instance: # if updating or destroying
-            if self.instance.status != 'C':
-                raise serializers.ValidationError("Can only update configuration of not enqueued executions.")
-            try:
-                validate(instance = data['config'] if 'config' in data else {}, schema = self.instance.protocol.config)
-            except JSONValidationError as e:
-                raise serializers.ValidationError(e.message)
-            
-        return data  
 
     class Meta:
         model = Execution
         fields = ['id','apparatus', 'protocol', 'config', 'status', 'queue_time', 'start', 'end']
         read_only_fields = ('id', 'apparatus', 'protocol', 'status', 'queue_time', 'start', 'end')
 
+class ExecutionCreateSerializer(serializers.ModelSerializer):
+    def validate(self, data):
+        data = super().validate(data)
+        adjusted_schema = json.loads(json.dumps(data['protocol'].config), parse_float=decimal.Decimal)
+        instance = data['config'] if 'config' in data else {}
+        adjusted_instance = json.loads(json.dumps(instance), parse_float=decimal.Decimal)
+        
+        try:
+            validate(instance = adjusted_instance, schema = adjusted_schema)
+        except JSONValidationError as e:
+            raise serializers.ValidationError(e.message)
+            
+        return data  
+
+    class Meta:
+        model = Execution
+        fields = ['id', 'apparatus', 'protocol', 'config']
+
+class ExecutionUpdateSerializer(serializers.ModelSerializer):
+
+    def validate(self, data):
+        data = super().validate(data)
+            
+        if self.instance.status != 'C':
+            raise serializers.ValidationError("Can only update configuration of not enqueued executions.")
+        
+        try:
+            validate(instance = data['config'] if 'config' in data else {}, schema = self.instance.protocol.config)
+        except JSONValidationError as e:
+            raise serializers.ValidationError(e.message)
+            
+        return data  
+
+    class Meta:
+        model = Execution
+        fields = ['config']
 
 class ExecutionConfigure(generics.CreateAPIView):
     """
@@ -80,7 +90,7 @@ class ExecutionConfigure(generics.CreateAPIView):
     
     You must supply valid apparatus and protocol ids. The config is validated against JSON schema of the protocol.
     """
-    serializer_class = ExecutionConfigSerializer
+    serializer_class = ExecutionCreateSerializer
     queryset = Execution.objects.all()
 
     def perform_create(self, serializer):
@@ -94,9 +104,13 @@ class ExecutionRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
     Update and delete are only possible for executions, that have not been enqueued (are in configured state - C).
     It is only possble to update config of the execution.
     """
-    serializer_class = ExecutionConfigSerializer
     queryset = Execution.objects.all()
     lookup_field = 'id'
+
+    def get_serializer_class(self):
+        if self.request.method == 'GET':
+            return ExecutionSerializer
+        return ExecutionUpdateSerializer
 
     def perform_update(self, serializer):
         serializer.save(status = 'C')
@@ -130,6 +144,15 @@ class AppratusView(generics.RetrieveAPIView):
     serializer_class = ApparatusSerializer
     queryset = Apparatus.objects.all()
     lookup_field = 'id'
+    
+class ApparatusListAPI(generics.ListAPIView):
+    """
+    Returns a list of all apparatuses.
+
+    Returns a list of all apparatuses.
+    """
+    queryset = Apparatus.objects.all()
+    serializer_class = ApparatusSerializer
 
 class NextExecution(generics.RetrieveAPIView):
     """
@@ -145,7 +168,6 @@ class NextExecution(generics.RetrieveAPIView):
         obj = Execution.objects.filter(status='Q', apparatus_id=self.kwargs['id']).order_by('start').first()
         if obj:
             self.check_object_permissions(self.request, obj)
-            obj.status = 'R' #TODO!
             obj.save()
         return obj   
 
@@ -162,7 +184,7 @@ class ResultSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Result
-        fields = ['id', 'execution', 'value', 'result_type']
+        fields = ['id', 'execution', 'value', 'result_type', 'time']
 
 class AddResult(generics.CreateAPIView):
     """
@@ -208,6 +230,7 @@ class ResultListFiltered(generics.ListAPIView):
 class ExecutionStatusSerializer(serializers.ModelSerializer):
     def validate(self, data):
         valid_transitions = {
+            'Q': ['R'],
             'R': ['F', 'E']
         }
 
@@ -247,3 +270,22 @@ class ExecutionQueue(generics.ListAPIView):
     serializer_class = ExecutionSerializer
     def get_queryset(self):
         return Execution.objects.filter(state='Q', apparatus_id=self.kwargs['apparatus_id']).order_by('queue_time')
+    
+# APPARATUS STATUS
+
+class ApparatusStatusSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Status
+        fields = ['apparatus', 'status']
+        
+class AddApparatusStatus(generics.CreateAPIView):
+    """
+    Writes an apparatus heartbeat status.
+    
+    **APPARATUS AUTHENTICATION REQUIRED**
+    """
+    permission_classes = [ApparatusOnlyAccess]
+    serializer_class = ApparatusStatusSerializer
+    
+    def perform_create(self, serializer):
+        serializer.validated_data['apparatus'].update_status(serializer.validated_data['status'])

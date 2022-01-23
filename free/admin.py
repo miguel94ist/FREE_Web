@@ -1,8 +1,10 @@
 from django.contrib import admin
 from django.forms import ModelForm
+from django.conf import settings
 from django.utils.translation import gettext_lazy as _
-from modeltranslation.admin import TabbedTranslationAdmin, TranslationAdmin
+from modeltranslation.admin import TabbedTranslationAdmin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
+from django_summernote.admin import SummernoteModelAdmin
 
 from free.models import *
 
@@ -10,8 +12,14 @@ admin.site.site_title = _('FREE Administration')
 admin.site.site_header = _('FREE Administration')
 admin.site.index_title = _('FREE Administration')
 
-class ExperimentAdmin(TabbedTranslationAdmin):
-    prepopulated_fields = {"slug": ("name",)}
+class ExperimentAdmin(SummernoteModelAdmin):
+    prepopulated_fields = {"slug": ("name_en",)}
+    exclude = ['description', 'scientific_area', 'lab_type', 'name']
+    
+    def __init__(self, *args, **kwargs):
+        self.summernote_fields = [f'description_{lang[0]}' for lang in settings.LANGUAGES]
+        super().__init__(*args, **kwargs)
+        
 admin.site.register(Experiment, ExperimentAdmin)
 
 class ApparatusAdminForm(ModelForm):
@@ -22,9 +30,16 @@ class ApparatusAdminForm(ModelForm):
         else:
             self.fields['protocols'].widget = self.fields['protocols'].hidden_widget()
 
-class ApparatusAdmin(TabbedTranslationAdmin):
+class ApparatusAdmin(SummernoteModelAdmin):
     form = ApparatusAdminForm
     list_filter = ['experiment']
+    
+    exclude = ['description', 'location']
+    
+    def __init__(self, *args, **kwargs):
+        self.summernote_fields = [f'description_{lang[0]}' for lang in settings.LANGUAGES]
+        super().__init__(*args, **kwargs)
+
 admin.site.register(Apparatus, ApparatusAdmin)
 
 class StatusAdmin(admin.ModelAdmin):
@@ -32,8 +47,15 @@ class StatusAdmin(admin.ModelAdmin):
     list_filter = ['apparatus', 'status', 'time']
 admin.site.register(Status, StatusAdmin)
 
-class ProtocolAdmin(admin.ModelAdmin):
+class ProtocolAdmin(SummernoteModelAdmin):
     list_display = ['__str__', 'experiment']
+    
+    exclude = ['description', 'name']
+    
+    def __init__(self, *args, **kwargs):
+        self.summernote_fields = [f'description_{lang[0]}' for lang in settings.LANGUAGES]
+        super().__init__(*args, **kwargs)
+        
 admin.site.register(Protocol, ProtocolAdmin)
 
 class ExecutionAdmin(admin.ModelAdmin):
