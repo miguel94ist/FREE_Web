@@ -37,7 +37,7 @@ class ApparatusSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Apparatus
-        fields = ['experiment', 'protocols', 'location', 'owner', 'video_config', 'status']
+        fields = ['experiment', 'protocols', 'location', 'owner', 'video_config', 'config', 'status']
 
 class ExecutionSerializer(serializers.ModelSerializer):
     protocol = ProtocolSerializer()
