@@ -70,7 +70,7 @@ class ExecutionUpdateSerializer(serializers.ModelSerializer):
     def validate(self, data):
         data = super().validate(data)
             
-        if self.instance.status != 'C' and self.instance.status != 'N':
+        if not self.instance.status in ['C','N']:
             raise serializers.ValidationError("Can only update configuration of not enqueued executions.")
         
         try:
