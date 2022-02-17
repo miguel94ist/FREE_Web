@@ -44,7 +44,7 @@ class ExecutionSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Execution
-        fields = ['id','apparatus', 'protocol', 'config', 'status', 'queue_time', 'start', 'end']
+        fields = ['id','name', 'apparatus', 'protocol', 'config', 'status', 'queue_time', 'start', 'end']
         read_only_fields = ('id', 'apparatus', 'protocol', 'status', 'queue_time', 'start', 'end')
 
 class ExecutionCreateSerializer(serializers.ModelSerializer):
@@ -63,7 +63,7 @@ class ExecutionCreateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Execution
-        fields = ['id', 'apparatus', 'protocol', 'config']
+        fields = ['id', 'name','apparatus', 'protocol', 'config']
 
 class ExecutionUpdateSerializer(serializers.ModelSerializer):
 

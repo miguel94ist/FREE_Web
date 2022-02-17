@@ -116,6 +116,7 @@ EXECUTION_STATUS_CHOICES = (
 
 class Execution(models.Model):
     user = models.ForeignKey(User, on_delete=models.PROTECT)
+    name = models.CharField(max_length=128, blank=True, default='')
     apparatus = models.ForeignKey(Apparatus, on_delete=models.PROTECT)
     protocol = models.ForeignKey(Protocol, on_delete=models.PROTECT)
     config = models.JSONField(_('Configuration'), default=dict, blank=True)
