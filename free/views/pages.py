@@ -27,7 +27,7 @@ class ExecutionView(DetailView):
     def get_template_names(self):
         if not self.request.user.is_authenticated:
             return ['free/login.html']
-        return ['free/experiments/' + self.object.apparatus.experiment.slug + '.html']
+        return ['free/experiments/' + self.object.apparatus.apparatus_type.slug + '.html']
 
 class CreateExecutionView(ExecutionView):    
     model = Execution
@@ -74,7 +74,7 @@ class ApparatusTable(Table):
 
     class Meta:
         model = Apparatus
-        fields = ['experiment', 'location', 'experiment__scientific_area', 'experiment__lab_type', 'current_status', 'protocols']    
+        fields = ['apparatus_type', 'location', 'apparatus_type__scientific_area', 'apparatus_type__lab_type', 'current_status', 'protocols']    
         
 class ApparatusesView(SingleTableView):
     template_name = 'free/apparatuses.html'

@@ -6,11 +6,10 @@ from django.dispatch import receiver
 from django.utils import timezone
 from datetime import timedelta
 
-class Experiment(models.Model):
+class ApparatusType(models.Model):
     name = models.CharField(_('Name'), max_length=64)
     slug = models.SlugField(_('Slug name'), max_length=64)
     description = models.TextField(_('Description'), blank=True, default='')
-    config = models.JSONField(_('Configuration'), default=dict, blank=True)
     scientific_area = models.CharField(_('Scientific area'), max_length=64)
     lab_type = models.CharField(_('Lab type'), max_length=32)
 
@@ -18,12 +17,12 @@ class Experiment(models.Model):
         return self.name
 
     class Meta:
-        verbose_name = _('Experiment')
-        verbose_name_plural = _('Experiments')
+        verbose_name = _('Apparatus type')
+        verbose_name_plural = _('Apparatus types')
         ordering = ['name']
 
 class Apparatus(models.Model):
-    experiment = models.ForeignKey(Experiment, on_delete=models.PROTECT, help_text=_('After setting/changing the experiment, press "%(button_name)s" to see the list of protocols.') % {'button_name' : _('Save and continue editing')})
+    apparatus_type = models.ForeignKey(ApparatusType, on_delete=models.PROTECT, help_text=_('After setting/changing the apparatus_type, press "%(button_name)s" to see the list of protocols.') % {'button_name' : _('Save and continue editing')})
     protocols = models.ManyToManyField('Protocol', blank=True)
     location = models.CharField(_('Location'), max_length=64)
     description = models.TextField(_('Description'), blank=True, default='')
@@ -34,7 +33,7 @@ class Apparatus(models.Model):
     video_config = models.JSONField(_('Video configuration'), null=True, blank=True)
 
     def __str__(self):
-        return _('%(experiment)s in %(location)s') % {'experiment': self.experiment.name, 'location': self.location}
+        return _('%(apparatus_type)s in %(location)s') % {'apparatus_type': self.apparatus_type.name, 'location': self.location}
 
     @property
     def status(self):
@@ -61,7 +60,7 @@ class Apparatus(models.Model):
 @receiver(post_save, sender=Apparatus)
 def cleanup_protocols(sender, instance, created, **kwargs):
     for protocol in instance.protocols.all():
-        if protocol.experiment != instance.experiment:
+        if protocol.apparatus_type != instance.apparatus_type:
             instance.protocols.remove(protocol)
 
 STATUS_CHOICES = (
@@ -90,7 +89,7 @@ class Status(models.Model):
         verbose_name_plural = _('Statuses')
 
 class Protocol(models.Model):
-    experiment = models.ForeignKey(Experiment, on_delete=models.PROTECT)
+    apparatus_type = models.ForeignKey(ApparatusType, on_delete=models.PROTECT)
     name = models.CharField(max_length=64)
     config = models.JSONField(_('Configuration'), default=dict, blank=True) # JSON SCHEMA
     description = models.TextField(_('Description'), blank=True, default='')

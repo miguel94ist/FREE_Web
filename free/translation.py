@@ -1,9 +1,9 @@
 from modeltranslation.translator import translator, TranslationOptions
 from free.models import *
 
-class ExperimentTranslationOptions(TranslationOptions):
+class ApparatusTypeTranslationOptions(TranslationOptions):
     fields = ('name', 'description', 'scientific_area', 'lab_type',)
-translator.register(Experiment, ExperimentTranslationOptions)
+translator.register(ApparatusType, ApparatusTypeTranslationOptions)
 
 class ApparatusTranslationOptions(TranslationOptions):
     fields = ('location','description',)

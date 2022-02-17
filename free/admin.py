@@ -12,7 +12,7 @@ admin.site.site_title = _('FREE Administration')
 admin.site.site_header = _('FREE Administration')
 admin.site.index_title = _('FREE Administration')
 
-class ExperimentAdmin(SummernoteModelAdmin):
+class ApparatusTypeAdmin(SummernoteModelAdmin):
     prepopulated_fields = {"slug": ("name_en",)}
     exclude = ['description', 'scientific_area', 'lab_type', 'name']
     
@@ -20,19 +20,19 @@ class ExperimentAdmin(SummernoteModelAdmin):
         self.summernote_fields = [f'description_{lang[0]}' for lang in settings.LANGUAGES]
         super().__init__(*args, **kwargs)
         
-admin.site.register(Experiment, ExperimentAdmin)
+admin.site.register(ApparatusType, ApparatusTypeAdmin)
 
 class ApparatusAdminForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         if 'instance' in kwargs and kwargs['instance']:
-            self.fields['protocols'].queryset = Protocol.objects.filter(experiment=kwargs['instance'].experiment)
+            self.fields['protocols'].queryset = Protocol.objects.filter(apparatus_type=kwargs['instance'].apparatus_type)
         else:
             self.fields['protocols'].widget = self.fields['protocols'].hidden_widget()
 
 class ApparatusAdmin(SummernoteModelAdmin):
     form = ApparatusAdminForm
-    list_filter = ['experiment']
+    list_filter = ['apparatus_type']
     
     exclude = ['description', 'location']
     
@@ -48,7 +48,7 @@ class StatusAdmin(admin.ModelAdmin):
 admin.site.register(Status, StatusAdmin)
 
 class ProtocolAdmin(SummernoteModelAdmin):
-    list_display = ['__str__', 'experiment']
+    list_display = ['__str__', 'apparatus_type']
     
     exclude = ['description', 'name']
     
@@ -60,7 +60,7 @@ admin.site.register(Protocol, ProtocolAdmin)
 
 class ExecutionAdmin(admin.ModelAdmin):
     list_display = ['__str__', 'apparatus', 'start', 'end']
-    list_filter = ['apparatus', 'apparatus__experiment']
+    list_filter = ['apparatus', 'apparatus__apparatus_type']
 admin.site.register(Execution, ExecutionAdmin)
 
 class ResultAdmin(admin.ModelAdmin):
