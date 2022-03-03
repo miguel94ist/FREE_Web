@@ -1,0 +1,3 @@
+[submodule "pendulum"]
+	path = pendulum
+	url = git@github.com:e-lab-FREE/FREE_pendulum.git

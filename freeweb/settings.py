@@ -51,6 +51,8 @@ INSTALLED_APPS = [
     'drf_yasg',
     'django_tables2',
     'django_summernote',
+    # APPARATUS TYPES BELOW
+    'pendulum',
 ]
 
 MIDDLEWARE = [
