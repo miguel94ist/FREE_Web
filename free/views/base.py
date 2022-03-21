@@ -25,12 +25,3 @@ class LoginView(auth_views.LoginView):
 
 class LogoutView(auth_views.LogoutView):
     pass
-
-
-
-
- #   auth_backend = getattr(settings, "AUTHENTICATION_BACKENDS", None)
- #   print(auth_backend)
- #   template_name = 'free/login.html'
- #   f = globals()["free.fenix_auth.fenixOAuth2")
- #   print(f)
