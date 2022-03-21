@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     'drf_yasg',
     'django_tables2',
     'django_summernote',
+    'social_django', # required for oauth (Google, ...) athentication
 ]
 
 MIDDLEWARE = [
@@ -175,3 +176,36 @@ SWAGGER_SETTINGS = {
       }
    }
 }
+
+#Social Login Configuration 
+
+AUTHENTICATION_BACKENDS = (
+   'free.auth_backends.fenix_auth.fenixOAuth2',
+   'django.contrib.auth.backends.ModelBackend',
+   'social_core.backends.google.GoogleOAuth2',
+)
+
+
+SOCIAL_AUTH_FENIX_AUTH_KEY = '570015174623445'
+
+#SOCIAL_AUTH_FENIX_AUTH_KEY = env.str('SOCIAL_AUTH_FENIX_AUTH_KEY')
+SOCIAL_AUTH_FENIX_AUTH_SECRET = 'G2jDFRSOsAe59Z7uXoS4tjlez4uerH4c5tpnh2yYo4k/ssi+hcW1i2PQIk5NJwI1T3MeNWDjkec2zP/GkkMSRw=='
+
+
+SOCIAL_AUTH_FENIX_PIPELINE = (
+'social_core.pipeline.social_auth.social_details',
+'social_core.pipeline.social_auth.social_uid',
+'social_core.pipeline.social_auth.auth_allowed',
+'social_core.pipeline.social_auth.social_user',
+'social_core.pipeline.user.get_username',
+'social_core.pipeline.social_auth.associate_by_email',  # <--- enable this one
+'social_core.pipeline.user.create_user',
+'social_core.pipeline.social_auth.associate_user',
+'social_core.pipeline.social_auth.load_extra_data',
+'social_core.pipeline.user.user_details',
+)
+SOCIAL_AUTH_FENIX_USER_FIELDS = ['username', 'email', 'first_name']
+
+
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = '222187710414-asik7shs09543slc64ffrtl6eetkg4a9.apps.googleusercontent.com'
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = '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'
