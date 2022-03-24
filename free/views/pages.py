@@ -6,12 +6,13 @@ from free.models import *
 from django_tables2 import Table, TemplateColumn, Column
 from django_tables2.views import SingleTableView
 
+from django.contrib.auth.mixins import LoginRequiredMixin
 class IndexView(TemplateView):
     template_name='free/index.html'
 
 # EXPERIMENT CONTROL & EXECUTIONS
 
-class ExecutionView(DetailView):
+class ExecutionView(LoginRequiredMixin,DetailView):
     model = Execution
     
     def get_context_data(self, **kwargs):
@@ -25,16 +26,12 @@ class ExecutionView(DetailView):
         return context
 
     def get_template_names(self):
-        if not self.request.user.is_authenticated:
-            return ['free/login.html']
         return ['free/experiments/' + self.object.apparatus.apparatus_type.slug + '.html']
 
 class CreateExecutionView(ExecutionView):    
     model = Execution
 
     def get_object(self):
-        if not self.request.user.is_authenticated:
-            return ['free/login.html']
         return Execution.objects.get_or_create(
             user = self.request.user,
             apparatus_id = self.kwargs['apparatus_id'],
@@ -50,13 +47,11 @@ class ExecutionsTable(Table):
         model = Execution
         fields = ['apparatus', 'name', 'protocol', 'status', 'start', 'end']
 
-class ExecutionsListView(SingleTableView):
+class ExecutionsListView(LoginRequiredMixin,SingleTableView):
     template_name = 'free/executions.html'
     table_class = ExecutionsTable
 
     def get_queryset(self):
-        if not self.request.user.is_authenticated:
-            return ['free/login.html']
         return Execution.objects.filter(user=self.request.user, status=self.status_filter)
 
 class ExecutionsConfiguredListView(ExecutionsListView):
@@ -76,7 +71,7 @@ class ApparatusTable(Table):
         model = Apparatus
         fields = ['apparatus_type', 'location', 'apparatus_type__scientific_area', 'apparatus_type__lab_type', 'current_status', 'protocols']    
         
-class ApparatusesView(SingleTableView):
+class ApparatusesView(LoginRequiredMixin,SingleTableView):
     template_name = 'free/apparatuses.html'
     table_class = ApparatusTable
     queryset = Apparatus.objects.all()

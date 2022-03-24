@@ -1,6 +1,6 @@
 /free-env
 __pycache__
-.env
+/freeweb/.env
 *.mo
 /free/assets/semantic-ui/themes
 /free/assets/node_modules

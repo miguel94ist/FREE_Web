@@ -120,6 +120,9 @@ AUTH_PASSWORD_VALIDATORS = [
 LOGIN_REDIRECT_URL = 'free:index'
 LOGOUT_REDIRECT_URL = 'free:index'
 
+LOGIN_URL = 'free:login'
+
+
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/
 
