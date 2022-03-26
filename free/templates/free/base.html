@@ -39,7 +39,17 @@
         {% if user.is_authenticated %}
             {% include 'free/layout/layout.html' %}
         {% else %}
-            {% include 'free/login.html' %}
+
+            {# the login fomr should be on a separate page #}
+          {#   {% include 'free/login.html' %} #}
+
+            {# button to login page #}
+          <a href="{% url 'free:login' %}">
+            <div class="ui teal labeled icon button">
+              LOG IN
+              <i class="signup icon"></i>
+            </div>
+          </a>
         {% endif %} 
 
         {% block content %}
