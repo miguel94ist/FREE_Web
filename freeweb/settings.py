@@ -52,6 +52,8 @@ INSTALLED_APPS = [
     'django_tables2',
     'django_summernote',
     'social_django', # required for oauth (Google, ...) athentication
+    # APPARATUS TYPES BELOW
+    'pendulum',
 ]
 
 MIDDLEWARE = [

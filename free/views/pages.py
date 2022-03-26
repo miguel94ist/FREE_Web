@@ -26,7 +26,7 @@ class ExecutionView(LoginRequiredMixin,DetailView):
         return context
 
     def get_template_names(self):
-        return ['free/experiments/' + self.object.apparatus.experiment.slug + '.html']
+        return ['free/experiments/' + self.object.apparatus.apparatus_type.slug + '.html']
 
 class CreateExecutionView(ExecutionView):    
     model = Execution
@@ -45,7 +45,7 @@ class ExecutionsTable(Table):
 
     class Meta:
         model = Execution
-        fields = ['apparatus', 'protocol', 'status', 'start', 'end']
+        fields = ['apparatus', 'name', 'protocol', 'status', 'start', 'end']
 
 class ExecutionsListView(LoginRequiredMixin,SingleTableView):
     template_name = 'free/executions.html'
@@ -69,7 +69,8 @@ class ApparatusTable(Table):
 
     class Meta:
         model = Apparatus
-        fields = ['experiment', 'location', 'experiment__scientific_area', 'experiment__lab_type', 'current_status', 'protocols']    
+        fields = ['apparatus_type', 'location', 'apparatus_type__scientific_area', 'apparatus_type__lab_type', 'current_status', 'protocols']    
+        
 class ApparatusesView(LoginRequiredMixin,SingleTableView):
     template_name = 'free/apparatuses.html'
     table_class = ApparatusTable

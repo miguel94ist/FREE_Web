@@ -9,16 +9,16 @@ def setup_fixtures(self):
     self.user = User.objects.create_user('user', 'em@a.il', 'password')
     self.user.save()
 
-    self.experiment = Experiment(
+    self.apparatus_type = ApparatusType(
         name = 'TestExperiment',
         description = 'X',
         scientific_area = 'X',
         lab_type = 'X'
     )
-    self.experiment.save()
+    self.apparatus_type.save()
 
     self.apparatus = Apparatus(
-        experiment = self.experiment,
+        apparatus_type = self.apparatus_type,
         location = 'Prague',
         secret = 'secret_code',
         owner = 'Somebody',
@@ -27,21 +27,21 @@ def setup_fixtures(self):
     self.apparatus.save()
     
     Apparatus(
-        experiment = self.experiment,
+        apparatus_type = self.apparatus_type,
         location = 'Dummy',
         secret = 'no',
         owner = 'Nobody',
     ).save()
 
     self.basic_protocol = Protocol(
-        experiment = self.experiment,
+        apparatus_type = self.apparatus_type,
         name = 'Basic protocol',
         config = {"type": "object"}
     )
     self.basic_protocol.save()
 
     self.protocol_with_schema = Protocol(
-        experiment = self.experiment,
+        apparatus_type = self.apparatus_type,
         name = 'Test',
         config = {"type": "object", "properties": {"displacement": {"type": "number", "description": "displacement", "minimum": 5, "maximum": 20, "multipleOf": 0.1}, "enumerator": {"type": "string", "enum": ["A", "B"]}}, "required": ["displacement", "enumerator"]}
     )

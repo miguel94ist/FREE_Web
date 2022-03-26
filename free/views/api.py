@@ -8,20 +8,20 @@ from jsonschema import validate, ValidationError as JSONValidationError
 
 from free.views.permissions import ApparatusOnlyAccess
 
-# Experiment
-class ExperimentSerializer(serializers.ModelSerializer):
+# apparatus_type
+class ApparatusTypeSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Experiment
-        fields = ['name', 'description', 'config', 'scientific_area', 'lab_type']
+        model = ApparatusType
+        fields = ['name', 'description', 'scientific_area', 'lab_type']
 
-class ExperimentListAPI(generics.ListAPIView):
+class ApparatusTypeListAPI(generics.ListAPIView):
     """
-    Returns a list of all experiments.
+    Returns a list of all ApparatusTypes.
 
-    Returns a list of all experiments.
+    Returns a list of all ApparatusTypes.
     """
-    queryset = Experiment.objects.all()
-    serializer_class = ExperimentSerializer
+    queryset = ApparatusType.objects.all()
+    serializer_class = ApparatusTypeSerializer
 
 class ProtocolSerializer(serializers.ModelSerializer):
     read_only = True
@@ -32,19 +32,19 @@ class ProtocolSerializer(serializers.ModelSerializer):
 class ApparatusSerializer(serializers.ModelSerializer):
     read_only = True
     protocols = ProtocolSerializer(many=True)
-    experiment = ExperimentSerializer()
+    apparatus_type = ApparatusTypeSerializer()
     status = serializers.SlugRelatedField(slug_field='status', read_only=True)
     
     class Meta:
         model = Apparatus
-        fields = ['experiment', 'protocols', 'location', 'owner', 'video_config', 'status']
+        fields = ['apparatus_type', 'protocols', 'location', 'owner', 'video_config', 'config', 'status']
 
 class ExecutionSerializer(serializers.ModelSerializer):
     protocol = ProtocolSerializer()
 
     class Meta:
         model = Execution
-        fields = ['id','apparatus', 'protocol', 'config', 'status', 'queue_time', 'start', 'end']
+        fields = ['id','name', 'apparatus', 'protocol', 'config', 'status', 'queue_time', 'start', 'end']
         read_only_fields = ('id', 'apparatus', 'protocol', 'status', 'queue_time', 'start', 'end')
 
 class ExecutionCreateSerializer(serializers.ModelSerializer):
@@ -63,14 +63,14 @@ class ExecutionCreateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Execution
-        fields = ['id', 'apparatus', 'protocol', 'config']
+        fields = ['id', 'name','apparatus', 'protocol', 'config']
 
 class ExecutionUpdateSerializer(serializers.ModelSerializer):
 
     def validate(self, data):
         data = super().validate(data)
             
-        if self.instance.status != 'C':
+        if not self.instance.status in ['C','N']:
             raise serializers.ValidationError("Can only update configuration of not enqueued executions.")
         
         try:
