@@ -65,3 +65,8 @@ By default, the webserver will be available at port 8000. To change the port, pa
 ## Update guide
 
 Follow the first two steps of the installation guide. The commands already contain overwrite switches so that the old version will be overwritten, while `.env` and `.sqlite` files won't be touched.
+
+A new release might contain changes to the database structure. If you are preserving your database from a previous version, run
+```
+python manage.py migrate
+```
