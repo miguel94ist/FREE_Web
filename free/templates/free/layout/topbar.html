@@ -1,5 +1,7 @@
     {% load i18n %}
     {% load static %}
+    {% load free_extras %}
+
     <div class="ui grid">
       <!--navbar-->
       <div class="computer only row">
@@ -10,9 +12,9 @@
                 </div>-->
                 <div class="left menu">
                     <div class="nav item">
-                        <strong class="navtext">{% trans 'Elab'%}</strong>
+                        <strong class="navtext">{% project_acronymum %} - {% project_name %} ({% site_name %})</strong>
                     </div>
-                
+
                 </div>
                 <div class="ui top pointing dropdown admindropdown link item right">
                     <img class="imgrad" src="{% static 'free/images/eu.jpg' %}" alt="">
