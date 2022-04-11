@@ -18,6 +18,11 @@ html, body {
   
   .imgrad {
     border-radius: 50%; }
+
+  .improfile{
+    border-radius: 45%;
+    max-width: 20%; }
+
   
   .hidden {
     display: none; }
