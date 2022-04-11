@@ -22,6 +22,31 @@ function disableButton(){
 
 }
 
+
+function save_name(){
+    console.log("OUT : test");
+    data_send = config
+    data_send["name"] =  $("#name-of-exection").val();
+    // '{"experiment_name": "Pendulo", "config_experiment": {"DeltaX":'+ String(DeltaX)+', "Samples":'+String(Samples)+' }}'
+    HEADERS = {
+        "X-CSRFToken": getCookie("csrftoken"),
+        }
+    var endpoint="/api/v1/execution/"+new_execution.id;
+    // print out
+    console.log('JSON : ' +  endpoint);
+    console.log(data_send);
+    axios({
+        method: 'patch', //you can set what request you want to be
+        url: endpoint,
+        headers: HEADERS,
+        data: data_send,
+    }).then(response => {
+        console.log('plotly_results', response);
+        toggleDisable();
+    }).catch(console);
+}
+
+
 function queue(config) {
     // get inputs values from the client side
     config_input.findConfigInput();
