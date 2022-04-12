@@ -1,21 +1,24 @@
+
     {% load i18n %}
     {% load static %}
+    {% load free_extras %}
+
     <div class="ui grid">
       <!--navbar-->
       <div class="computer only row">
         <div class=" column">
             <div class="ui top fixed massive menu navbar">
                 <!--<div class="nav item">
-                    <img src="static/images/eu.png">
+                    <img src="static/images/eu.jpg">
                 </div>-->
                 <div class="left menu">
                     <div class="nav item">
-                        <strong class="navtext">{% trans 'Elab'%}</strong>
+                        <strong class="navtext">{% project_acronymum %} - {% project_name %} ({% site_name %})</strong>
                     </div>
-                
+
                 </div>
                 <div class="ui top pointing dropdown admindropdown link item right">
-                    <img class="improfile" src="{% static 'free/images/eu.png' %}" alt="">
+                    <img class="imgrad" src="{% static 'free/images/eu.jpg' %}" alt="">
                     {% if user.is_authenticated %}
                         <span class="clear navtext"><strong>{% trans 'Hi'%}, {{ user }}</strong></span>
                     {% endif %}
@@ -48,3 +51,4 @@
             </div>
         </div>
     </div>
+

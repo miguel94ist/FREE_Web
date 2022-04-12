@@ -17,7 +17,6 @@ from django.contrib import admin
 from django.urls import include, path
 from django.conf.urls.static import static
 from django.conf import settings
-
 from django.views.i18n import JavaScriptCatalog
 
 urlpatterns = [
@@ -27,6 +26,7 @@ urlpatterns = [
     path('i18n/', include('django.conf.urls.i18n')),
     path('summernote/', include('django_summernote.urls')),
     path('', include('social_django.urls', namespace='social')),
+    path('', include('free.videoConfig.urls')),
 ]
 
 if settings.DEBUG:
