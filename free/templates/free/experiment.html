@@ -10,7 +10,7 @@
 {% endblock %}
 
 {% block content %}
-    <div class="right floated thirteen wide computer sixteen wide phone column"  id="content">
+    <div class="right floated fourteen wide computer sixteen wide phone column"  id="content">
             <div class="ui container grid" >
                 <div class="row">
 
@@ -24,27 +24,15 @@
                 <!-- MANDATORY EXPERIMENT DESCRIPTION FROM DB -->
                 <div class="ui bottom attached active tab segment" data-tab="description" >
                     <section class="intro">
-
-                        <div class="row" style="display:table; content:""; clear:both;">
-        		 <div class="column " style="float:left;width:70%; ">
-                         <figure class="" >
-                         <img
+                        <figure class="">
+                        <img
                             src="{% with 'free/images/'|add:object.apparatus.apparatus_type.slug|add:'.png' as image_static %}
                                 {% static image_static %}
                             {% endwith %}"
 
                             alt="{{object.name}}"
-                            width="100%">
-                         </figure>
-                         </div>
-        		 <div class=" column " style="float:left; width:30%;">
-                         <figure class="" display="right">
-                        	<img src="{% static 'free/images/WPA.jpeg' %}" width="85%">
-                   	 </figure>
-                         </div>
-                        </div>
-
-
+                            width="60%">
+                        </figure>
                         <!-- TODO: CHANGE THE MONTE-CARLO HERE, PROBABLY TO object.slug -->
                         <h2 id="about-the-Monte-Carlo">{{object.apparatus.apparatus_type.name}}</h2>
 

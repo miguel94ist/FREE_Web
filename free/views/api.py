@@ -70,7 +70,7 @@ class ExecutionUpdateSerializer(serializers.ModelSerializer):
     def validate(self, data):
         data = super().validate(data)
             
-        if not self.instance.status in ['C','N','F']:
+        if not self.instance.status in ['C','N']:
             raise serializers.ValidationError("Can only update configuration of not enqueued executions.")
         
         try:
@@ -82,7 +82,7 @@ class ExecutionUpdateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Execution
-        fields = ['config','name']
+        fields = ['config']
 
 class ExecutionConfigure(generics.CreateAPIView):
     """
@@ -113,10 +113,7 @@ class ExecutionRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
         return ExecutionUpdateSerializer
 
     def perform_update(self, serializer):
-        if self.request.method == 'PUT':
-            serializer.save(status = 'C')
-        elif self.request.method == 'PATCH':
-            serializer.save()
+        serializer.save(status = 'C')
 
 class ExecutionStart(views.APIView):
     """

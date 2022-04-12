@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-04-01 18:08+0100\n"
+"POT-Creation-Date: 2021-11-16 21:10-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,362 +18,343 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: admin.py:11 admin.py:12 admin.py:13
+#: .\admin.py:9 .\admin.py:10 .\admin.py:11
 msgid "FREE Administration"
-msgstr "Administração do FREE"
-
-#: models.py:10
-msgid "Name"
-msgstr "Nome"
-
-#: models.py:11
-msgid "Slug name"
-msgstr "Nome Slug"
-
-#: models.py:12 models.py:28 models.py:95 templates/free/experiment.html:18
-msgid "Description"
-msgstr "Descrição"
-
-#: models.py:13
-msgid "Scientific area"
-msgstr "Área Científica"
-
-#: models.py:14
-msgid "Lab type"
-msgstr "Tipo de Laboratório"
-
-#: models.py:20
-msgid "Apparatus type"
-msgstr "Tipo de aparato"
-
-#: models.py:21
-msgid "Apparatus types"
-msgstr "Tipos de aparatos"
-
-#: models.py:25
-#, python-format
-msgid ""
-"After setting/changing the apparatus_type, press \"%(button_name)s\" to see "
-"the list of protocols."
-msgstr "Deposide selecionar/mudar o tipo de aparato, carregue em \"%(button_name)s\" para ver"
-"a lista de protocolos."
-
-#: models.py:25
-msgid "Gravar e continuar a edição"
 msgstr ""
 
-#: models.py:27
-msgid "Location"
-msgstr "Localização"
+#: .\models.py:9
+msgid "Name"
+msgstr ""
 
-#: models.py:29
-msgid "Secret"
-msgstr "Segredo"
+#: .\models.py:10
+msgid "Slug name"
+msgstr ""
 
-#: models.py:30
-msgid "Owner"
-msgstr "Dono/Responsável"
+#: .\models.py:11 .\templates\free\experiment.html:18
+msgid "Description"
+msgstr ""
 
-#: models.py:31
-msgid "Connection timeout"
-msgstr "Timeout da ligação"
-
-#: models.py:32 models.py:94 models.py:121
-#: templates/free/experiments/pendulum_old.html:12
+#: .\models.py:12 .\models.py:72 .\models.py:97
+#: .\templates\free\experiments\pendulum.html:12
 msgid "Configuration"
-msgstr "Configração"
+msgstr ""
 
-#: models.py:33
-msgid "Video configuration"
-msgstr "Configuração do Video"
+#: .\models.py:13
+msgid "Scientific area"
+msgstr ""
 
-#: models.py:36
+#: .\models.py:14
+msgid "Lab type"
+msgstr ""
+
+#: .\models.py:20
+msgid "Experiment"
+msgstr ""
+
+#: .\models.py:21
+msgid "Experiments"
+msgstr ""
+
+#: .\models.py:25
 #, python-format
-msgid "%(apparatus_type)s in %(location)s"
-msgstr "%(apparatus_type)s em %(location)s"
+msgid ""
+"After setting/changing the experiment, press \"%(button_name)s\" to see the "
+"list of protocols."
+msgstr ""
 
-#: models.py:56
+#: .\models.py:25
+msgid "Save and continue editing"
+msgstr ""
+
+#: .\models.py:27
+msgid "Location"
+msgstr ""
+
+#: .\models.py:28
+msgid "Secret"
+msgstr ""
+
+#: .\models.py:29
+msgid "Owner"
+msgstr ""
+
+#: .\models.py:30
+msgid "Video configuration"
+msgstr ""
+
+#: .\models.py:33
+#, python-format
+msgid "%(experiment)s in %(location)s"
+msgstr ""
+
+#: .\models.py:44
 msgid "Apparatus"
-msgstr "Aparato"
+msgstr ""
 
-#: models.py:57
+#: .\models.py:45
 msgid "Apparatuses"
-msgstr "Aparatos"
+msgstr ""
 
-#: models.py:67
+#: .\models.py:55
 msgid "Online"
 msgstr ""
 
-#: models.py:68
-msgid "Hardware error"
-msgstr "Erro de Hardware"
-
-#: models.py:69
-msgid "Maintenance"
-msgstr "Manutenção"
-
-#: models.py:70
-msgid "Reserved"
-msgstr "Reservado"
-
-#: models.py:71
+#: .\models.py:56
 msgid "Offline"
 msgstr ""
 
-#: models.py:76 models.py:153
-msgid "Time"
-msgstr "Tempo"
-
-#: models.py:77 models.py:88 models.py:122
-msgid "Status"
-msgstr "Estado"
-
-#: models.py:78
-msgid "Is last?"
-msgstr "É o último?"
-
-#: models.py:89
-msgid "Statuses"
-msgstr "Estados"
-
-#: models.py:101
-msgid "Protocol"
-msgstr "Protocolo"
-
-#: models.py:102 templates/free/layout/sidebar.html:12
-msgid "Protocols"
-msgstr "Protocolos"
-
-#: models.py:106
-msgid "New"
-msgstr "Novo"
-
-#: models.py:107
-msgid "Configured"
-msgstr "Configurado"
-
-#: models.py:108
-msgid "In queue"
-msgstr "Em fila de espera"
-
-#: models.py:109
+#: .\models.py:57 .\models.py:86
 msgid "Running"
-msgstr "Em execução"
+msgstr ""
 
-#: models.py:110
+#: .\models.py:62 .\models.py:129
+msgid "Time"
+msgstr ""
+
+#: .\models.py:63 .\models.py:66 .\models.py:98
+msgid "Status"
+msgstr ""
+
+#: .\models.py:67
+msgid "Statuses"
+msgstr ""
+
+#: .\models.py:78
+msgid "Protocol"
+msgstr ""
+
+#: .\models.py:79 .\templates\free\layout\sidebar.html:12
+msgid "Protocols"
+msgstr ""
+
+#: .\models.py:83
+msgid "New"
+msgstr ""
+
+#: .\models.py:84
+msgid "Configured"
+msgstr ""
+
+#: .\models.py:85
+msgid "In queue"
+msgstr ""
+
+#: .\models.py:87
 msgid "Error"
-msgstr "Erro"
+msgstr ""
 
-#: models.py:111
+#: .\models.py:88
 msgid "Finished"
-msgstr "Termidada"
+msgstr ""
 
-#: models.py:112
+#: .\models.py:89
 msgid "Aborted"
-msgstr "Abortada"
+msgstr ""
 
-#: models.py:113
+#: .\models.py:90
 msgid "Timeout"
 msgstr ""
 
-#: models.py:128
+#: .\models.py:104
 #, python-format
 msgid "Execution of %(protocol)s"
-msgstr "Execução de %(protocol)s"
+msgstr ""
 
-#: models.py:131 templates/free/experiments/pendulum_old.html:16
+#: .\models.py:107 .\templates\free\experiments\pendulum.html:16
 msgid "Execution"
-msgstr "Execução"
+msgstr ""
 
-#: models.py:132
+#: .\models.py:108
 msgid "Executions"
-msgstr "Execuções"
+msgstr ""
 
-#: models.py:147
+#: .\models.py:123
 msgid "Partial"
-msgstr "Parcial"
+msgstr ""
 
-#: models.py:148
+#: .\models.py:124
 msgid "Final"
 msgstr ""
 
-#: models.py:154
+#: .\models.py:130
 msgid "Result type"
-msgstr "Tipo de resultado"
+msgstr ""
 
-#: models.py:155
+#: .\models.py:131
 msgid "Value"
-msgstr "Valor"
+msgstr ""
 
-#: models.py:158
+#: .\models.py:134
 #, python-format
 msgid "Result of %(execution)s"
-msgstr "Resultado das %(execution)s"
+msgstr ""
 
-#: models.py:162
+#: .\models.py:138
 msgid "Result"
-msgstr "Resultado"
+msgstr ""
 
-#: models.py:163 templates/free/experiments/pendulum_old.html:14
+#: .\models.py:139 .\templates\free\experiments\pendulum.html:14
 msgid "Results"
-msgstr "Resultados"
+msgstr ""
 
-#: models.py:166
+#: .\models.py:142
 msgid "Student"
-msgstr "Estudante"
+msgstr ""
 
-#: models.py:167
+#: .\models.py:143
 msgid "Teacher"
-msgstr "Professor"
+msgstr ""
 
-#: models.py:168
+#: .\models.py:144
 msgid "Administrator"
-msgstr "Administrador"
+msgstr ""
 
-#: models.py:176
+#: .\models.py:152
 msgid "Profile of "
-msgstr "Perfil de "
+msgstr ""
 
-#: templates/free/apparatuses.html:5
+#: .\templates\free\apparatuses.html:5
 msgid "List of protocols"
-msgstr "Lista de protocolos"
+msgstr ""
 
-#: templates/free/apparatuses.html:18
+#: .\templates\free\apparatuses.html:18
 msgid "List of Protocols"
-msgstr "Lista de Protocolos"
+msgstr ""
 
-#: templates/free/apparatuses.html:22
+#: .\templates\free\apparatuses.html:22
 msgid "List of available Experiments"
-msgstr "Lista de Experi6encias disponíveis"
+msgstr ""
 
-#: templates/free/base.html:15
+#: .\templates\free\base.html:15
 msgid "FREE"
 msgstr ""
 
-#: templates/free/execution_link.html:2
+#: .\templates\free\execution_link.html:2
 msgid "Show"
-msgstr "Mostrar"
+msgstr ""
 
-#: templates/free/executions.html:6
+#: .\templates\free\executions.html:6
 msgid "List of executions"
-msgstr "Lista de execuções"
+msgstr ""
 
-#: templates/free/executions.html:17
+#: .\templates\free\executions.html:17
 msgid "List of Executions"
-msgstr "Lista de Execuções"
+msgstr ""
 
-#: templates/free/executions.html:31
+#: .\templates\free\executions.html:31
 msgid "List of your executions"
-msgstr "Lisa das suas execuçoes"
+msgstr ""
 
-#: templates/free/experiments/pendulum_old.html:5
+#: .\templates\free\experiments\pendulum.html:5
 msgid "Pendulum"
 msgstr ""
 
-#: templates/free/experiments/pendulum_old.html:25
+#: .\templates\free\experiments\pendulum.html:25
 msgid "Initial Displacement"
 msgstr ""
 
-#: templates/free/experiments/pendulum_old.html:42
+#: .\templates\free\experiments\pendulum.html:42
 msgid "Number of Samples N"
 msgstr ""
 
-#: templates/free/experiments/pendulum_old.html:60
+#: .\templates\free\experiments\pendulum.html:60
 msgid "Save"
 msgstr ""
 
-#: templates/free/experiments/pendulum_old.html:63
+#: .\templates\free\experiments\pendulum.html:63
 msgid "Submit"
 msgstr ""
 
-#: templates/free/experiments/pendulum_old.html:66
+#: .\templates\free\experiments\pendulum.html:66
 msgid "Clear All"
 msgstr ""
 
-#: templates/free/experiments/pendulum_old.html:92
+#: .\templates\free\experiments\pendulum.html:92
 msgid "Video stream "
 msgstr ""
 
-#: templates/free/experiments/pendulum_old.html:108
-#: templates/free/experiments/pendulum_old.html:155
+#: .\templates\free\experiments\pendulum.html:108
+#: .\templates\free\experiments\pendulum.html:155
 msgid "Sample Number"
 msgstr ""
 
-#: templates/free/experiments/pendulum_old.html:109
-#: templates/free/experiments/pendulum_old.html:156
+#: .\templates\free\experiments\pendulum.html:109
+#: .\templates\free\experiments\pendulum.html:156
 msgid "Period [s]"
 msgstr ""
 
-#: templates/free/experiments/pendulum_old.html:110
-#: templates/free/experiments/pendulum_old.html:157
+#: .\templates\free\experiments\pendulum.html:110
+#: .\templates\free\experiments\pendulum.html:157
 msgid "g [m/s^2]"
 msgstr ""
 
-#: templates/free/experiments/pendulum_old.html:111
-#: templates/free/experiments/pendulum_old.html:158
+#: .\templates\free\experiments\pendulum.html:111
+#: .\templates\free\experiments\pendulum.html:158
 msgid "Velocity [m/s]"
 msgstr ""
 
-#: templates/free/experiments/pendulum_old.html:112
-#: templates/free/experiments/pendulum_old.html:159
+#: .\templates\free\experiments\pendulum.html:112
+#: .\templates\free\experiments\pendulum.html:159
 msgid "Temperature [ºC]"
 msgstr ""
 
-#: templates/free/layout/sidebar.html:11
+#: .\templates\free\layout\sidebar.html:11
 msgid "Home"
-msgstr "Início"
+msgstr ""
 
-#: templates/free/layout/sidebar.html:13
+#: .\templates\free\layout\sidebar.html:13
 msgid "Configured Executions"
-msgstr "Execuções Configuradas"
+msgstr ""
 
-#: templates/free/layout/sidebar.html:14
+#: .\templates\free\layout\sidebar.html:14
 msgid "Finished Executions"
-msgstr "Execuçoes Terminadas"
+msgstr ""
 
-#: templates/free/layout/sidebar.html:16 templates/free/layout/topbar.html:27
+#: .\templates\free\layout\sidebar.html:16
+#: .\templates\free\layout\topbar.html:27
 msgid "Logout"
 msgstr ""
 
-#: templates/free/layout/sidebar.html:18 templates/free/login.html:71
+#: .\templates\free\layout\sidebar.html:18 .\templates\free\login.html:70
 msgid "Login"
 msgstr ""
 
-#: templates/free/layout/topbar.html:13 templates/free/layout/topbar.html:41
+#: .\templates\free\layout\topbar.html:13
+#: .\templates\free\layout\topbar.html:41
 msgid "Elab"
 msgstr ""
 
-#: templates/free/layout/topbar.html:20
+#: .\templates\free\layout\topbar.html:20
 msgid "Hi"
-msgstr "Olá"
+msgstr ""
 
-#: templates/free/layout/topbar.html:25
+#: .\templates\free\layout\topbar.html:25
 msgid "Administration"
-msgstr "Adminstração"
+msgstr ""
 
-#: templates/free/login.html:51
+#: .\templates\free\login.html:50
 msgid "Log-in to FREE"
-msgstr "Log-in no FREE"
+msgstr ""
 
-#: templates/free/login.html:61
+#: .\templates\free\login.html:60
 msgid "Username"
 msgstr ""
 
-#: templates/free/login.html:68
+#: .\templates\free\login.html:67
 msgid "Password"
 msgstr ""
 
-#: templates/free/login.html:76
+#: .\templates\free\login.html:75
 msgid "Your username and password didn\\"
-msgstr "O seu username e password não\\"
+msgstr ""
 
-#: templates/free/protocols.html:4
+#: .\templates\free\protocols.html:4
 msgid "Run"
-msgstr "Excecutar"
+msgstr ""
 
-#: views/pages.py:68
+#: .\views\pages.py:73
 msgid "Current status"
-msgstr "Estado actual"
+msgstr ""
 
 #~ msgid "Test translated heading"
 #~ msgstr "Título traduzido do teste"
