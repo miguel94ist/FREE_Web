@@ -1,0 +1,134 @@
+{% extends 'free/base.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block title %} Home page {% endblock %}
+{% block headscript%}
+
+<!-- necessary for movable window -->
+<script>
+    var selectedStream = {{ap.video_config.stream_id}};
+    server = "{{ap.video_config.stream_server}}";
+</script>
+
+<!-- necessary for movable window -->
+<script src="https://cdn.jsdelivr.net/npm/interactjs/dist/interact.min.js"></script>
+
+<!-- necessary for movable window -->
+<!-- Define here the width of the div -->
+<style>
+  .resizable {
+    width: 320px;
+    overflow: hidden;
+    touch-action: none;
+    box-sizing: border-box;
+    hold: 1000;
+  }
+</style>
+    
+
+<!-- necessary for movable window -->
+<script>
+const position = { x: 0, y: 0 }
+
+interact('.draggable').draggable({
+  listeners: {
+    start (event) {
+      console.log(event.type, event.target)
+    },
+    move (event) {
+      position.x += event.dx
+      position.y += event.dy
+      event.target.style.transform =
+        `translate(${position.x}px, ${position.y}px)`
+    },
+  }
+})
+
+interact('.resizable')
+  .resizable({
+    edges: { top: true, left: true, bottom: true, right: true },
+    invert: 'reposition',
+    modifiers: [
+      interact.modifiers.aspectRatio({
+        ratio: 'preserve',
+      }),
+    ],
+    listeners: {
+      move: function (event) {
+        let { x, y } = event.target.dataset
+
+        x = (parseFloat(x) || 0) + event.deltaRect.left
+        y = (parseFloat(y) || 0) + event.deltaRect.top
+
+        Object.assign(
+          event.target.style, 
+          {
+            width: `${event.rect.width}px`,
+            height: `${event.rect.height}px`,
+            transform: `translate(${x}px, ${y}px)`
+          }
+        )
+
+        Object.assign(event.target.dataset, { x, y })
+      }
+    }
+  })
+</script>
+
+{% endblock %}
+
+{% block content %}
+
+<div class="right floated thirteen wide computer sixteen wide phone column" id="content">
+
+
+  <h1> {% trans 'Apparatus Information' %}</h3>
+  <pre>{{ ap | pprint }}</pre>
+  <h1>{% trans 'Video Stream information' %}</h3>
+  <pre>{{ stream_info | pprint }}</pre>
+  
+
+  <br>
+  {% if stream_info %}
+    <a href="{% url "video-config-remove" ap.id %}">
+      <div class="ui teal labeled icon button">
+        {% trans 'Remove stream' %} 
+        <i class="signup icon"></i>
+      </div>
+    </a>
+  {% else %}
+    <a href="{% url "video-config-assign" ap.id %}">
+      <div class="ui teal labeled icon button">
+        {% trans 'Assign stream' %} 
+        <i class="signup icon"></i>
+      </div>
+    </a>
+  {% endif %}
+
+  <h1>Data to copied into RP (start-video.sh)</h1>
+    <pre>
+      {% if stream_address and stream_port %}
+        video_server={{stream_address}}<br>
+        video_port={{stream_port}}
+        {%else%}
+        
+        {%endif%}
+    </pre>
+  <h1> video windows</h1>
+
+
+<!-- movable window -->
+  <div class="draggable">
+      <div class="resizable">
+          <div class="ui raised very  container segment ">
+              <div id="stream"> </div>
+          </div>
+      </div>
+  </div>
+<!-- movable window -->
+
+</div>
+{% endblock %}
+
+{% include 'free/layout/scripts.html' %}
