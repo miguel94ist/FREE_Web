@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     'django_tables2',
     'django_summernote',
     'social_django', # required for oauth (Google, ...) athentication
+    'free.videoConfig',
     # APPARATUS TYPES BELOW
     'pendulum',
 ]
@@ -211,6 +212,10 @@ if env.bool('FREE_FENIX_OAUTH'):
 
     SOCIAL_AUTH_FENIX_AUTH_KEY=env.str('SOCIAL_AUTH_FENIX_AUTH_KEY')
     SOCIAL_AUTH_FENIX_AUTH_SECRET=env.str('SOCIAL_AUTH_FENIX_AUTH_SECRET')
+
+JANUS_SERVER_ADDRESSS="http://localhost:8088/janus"
+JANUS_API_SECRET='janusrocks'
+JANUS_STREAM_ADMIN_KEY = "supersecret"
 
 
 PROJECT_NAME='World Pendulum Alliance'
