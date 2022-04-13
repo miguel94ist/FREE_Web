@@ -213,9 +213,9 @@ if env.bool('FREE_FENIX_OAUTH'):
     SOCIAL_AUTH_FENIX_AUTH_KEY=env.str('SOCIAL_AUTH_FENIX_AUTH_KEY')
     SOCIAL_AUTH_FENIX_AUTH_SECRET=env.str('SOCIAL_AUTH_FENIX_AUTH_SECRET')
 
-JANUS_SERVER_ADDRESSS="http://localhost:8088/janus"
+JANUS_SERVER_ADDRESSS="http://elab1.ist.utl.pt:8088/janus"
 JANUS_API_SECRET='janusrocks'
-JANUS_STREAM_ADMIN_KEY = "supersecret"
+JANUS_STREAM_ADMIN_KEY = "elab1"
 
 
 PROJECT_NAME='World Pendulum Alliance'
