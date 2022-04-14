@@ -80,7 +80,11 @@ interact('.resizable')
 
 {% block content %}
 
+
+
 <div class="right floated thirteen wide computer sixteen wide phone column" id="content">
+
+  <h3> <a href = '{% url "video-config-list" %}'>Return no Apparatuses List</a></h3>
 
 
   <h1> {% trans 'Apparatus Information' %}</h3>
@@ -116,17 +120,6 @@ interact('.resizable')
         {%endif%}
     </pre>
   <h1> video windows</h1>
-
-
-<!-- movable window -->
-  <div class="draggable">
-      <div class="resizable">
-          <div class="ui raised very  container segment ">
-              <div id="stream"> </div>
-          </div>
-      </div>
-  </div>
-<!-- movable window -->
 
 </div>
 {% endblock %}

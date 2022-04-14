@@ -1,16 +1,15 @@
-from django.views.generic import TemplateView
+from django.views.generic import TemplateView, View
 from rest_framework import serializers
 from django.http import HttpResponse
 from django.conf import settings
 from django.contrib.auth.mixins import PermissionRequiredMixin
-from django.shortcuts import render
+from django.shortcuts import redirect
 
 from free.models import Apparatus
 import requests
 
 
 janus_server_address = settings.JANUS_SERVER_ADDRESSS
-janus_api_secret = settings.JANUS_API_SECRET
 janus_stream_admin_key = settings.JANUS_STREAM_ADMIN_KEY
 
 
@@ -18,12 +17,11 @@ janus_stream_admin_key = settings.JANUS_STREAM_ADMIN_KEY
 
 
 
-def connect_janus_stream(server_address, apisecret):
+def connect_janus_stream(server_address):
 
     data = {
         "janus": "create",
         "transaction": "transaction-x",
-        "apisecret" : str(apisecret)
     }
     response = requests.post(f'{server_address}/', json = data)
 
@@ -42,7 +40,6 @@ def connect_janus_stream(server_address, apisecret):
         "janus" : "attach",
         "plugin" : "janus.plugin.streaming",
         "transaction": "transaction-x",
-        "apisecret": str(apisecret)
     }
 
     response = requests.post(f'{server_address}/'+str(session_id), json = data)
@@ -55,8 +52,8 @@ def connect_janus_stream(server_address, apisecret):
     plugin_id = json_ret['data']['id']
     return   (plugin_id, session_id)
 
-def list_streams(server_address, apisecret):
-    plugin_id, session_id = connect_janus_stream(server_address, apisecret)
+def list_streams(server_address):
+    plugin_id, session_id = connect_janus_stream(server_address)
 
     if session_id ==0 or plugin_id == 0:
         return -1
@@ -66,8 +63,7 @@ def list_streams(server_address, apisecret):
         "body": {
             "request": "list"
         },
-        "transaction": "transaction-x",
-        "apisecret": apisecret
+        "transaction": "transaction-x"
     }
 
     response = requests.post(f'{server_address}/{session_id}/{plugin_id}', json = data)
@@ -80,8 +76,8 @@ def list_streams(server_address, apisecret):
     
 
 
-def stream_info(server_address, apisecret, stream_id):
-    plugin_id, session_id = connect_janus_stream(server_address, apisecret)
+def stream_info(server_address, stream_id):
+    plugin_id, session_id = connect_janus_stream(server_address)
     ret_list = []
 
     if session_id ==0 or plugin_id == 0:
@@ -94,7 +90,6 @@ def stream_info(server_address, apisecret, stream_id):
             "id": int(stream_id)
         },
         "transaction": "transaction-x",
-        "apisecret": apisecret
     }
     response = requests.post(f'{server_address}/{session_id}/{plugin_id}', json = data)
     json_ret = response.json()
@@ -107,8 +102,8 @@ def stream_info(server_address, apisecret, stream_id):
 
 
 
-def create_stream(server_address, apisecret, stream_admin_key, name, description):
-    plugin_id, session_id = connect_janus_stream(server_address, apisecret)
+def create_stream(server_address, stream_admin_key, name, description):
+    plugin_id, session_id = connect_janus_stream(server_address)
 
     if session_id ==0 or plugin_id == 0:
         return {}
@@ -132,24 +127,23 @@ def create_stream(server_address, apisecret, stream_admin_key, name, description
                 "admin_key": stream_admin_key
         },
         "transaction": "transaction-x",
-        "apisecret": apisecret,
     }
 
     response = requests.post(f'{server_address}/{session_id}/{plugin_id}', json = data)
     json_ret = response.json()
     if(json_ret['janus']!= 'success'):
-        print(f"Error creating JANUS Stream")
+        print(f"Error creating JANUS Stream "+json_ret)
         return {}
     json_plugin = json_ret['plugindata']['data']
     try: 
         return json_plugin['stream'] 
     except:
-        print(f"Error creating JANUS Stream")
+        print(f"Error creating JANUS Stream "+json_plugin)
         return {}
  
 
-def destroy_stream(server_address, apisecret, stream_admin_key, stream_id):
-    plugin_id, session_id = connect_janus_stream(server_address, apisecret)
+def destroy_stream(server_address, stream_admin_key, stream_id):
+    plugin_id, session_id = connect_janus_stream(server_address)
 
     if session_id ==0 or plugin_id == 0:
         return {}
@@ -165,7 +159,6 @@ def destroy_stream(server_address, apisecret, stream_admin_key, stream_id):
             
         },
         "transaction": "transaction-x",
-        "apisecret": apisecret,
     }
 
     response = requests.post(f'{server_address}/{session_id}/{plugin_id}', json = data)
@@ -190,7 +183,7 @@ class ApparatusSerializer(serializers.ModelSerializer):
     )
     class Meta:
         model = Apparatus
-        fields = ['id', 'description', 'video_config','location', 'apparatus_type']
+        fields = ['id',  'video_config','location', 'apparatus_type']
 
 
 
@@ -203,7 +196,8 @@ class VideoConfigList(PermissionRequiredMixin, TemplateView):
         
         for a in set(Apparatus.objects.all()):
             context["aparatus_list"].append(ApparatusSerializer(a).data)
-        context['janus_info'] = list_streams(janus_server_address, janus_api_secret)
+        context['janus_info'] = list_streams(janus_server_address)
+        print(context['janus_info'])
         return context
 
 
@@ -212,11 +206,11 @@ class VideoConfig(PermissionRequiredMixin,TemplateView):
     permission_required = 'user.is_supersuser'
     def get_context_data(self, **kwargs):          
         context = super().get_context_data(**kwargs)                     
-       
-        ap = Apparatus.objects.filter(id = 1).first()
+        apparatus_id = self.kwargs['id']
+        ap = Apparatus.objects.filter(id = apparatus_id).first()
         context["ap"] = ApparatusSerializer(ap).data
         try:
-            si = stream_info(janus_server_address, janus_api_secret, ap.video_config['stream_id'])
+            si = stream_info(janus_server_address, ap.video_config['stream_id'])
             context['stream_info'] = si
             context['stream_address'] = janus_server_address.split('/')[2].split(':')[0]
             context['stream_port'] = si['media'][0]['port']
@@ -224,63 +218,43 @@ class VideoConfig(PermissionRequiredMixin,TemplateView):
             context['stream_info'] = {}
         return context
 
-class VideoConfigAssignStream(VideoConfig):
-    def get(self, request, *args, **kwargs):          
-        context = super().get_context_data(**kwargs)                     
-       
-        ap = Apparatus.objects.filter(id = 1).first()
+class VideoConfigAssignStream(PermissionRequiredMixin,View):
+    permission_required = 'user.is_supersuser'
+    def get(self, request, *args, **kwargs):    
+        apparatus_id = kwargs['id']
+        print(apparatus_id)
+        ap = Apparatus.objects.filter(id = apparatus_id).first()
         si = {}
         try:
-            si = stream_info(janus_server_address, janus_api_secret, ap.video_config['stream_id'])
+            si = stream_info(janus_server_address,  ap.video_config['stream_id'])
         except:
             pass
-        if si != {}:
-            context["ap"] = ApparatusSerializer(ap).data
-            context['stream_info'] = si
-        else:
             new_stream = create_stream(janus_server_address, 
-                        janus_api_secret,
-                        janus_stream_admin_key, 
-                        f'ap_{ap.id}_{ap.apparatus_type}',
-                        ap.description, 
-            )
+                            janus_stream_admin_key, 
+                            f'ap_{ap.id}_{ap.apparatus_type}',
+                            f'{ap.apparatus_type} {ap.id} in {ap.location}', 
+                )
+        
             if(new_stream != {}):
                 ap.video_config = {'stream_id': new_stream['id'], 'stream_server': janus_server_address}
                 ap.save()
-                context['stream_info'] = stream_info(janus_server_address, janus_api_secret, ap.video_config['stream_id'])
+        return redirect('video-config', id = apparatus_id)
 
-            context["ap"] = ApparatusSerializer(ap).data
-            context['stream_address'] = janus_server_address.split('/')[2].split(':')[0]
-            context['stream_port'] = context['stream_info']['media'][0]['port']
-
-        return render(request, 'videoConfig.html', context=context)
-
-class VideoConfigRemoveStream(VideoConfig):
+class VideoConfigRemoveStream(PermissionRequiredMixin,View):
+    permission_required = 'user.is_supersuser'
     def get(self, request, *args, **kwargs):            
-        context = super().get_context_data(**kwargs)                     
-
-        ap = Apparatus.objects.filter(id = 1).first()
+        apparatus_id = kwargs['id']
+        ap = Apparatus.objects.filter(id = apparatus_id).first()
         si = {}
         try:
-            si = stream_info(janus_server_address, janus_api_secret, ap.video_config['stream_id'])
+            si = stream_info(janus_server_address, ap.video_config['stream_id'])
         except:
             pass
-        if si == {}:
-            context["ap"] = ApparatusSerializer(ap).data
-            context['stream_info'] = si
-            return render(request, 'videoConfig.html', context=context)
-        else:
-            destroyed_stream = destroy_stream(janus_server_address, 
-                        janus_api_secret,
+        destroyed_stream = destroy_stream(janus_server_address, 
                         janus_stream_admin_key, 
                         ap.video_config['stream_id'],
             )
-            ap.video_config = {} 
-            ap.save()
-            context["ap"] = ApparatusSerializer(ap).data
-            context['stream_info'] = {}
-            context['stream_address'] = ""
-            context['stream_port'] = ""
-            return render(request, 'videoConfig.html', context=context)
-
+        ap.video_config = {} 
+        ap.save()
+        return redirect('video-config', id = apparatus_id)
 
