@@ -46,10 +46,14 @@
 {% block content %}
 
     <div class="right floated thirteen wide computer sixteen wide phone column"  id="content">
-        <h1 >{{object.apparatus.apparatus_type.name}} {{object.apparatus.id}} in {{object.apparatus.location}}</h1>
-        {% include 'free/video_window.html' %}
+        <div class="" style="position: absolute;top: 20%;left: 40%;">
+            {% include 'free/video_window.html' %}
+        </div>
 
         <div class="ui container grid" >
+            <div style="padding-top:17px;padding-bottom:10px">
+               <h1 >{{object.apparatus.apparatus_type.name}} {{object.apparatus.id}} in {{object.apparatus.location}}</h1>
+            </div> 
             <div class="row">
                 <div class="ui top attached tabular menu">
                     <a class="active item" data-tab="description">{% trans 'Description' %}</a>
