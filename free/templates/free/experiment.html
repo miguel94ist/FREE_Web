@@ -9,63 +9,108 @@
 {{video_config|json_script:"video-config"}}
 {% endblock %}
 
-{% block content %}
-    <div class="right floated thirteen wide computer sixteen wide phone column"  id="content">
-            <div class="ui container grid" >
-                <div class="row">
 
+{% block head %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fomantic-ui/2.6.4/components/range.min.css">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fomantic-ui/2.8.4/components/slider.css">
+<style>
+    /* Chrome, Safari, Edge, Opera */
+    input::-webkit-outer-spin-button,
+    input::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+    
+    /* Firefox */
+    input[type=number] {
+      -moz-appearance: textfield;
+    }
+</style>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.css" type="text/css"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fomantic-ui/2.6.4/components/range.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fomantic-ui/2.8.4/components/slider.css">
+<link rel="stylesheet" href="https://cdn.datatables.net/1.10.18/css/dataTables.semanticui.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fomantic-ui/2.8.8/semantic.min.css">
+<link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/dataTables.semanticui.min.css">
+<link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.2.2/css/buttons.semanticui.min.css">
+
+
+{% endblock %}  
+
+{% block title %}
+    {{object.apparatus.apparatus_type.name}} {{object.apparatus.id}} in {{object.apparatus.location}}
+{% endblock %}
+
+
+{% block content %}
+
+    <div class="right floated thirteen wide computer sixteen wide phone column"  id="content">
+        <h1 >{{object.apparatus.apparatus_type.name}} {{object.apparatus.id}} in {{object.apparatus.location}}</h1>
+        {% include 'free/video_window.html' %}
+
+        <div class="ui container grid" >
+            <div class="row">
                 <div class="ui top attached tabular menu">
                     <a class="active item" data-tab="description">{% trans 'Description' %}</a>
-                    {% block tabheaders %}
-                        <!-- TAB HEADERS WILL BE INJECTED HERE -->
-                    {% endblock %}
+                    <a class="item" data-tab="configuration">{% trans 'Configuration'%}</a>
+                    {% if final_result.id != None %}
+                    <a class="item " data-tab="results">{% trans 'Results'%}</a>
+                    {% else %}  
+                    <a class="item " data-tab="execution">{% trans 'Execution'%}</a>
+                    {% endif %} 
                 </div>
 
                 <!-- MANDATORY EXPERIMENT DESCRIPTION FROM DB -->
                 <div class="ui bottom attached active tab segment" data-tab="description" >
                     <section class="intro">
-
-                        <div class="row" style="display:table; content:""; clear:both;">
-        		 <div class="column " style="float:left;width:70%; ">
-                         <figure class="" >
-                         <img
-                            src="{% with 'free/images/'|add:object.apparatus.apparatus_type.slug|add:'.png' as image_static %}
+                    <div class="row" style="display:table; content:""; clear:both;">
+                        <div class="column " style="float:left;width:70%; ">
+                            <figure class="" >
+                                <img
+                                src="{% with 'free/images/'|add:object.apparatus.apparatus_type.slug|add:'.png' as image_static %}
                                 {% static image_static %}
-                            {% endwith %}"
-
-                            alt="{{object.name}}"
-                            width="100%">
-                         </figure>
-                         </div>
-        		 <div class=" column " style="float:left; width:30%;">
-                         <figure class="" display="right">
-                        	<img src="{% static 'free/images/WPA.jpeg' %}" width="85%">
-                   	 </figure>
-                         </div>
+                                {% endwith %}"
+                                alt="{{object.name}}"
+                                width="100%">
+                            </figure>
                         </div>
-
-
-                        <!-- TODO: CHANGE THE MONTE-CARLO HERE, PROBABLY TO object.slug -->
-                        <h2 id="about-the-Monte-Carlo">{{object.apparatus.apparatus_type.name}}</h2>
-
-                        {{object.apparatus.apparatus_type.description|safe}}
-
-                        {{object.apparatus.description|safe}}
-
-                        {{object.protocol.description|safe}}
+                        <div class=" column " style="float:left; width:30%;">
+                            <figure class="" display="right">
+                                <img src="{% static 'free/images/WPA.jpeg' %}" width="85%" bottom="0px">
+                            </figure>
+                        </div>
+                    </div>
+                    {{object.apparatus.apparatus_type.description|safe}}
+                    <h2> Details</h2>
+                    {{object.apparatus.description|safe}}
+                    <h2> Protocol details</h2>
+                    {{object.protocol.description|safe}}
                     </section>
                     <!--end of the description-->
-                </div>
+                </div>       
+                <div  class="ui bottom attached tab segment"  data-tab="configuration">
+                    <h2>{% trans 'Configuration data'%}</h2>
 
-               {% block tabs %}
+                    {% block configtab %}
+
                     <!-- TAB CONTENT WILL BE INJECTED HERE -->
-               {% endblock %}
-
-
+                    {% endblock %}
+                </div>
+                {% if final_result.id == None %}
+                    <div class="ui bottom attached tab segment" data-tab="execution" id="cena">
+                        {% block excutiontab %}
+                        {% endblock %}
+                    </div>
+                {% else %}
+                    <div class="ui bottom attached tab segment" data-tab="results" id="cena1">
+                        {% block resultstab %}
+                        {% endblock %}     
+                    </div>
+                {% endif %}
             </div>
         </div>
     </div>
-
 {% endblock %}
 
 {% include 'free/layout/scripts.html' %}

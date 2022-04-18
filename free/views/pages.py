@@ -52,13 +52,13 @@ class ExecutionsListView(LoginRequiredMixin,SingleTableView):
     table_class = ExecutionsTable
 
     def get_queryset(self):
-        return Execution.objects.filter(user=self.request.user, status=self.status_filter)
+        return Execution.objects.filter(user=self.request.user, status__in =  self.status_filter)
 
 class ExecutionsConfiguredListView(ExecutionsListView):
-    status_filter = 'C'
+    status_filter = ['C','N', 'Q', 'R']
 
 class ExecutionsFinishedListView(ExecutionsListView):
-    status_filter = 'F'
+    status_filter = ['E',  'F', 'A', 'T']
         
 # PROTOCOLS LIST
 

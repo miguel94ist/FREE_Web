@@ -212,6 +212,8 @@ class VideoConfig(PermissionRequiredMixin,TemplateView):
         try:
             si = stream_info(janus_server_address, ap.video_config['stream_id'])
             context['stream_info'] = si
+
+            context['video_config'] = ap.video_config
             context['stream_address'] = janus_server_address.split('/')[2].split(':')[0]
             context['stream_port'] = si['media'][0]['port']
         except:

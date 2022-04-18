@@ -1,0 +1,9 @@
+{% load i18n %}
+
+<div class="ui top aligned  image">
+    <h2  class=" item"><img src="http://e-lab.ist.eu/rec.web/javax.faces.resource/elab_logo.png.faces?ln=images" id="logo-elab" ></h2> 
+</div>
+<a class="item" href="{% url 'free:index' %}"><i class="home icon"></i>{% trans 'Home' %}</a>
+<a class="item" href="{% url 'free:apparatuses' %}"><i class="table icon"></i>{% trans 'Apparatuses' %}</a>
+<a class="item" href="{% url 'free:executions-configured' %}"><i class="home icon"></i>{% trans 'Configured Executions' %}</a>
+<a class="item" href="{% url 'free:executions-finished' %}"><i class="home icon"></i>{% trans 'Finished Executions' %}</a>

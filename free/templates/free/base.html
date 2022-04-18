@@ -36,21 +36,25 @@
         {% endblock %}
     </head>
     <body>  
+
+        {% block layout %}
+        
         {% if user.is_authenticated %}
-            {% include 'free/layout/layout.html' %}
-        {% else %}
 
-            {# the login fomr should be on a separate page #}
-          {#   {% include 'free/login.html' %} #}
-
-            {# button to login page #}
-          <a href="{% url 'free:login' %}">
-            <div class="ui teal labeled icon button">
-              LOG IN
-              <i class="signup icon"></i>
+          <div class="ui grid">
+            <div class="ui row">
+        
+                {% include 'free/layout/topbar.html' %}
+        
+                {% include 'free/layout/sidebar.html' %}
+        
             </div>
-          </a>
-        {% endif %} 
+        
+        </div>
+        {% endif %}
+
+      
+        {% endblock %}
 
         {% block content %}
         {% endblock %}
