@@ -269,6 +269,13 @@ class ExecutionAPI(TestCase):
             'config': {'displacement': 7, 'enumerator':'A'} }
         , content_type='application/json')
         self.assertEqual(response.status_code, 200)
+        
+        response = self.client.put('/api/v1/execution/' + str(new_exec_id) + '/name', {
+            'name': 'testname',
+        }, content_type='application/json')
+        self.assertEqual(response.status_code, 200)
+        
+        self.assertEqual('testname', Execution.objects.get(pk=new_exec_id).name)
 
         # UPDATE WITH INVALID SCHEMA
         response = self.client.put('/api/v1/execution/' + str(new_exec_id), {

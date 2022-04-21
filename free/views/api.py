@@ -70,7 +70,7 @@ class ExecutionUpdateSerializer(serializers.ModelSerializer):
     def validate(self, data):
         data = super().validate(data)
             
-        if not self.instance.status in ['C','N','F']:
+        if not self.instance.status in ['C','N']:
             raise serializers.ValidationError("Can only update configuration of not enqueued executions.")
         
         try:
@@ -82,7 +82,9 @@ class ExecutionUpdateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Execution
-        fields = ['config','name']
+        fields = ['config']
+        
+
 
 class ExecutionConfigure(generics.CreateAPIView):
     """
@@ -113,10 +115,22 @@ class ExecutionRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
         return ExecutionUpdateSerializer
 
     def perform_update(self, serializer):
-        if self.request.method == 'PUT':
-            serializer.save(status = 'C')
-        elif self.request.method == 'PATCH':
-            serializer.save()
+        serializer.save(status = 'C')
+        
+class ExecutionUpdateNameSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Execution
+        fields = ['name']        
+        
+class ExecutionUpdateName(generics.UpdateAPIView):
+    """
+    Changes the name of the execution.
+
+    It's possible to change the name of the execution in any state.
+    """
+    queryset = Execution.objects.all()
+    lookup_field = 'id'
+    serializer_class = ExecutionUpdateNameSerializer
 
 class ExecutionStart(views.APIView):
     """

@@ -41,6 +41,7 @@ urlpatterns = [
 
     path('api/v1/execution', views.ExecutionConfigure.as_view(), name='api-execution-configure' ),
     path('api/v1/execution/<int:id>', views.ExecutionRetrieveUpdateDestroy().as_view(), name='api-execution'),
+    path('api/v1/execution/<int:id>/name', views.ExecutionUpdateName.as_view(), name='api-execution-update-name'),
     path('api/v1/execution/<int:id>/start', views.ExecutionStart.as_view(), name='api-execution-start'),
     path('api/v1/execution/<int:id>/status', views.ChangeExecutionStatus.as_view(), name='api-execution-status-change'),
     path('api/v1/execution/<int:id>/result', views.ResultList.as_view(), name='api-result-list'),

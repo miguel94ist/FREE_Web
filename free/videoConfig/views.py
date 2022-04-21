@@ -12,11 +12,6 @@ import requests
 janus_server_address = settings.JANUS_SERVER_ADDRESSS
 janus_stream_admin_key = settings.JANUS_STREAM_ADMIN_KEY
 
-
-
-
-
-
 def connect_janus_stream(server_address):
 
     data = {
