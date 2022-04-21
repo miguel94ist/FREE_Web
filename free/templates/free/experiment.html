@@ -3,6 +3,7 @@
 {% load i18n %}
 
 {% block headscript%}
+<script id="csrf_token" type="application/json">{{csrf_token}}</script>
 {{object.apparatus.config|json_script:"apparatus-config"}}
 {{execution_json|json_script:"execution-config"}}
 {{final_result|json_script:"final-result"}}
