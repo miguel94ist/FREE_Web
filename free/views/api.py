@@ -150,6 +150,20 @@ class ExecutionStart(views.APIView):
         execution.save()
 
         return Response(status = 200)
+    
+class Heartbeat(views.APIView):
+    """
+    Notifies the system that the Apparatus is alive
+
+
+    """
+    permission_classes = [ApparatusOnlyAccess]
+    def put(self, *args, **kwargs):
+        try:
+            apparatus = Apparatus.objects.get(pk=kwargs['id'])
+        except Apparatus.DoesNotExist:
+            return Response({'error': 'Apparatus with this id does not exist!'}, status=404)
+        return Response(status=200)
 
 class AppratusView(generics.RetrieveAPIView):
     """
