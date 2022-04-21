@@ -82,6 +82,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'free.context_processors.free_extras.site_info',
             ],
         },
     },
@@ -217,6 +218,6 @@ JANUS_SERVER_ADDRESSS="http://localhost:8088/janus"
 JANUS_STREAM_ADMIN_KEY = env.str('JANUS_STREAM_ADMIN_KEY')
 
 
-PROJECT_NAME='World Pendulum Alliance'
-PROJECT_ACRONYMUN='WPA'
-SITE_NAME='IST, Lisboa, Portugal'
+PROJECT_NAME=env.str('PROJECT_NAME','World Pendulum Alliance')
+PROJECT_ACRONYMUM=env.str('PROJECT_ACRONYMUM', 'WPA')
+SITE_NAME=env.str('SITE_NAME','') 

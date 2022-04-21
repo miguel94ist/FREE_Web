@@ -1,6 +1,5 @@
     {% load i18n %}
     {% load static %}
-    {% load free_extras %}
 
     <div class="ui grid">
       <!--navbar-->
@@ -12,7 +11,7 @@
                 </div>-->
                 <div class="left menu">
                     <div class="nav item">
-                        <strong class="navtext">{% project_acronymum %} - {% project_name %} ({% site_name %})</strong>
+                        <strong class="navtext">{{project_acronymum}} - {{project_name}} {% if site_name %}({{site_name}}) {% endif %}</strong>
                     </div>
 
                 </div>
