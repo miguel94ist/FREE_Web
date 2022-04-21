@@ -31,26 +31,19 @@ class Apparatus(models.Model):
     timeout = models.IntegerField(_('Connection timeout'), default = 60)
     config = models.JSONField(_('Configuration'), default=dict, blank=True)
     video_config = models.JSONField(_('Video configuration'), null=True, blank=True)
+    last_online = models.DateTimeField(_('Last ping'), auto_now=True)
 
     def __str__(self):
         return _('%(apparatus_type)s in %(location)s') % {'apparatus_type': self.apparatus_type.name, 'location': self.location}
 
     @property
     def status(self):
-        return Status.last_status(self)
-    
-    @property
-    def status_display(self):
-        self.status.get_status_display()
-    
-    def update_status(self, status_name):
-        last_status = Status.last_status(self)
-        if last_status.status != status_name:
-            Status(apparatus=self, status=status_name, is_last=False).save()
-            Status(apparatus=self, status=status_name, is_last=True).save()
+        from freeweb import settings
+        if (timezone.now() - self.last_online).total_seconds() < settings.APPARATUS_TIMEOUT:
+            return (_('Online'))
         else:
-            last_status.time = timezone.now()
-            last_status.save()
+            return (_('Offline'))
+
 
     class Meta:
         verbose_name = _('Apparatus')
@@ -62,31 +55,6 @@ def cleanup_protocols(sender, instance, created, **kwargs):
     for protocol in instance.protocols.all():
         if protocol.apparatus_type != instance.apparatus_type:
             instance.protocols.remove(protocol)
-
-STATUS_CHOICES = (
-    ('online', _('Online')),
-    ('hardware-error', _('Hardware error')),
-    ('maintenance', _('Maintenance')),
-    ('reserved', _('Reserved')),
-    ('offline', _('Offline'))
-)
-
-class Status(models.Model):
-    apparatus = models.ForeignKey(Apparatus, on_delete=models.PROTECT)
-    time = models.DateTimeField(_('Time'), auto_now=True)
-    status = models.CharField(_('Status'), max_length=128, choices=STATUS_CHOICES)
-    is_last = models.BooleanField(_('Is last?'), default=True)
-    
-    @classmethod
-    def last_status(cls, apparatus):
-        try:
-            return cls.objects.filter(apparatus=apparatus, time__gte=timezone.now() + timedelta(seconds=-apparatus.timeout), is_last=True).latest('time')
-        except:
-            return Status(status='offline', time=timezone.now(), apparatus=apparatus, is_last=True)
-
-    class Meta:
-        verbose_name = _('Status')
-        verbose_name_plural = _('Statuses')
 
 class Protocol(models.Model):
     apparatus_type = models.ForeignKey(ApparatusType, on_delete=models.PROTECT)

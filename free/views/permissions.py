@@ -7,10 +7,17 @@ class ApparatusOnlyAccess(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
         if 'Authentication' in request.headers:
             if isinstance(obj, Execution):
-                return request.headers['Authentication'] == obj.apparatus.secret
+                if request.headers['Authentication'] == obj.apparatus.secret:
+                    obj.apparatus.save()
+                    return True
             if isinstance(obj, Result):
-                return request.headers['Authentication'] == obj.execution.apparatus.secret
+                if request.headers['Authentication'] == obj.execution.apparatus.secret:
+                    obj.execution.apparatus.save()
+                    return True
             if isinstance(obj, Apparatus):
-                return request.headers['Authentication'] == obj.secret
+                if request.headers['Authentication'] == obj.secret:
+                    obj.save()
+                    return True
+                    
         return False
         

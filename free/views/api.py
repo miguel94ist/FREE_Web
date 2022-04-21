@@ -33,11 +33,10 @@ class ApparatusSerializer(serializers.ModelSerializer):
     read_only = True
     protocols = ProtocolSerializer(many=True)
     apparatus_type = ApparatusTypeSerializer()
-    status = serializers.SlugRelatedField(slug_field='status', read_only=True)
     
     class Meta:
         model = Apparatus
-        fields = ['apparatus_type', 'protocols', 'location', 'owner', 'video_config', 'config', 'status']
+        fields = ['apparatus_type', 'protocols', 'location', 'owner', 'video_config', 'config']
 
 class ExecutionSerializer(serializers.ModelSerializer):
     protocol = ProtocolSerializer()
@@ -287,22 +286,3 @@ class ExecutionQueue(generics.ListAPIView):
     serializer_class = ExecutionSerializer
     def get_queryset(self):
         return Execution.objects.filter(state='Q', apparatus_id=self.kwargs['apparatus_id']).order_by('queue_time')
-    
-# APPARATUS STATUS
-
-class ApparatusStatusSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Status
-        fields = ['apparatus', 'status']
-        
-class AddApparatusStatus(generics.CreateAPIView):
-    """
-    Writes an apparatus heartbeat status.
-    
-    **APPARATUS AUTHENTICATION REQUIRED**
-    """
-    permission_classes = [ApparatusOnlyAccess]
-    serializer_class = ApparatusStatusSerializer
-    
-    def perform_create(self, serializer):
-        serializer.validated_data['apparatus'].update_status(serializer.validated_data['status'])

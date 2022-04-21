@@ -42,11 +42,6 @@ class ApparatusAdmin(SummernoteModelAdmin):
 
 admin.site.register(Apparatus, ApparatusAdmin)
 
-class StatusAdmin(admin.ModelAdmin):
-    list_display = ['apparatus', 'status', 'time']
-    list_filter = ['apparatus', 'status', 'time']
-admin.site.register(Status, StatusAdmin)
-
 class ProtocolAdmin(SummernoteModelAdmin):
     list_display = ['__str__', 'apparatus_type']
     

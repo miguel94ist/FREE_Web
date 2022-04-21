@@ -51,7 +51,6 @@ urlpatterns = [
     path('api/v1/apparatus/<int:id>', views.AppratusView.as_view(), name='api-apparatus-view'),
     path('api/v1/apparatus/<int:id>/nextexecution', views.NextExecution.as_view(), name='api-execution-next'),
     path('api/v1/apparatus/<int:id>/queue', views.ExecutionQueue.as_view(), name='api-execution-queue'),
-    path('api/v1/apparatus/<int:id>/setstatus', views.AddApparatusStatus.as_view(), name='api-apparatus-status-add'),
 
     path('api/v1/result', views.AddResult.as_view(), name='api-result-add'),
 ]
