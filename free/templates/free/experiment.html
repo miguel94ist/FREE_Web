@@ -4,10 +4,10 @@
 
 {% block headscript%}
 <script id="csrf_token" type="application/json">{{csrf_token}}</script>
-{{object.apparatus.config|json_script:"apparatus-config"}}
+{{apparatus.config|json_script:"apparatus-config"}}
 {{execution_json|json_script:"execution-config"}}
 {{final_result|json_script:"final-result"}}
-{{video_config|json_script:"video-config"}}
+{{apparatus.video_config|json_script:"video-config"}}
 {% endblock %}
 
 
@@ -40,7 +40,7 @@
 {% endblock %}  
 
 {% block title %}
-    {{object.apparatus.apparatus_type.name}} {{object.apparatus.id}} in {{object.apparatus.location}}
+    {{apparatus.apparatus_type.name}} {{apparatus.id}} in {{apparatus.location}}
 {% endblock %}
 
 
@@ -53,7 +53,7 @@
 
         <div class="ui container grid" >
             <div style="padding-top:17px;padding-bottom:10px">
-               <h1 >{{object.apparatus.apparatus_type.name}} {{object.apparatus.id}} in {{object.apparatus.location}}</h1>
+               <h1 >{{apparatus.apparatus_type.name}} {{apparatus.id}} in {{apparatus.location}}</h1>
             </div> 
             <div class="row">
                 <div class="ui top attached tabular menu">
@@ -73,10 +73,10 @@
                         <div class="column " style="float:left;width:70%; ">
                             <figure class="" >
                                 <img
-                                src="{% with 'free/images/'|add:object.apparatus.apparatus_type.slug|add:'.png' as image_static %}
+                                src="{% with 'free/images/'|add:apparatus.apparatus_type.slug|add:'.png' as image_static %}
                                 {% static image_static %}
                                 {% endwith %}"
-                                alt="{{object.name}}"
+                                alt="{{apparatus.apparatus_type.slug}}"
                                 width="100%">
                             </figure>
                         </div>
@@ -86,11 +86,11 @@
                             </figure>
                         </div>
                     </div>
-                    {{object.apparatus.apparatus_type.description|safe}}
+                    {{apparatus.apparatus_type.description|safe}}
                     <h2> Details</h2>
-                    {{object.apparatus.description|safe}}
+                    {{apparatus.description|safe}}
                     <h2> Protocol details</h2>
-                    {{object.protocol.description|safe}}
+                    {{protocol.description|safe}}
                     </section>
                     <!--end of the description-->
                 </div>       
