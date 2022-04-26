@@ -5,6 +5,7 @@
 {% block headscript%}
 <script id="csrf_token" type="application/json">{{csrf_token}}</script>
 {{apparatus.config|json_script:"apparatus-config"}}
+{{protocol.config|json_script:"protocol-config"}}
 {{execution_json|json_script:"execution-config"}}
 {{final_result|json_script:"final-result"}}
 {{apparatus.video_config|json_script:"video-config"}}
