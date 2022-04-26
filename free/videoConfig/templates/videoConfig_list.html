@@ -11,6 +11,17 @@
 <div class="right floated thirteen wide computer sixteen wide phone column" id="content">
 
 
+  {% if janus_error %}
+
+  <div class="ui big negative message">
+    <i class="icon"></i>
+    <div class="header">
+      Janus not running or not well configured
+    </div>
+    Verify instructions bellow
+  </div>
+  
+  {% endif %}
   <h1>Existing aparatus</h1>
   <table class="ui celled table">
     <thead>
@@ -39,14 +50,15 @@
   {% endfor %}
   </tbody>
   </table>
-
+  {% if janus_error %}
+  {% include './videoConfig_message.html' %}
+  {% else %}
   <h1> Existing video streams</h1>
 
   <table class="ui celled table">
     <thead>
       <tr><th>id</th>
       <th>Description</th>
-      <th>Metadata</th>
     </tr></thead>
     <tbody>
 
@@ -54,12 +66,13 @@
   <tr>
     <td>{{ s.id}} </td>
     <td>{{ s.description}}</td>
-    <td>{{ s.metadata}}</td>
     </td>
   </tr>
   {% endfor %}
   </tbody>
   </table>
+
+  {% endif %}
   </div>
 </div>
 {% endblock %}

@@ -14,46 +14,81 @@
 
 <div class="right floated thirteen wide computer sixteen wide phone column" id="content">
 
+  {% if janus_warning %}
+
+  <div class="ui big negative message">
+      <i class="icon"></i>
+      <div class="header">
+        {{ janus_warning }}
+      </div>
+      You may need to delete the stream information on the administration page or on the janus streaaming plugin configuration file
+    </div>
+
+    {%else%}
+
+      {% if janus_error %}
+
+      <div class="ui big negative message">
+          <i class="icon"></i>
+          <div class="header">
+            Janus not runnig or not well configured
+          </div>
+          Follow instructions bellow
+      </div>
+      
+      {% endif %}
+
+  {% endif %}
+
+
+
   <h3> <a href = '{% url "video-config-list" %}'>Return no Apparatuses List</a></h3>
 
   {% include 'free/video_window.html' %}
 
-  <h1> {% trans 'Apparatus Information' %}</h3>
+  <h1> {% trans 'Apparatus Information' %}</h1>
   <pre>{{ ap | pprint }}</pre>
-  <h1>{% trans 'Video Stream information' %}</h3>
+  <h1>{% trans 'Video Stream information' %}</h1>
   <pre>{{ stream_info | pprint }}</pre>
-  
-
   <br>
+  
   {% if stream_info %}
+  
     <a href="{% url "video-config-remove" ap.id %}">
       <div class="ui teal labeled icon button">
         {% trans 'Remove stream' %} 
         <i class="signup icon"></i>
       </div>
     </a>
+  
   {% else %}
+  
     <a href="{% url "video-config-assign" ap.id %}">
       <div class="ui teal labeled icon button">
         {% trans 'Assign stream' %} 
         <i class="signup icon"></i>
       </div>
     </a>
+  
   {% endif %}
 
-  <h1>Data to copied into RP (start-video.sh)</h1>
-    <pre>
-      {% if stream_address and stream_port %}
+  <h1>Data to be copied into RP </h1>
+    {% if stream_address and stream_port %}
+      <pre>
         video_server={{stream_address}}<br>
         video_port={{stream_port}}
-        {%else%}
-        
-        {%endif%}
-    </pre>
-  <h1> video windows</h1>
+      </pre>
+    {%else%}
+
+    {%endif%}
   {% include 'free/video_window.html' %}
 
-</div>
+  {% if janus_error %}
+    {% include './videoConfig_message.html' %}
+  {% endif %}
+
 {% endblock %}
 
-{% include 'free/layout/scripts.html' %}
+</div>
+
+  {% include 'free/layout/scripts.html' %}
