@@ -66,7 +66,7 @@ interact('.resizable')
          {
            width: `${event.rect.width}px`,
            height: `${event.rect.height}px`,
-           transform: `translate(${x}px, ${y}px)`
+           transform: `translate(${x/2}px, ${y/2}px)`
          }
        )
        Object.assign(event.target.dataset, { x, y })
