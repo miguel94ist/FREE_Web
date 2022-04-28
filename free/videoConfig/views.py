@@ -199,6 +199,14 @@ class VideoConfigList(PermissionRequiredMixin, TemplateView):
         context["aparatus_list"] = []
         
         for a in set(Apparatus.objects.all()):
+            try:
+                video_strema_id = int(a.video_config)
+                a.video_config = {'stream_id': video_strema_id, 
+                                'stream_server': janus_server_address,
+                                }
+                a.save()
+            except:
+                pass
             context["aparatus_list"].append(ApparatusSerializer(a).data)
         connection = connect_janus_stream(janus_server_address)
 
@@ -231,8 +239,14 @@ class VideoConfig(PermissionRequiredMixin,TemplateView):
         try:
             context['stream_info'] = si
             context['video_config'] = ap.video_config
-            context['stream_address'] = janus_server_address.split('/')[2].split(':')[0]
-            context['stream_port'] = si['media'][0]['port']
+            context['stream_config']={
+                'video_server': janus_server_address.split('/')[2].split(':')[0],
+                'video_port' : si['media'][0]['port'],
+                #'video_port' : si['videoport'],
+                'apparatus_location': ap.location,
+                'apparatus_name': ap.apparatus_type.slug,
+                'apparatus_id' :  ap.id,
+            }
         except:
             context['janus_warning'] = 'Video stream information mismatch between FREE and JANUS'
         return context
@@ -248,7 +262,6 @@ class VideoConfigAssignStream(PermissionRequiredMixin,View):
     permission_required = 'user.is_supersuser'
     def get(self, request, *args, **kwargs):    
         apparatus_id = kwargs['id']
-        print(apparatus_id)
         ap = Apparatus.objects.filter(id = apparatus_id).first()
         try:
             s_id = ap.video_config['stream_id']

@@ -73,15 +73,17 @@
   {% endif %}
 
   <h1>Data to be copied into RP </h1>
-    {% if stream_address and stream_port %}
+    {% if stream_config %}
       <pre>
-        video_server={{stream_address}}<br>
-        video_port={{stream_port}}
-      </pre>
+        video_server="{{stream_config.video_server}}"
+        video_port={{stream_config.video_port}}
+        apparatus_location="{{stream_config.apparatus_location}}"
+        apparatus_name="{{stream_config.apparatus_name}}"
+        apparatus_id={{stream_config.apparatus_id}}
+      </pre>  
     {%else%}
 
     {%endif%}
-  {% include 'free/video_window.html' %}
 
   {% if janus_error %}
     {% include './videoConfig_message.html' %}
