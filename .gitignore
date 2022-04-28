@@ -12,4 +12,4 @@ __pycache__
 /assets/semantic-ui/themes
 
 /FREE_Web.zip
-db.sqlite3
+*.sqlite3
