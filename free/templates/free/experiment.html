@@ -5,10 +5,12 @@
 {% block headscript%}
 <script id="csrf_token" type="application/json">{{csrf_token}}</script>
 {{apparatus.config|json_script:"apparatus-config"}}
+{{apparatus.id|json_script:"apparatus-id"}}
 {{protocol.config|json_script:"protocol-config"}}
+{{protocol.id|json_script:"protocol-id"}}
 {{execution_json|json_script:"execution-config"}}
 {{final_result|json_script:"final-result"}}
-{{apparatus.video_config|json_script:"video-config"}}
+//{{apparatus.video_config|json_script:"video-config"}}
 {% endblock %}
 
 
@@ -48,9 +50,7 @@
 {% block content %}
 
     <div class="right floated thirteen wide computer sixteen wide phone column"  id="content">
-        <div class="" style="position: absolute;top: 20%;left: 40%;">
             {% include 'free/video_window.html' %}
-        </div>
 
         <div class="ui container grid" >
             <div style="padding-top:17px;padding-bottom:10px">
@@ -58,17 +58,26 @@
             </div> 
             <div class="row">
                 <div class="ui top attached tabular menu">
-                    <a class="active item" data-tab="description">{% trans 'Description' %}</a>
-                    <a class="item" data-tab="configuration">{% trans 'Configuration'%}</a>
-                    {% if final_result.id != None %}
-                    <a class="item " data-tab="results">{% trans 'Results'%}</a>
+                    {% if execution_json.id != None and execution_json.status != "F" %}
+                       <a class="item" data-tab="description">{% trans 'Description' %}</a>
+                       <a class="active item" data-tab="configuration">{% trans 'Configuration'%}</a>
                     {% else %}  
-                    <a class="item " data-tab="execution">{% trans 'Execution'%}</a>
+                       <a class="active item" data-tab="description">{% trans 'Description' %}</a>
+                       <a class="item" data-tab="configuration">{% trans 'Configuration'%}</a>
+                    {% endif %} 
+                    {% if final_result.id != None %}
+                       <a class="item " data-tab="results">{% trans 'Results'%}</a>
+                    {% else %}  
+                       <a class="item " data-tab="execution">{% trans 'Execution'%}</a>
                     {% endif %} 
                 </div>
 
                 <!-- MANDATORY EXPERIMENT DESCRIPTION FROM DB -->
-                <div class="ui bottom attached active tab segment" data-tab="description" >
+                {% if execution_json.id == None or execution_json.status == "F" %}
+                 <div class="ui bottom attached active tab segment" data-tab="description" >
+                {% else %} 
+                 <div class="ui bottom attached tab segment" data-tab="description" >
+                {% endif %}
                     <section class="intro">
                     <div class="row" style="display:table; content:""; clear:both;">
                         <div class="column " style="float:left;width:70%; ">
@@ -94,8 +103,12 @@
                     {{protocol.description|safe}}
                     </section>
                     <!--end of the description-->
-                </div>       
-                <div  class="ui bottom attached tab segment"  data-tab="configuration">
+                </div>
+                {% if execution_json.id != None and execution_json.status != "F" %}
+                 <div  class="ui bottom attached active tab segment"  data-tab="configuration">
+                {% else %} 
+                 <div class="ui bottom attached tab segment" data-tab="configuration" >
+                {% endif %}
                     <h2>{% trans 'Configuration data'%}</h2>
 
                     {% block configtab %}

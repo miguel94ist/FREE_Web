@@ -1,8 +1,25 @@
 let new_execution = JSON.parse(document.getElementById('execution-config').textContent);
-
-var apparatus = new_execution.apparatus;
-var protocol = new_execution.protocol.id;
-
+//console.log("test 28")
+//console.log(new_execution)
+if ( Object.keys(new_execution).length  !== 0)
+{
+  var apparatus = new_execution.apparatus;
+  var protocol = new_execution.protocol.id;
+  if (new_execution.status === "C" ){
+     //$('.menu .item').tab('change tab','configuration');
+     toggleDisable();
+  }
+}
+else{
+  var apparatus = JSON.parse(document.getElementById('apparatus-id').textContent);
+  var protocol = JSON.parse(document.getElementById('protocol-id').textContent);
+  console.log("Rossa");
+  console.log(apparatus);
+  console.log(protocol);
+}
+let save = 0;
+let endpoint = "";
+let method_queue = '';
 let execution_id = 0;
 let Results=0;
 var name = ''
@@ -31,7 +48,7 @@ function save_name(){
     HEADERS = {
         "X-CSRFToken": getCookie("csrftoken"),
         }
-    var endpoint="/api/v1/execution/"+new_execution.id;
+    var endpoint="/api/v1/execution/"+new_execution.id+"/name";
     // print out
     console.log('JSON : ' +  endpoint);
     console.log(data_send);
@@ -48,9 +65,22 @@ function save_name(){
 
 
 function queue(config) {
+    if (Object.keys(new_execution).length  !== 0)
+    {
+      execution_id = new_execution.id
+      endpoint="/api/v1/execution/"+new_execution.id;
+      method_queue = 'put'
+      data_send = new_execution
+    }
+    else
+    {
+      endpoint="/api/v1/execution";
+      method_queue = 'post';
+      data_send = {"apparatus": apparatus, "protocol": protocol}
+    }
     // get inputs values from the client side
     config_input.findConfigInput();
-    data_send = new_execution
+    
     data_send["config"] = config.processElements()
     
   
@@ -67,21 +97,27 @@ function queue(config) {
     HEADERS = {
       "X-CSRFToken": getCookie("csrftoken"),
       }
-    execution_id = new_execution.id
-    var endpoint="/api/v1/execution/"+new_execution.id;
     // print out
     console.log('JSON : ' +  endpoint);
     console.log('JSON : ' +  data_send);
   
   
     axios({
-      method: 'put', //you can set what request you want to be
+      method: method_queue, //you can set what request you want to be
       url: endpoint,
       headers: HEADERS,
       data: data_send,
     }).then(response => {
-      console.log('plotly_results', response);
-      toggleDisable();
+      if (method_queue === 'post')
+      { 
+        save = 1;
+        console.log("http://elab-dev.vps.tecnico.ulisboa.pt:8008/execution/"+String(response.data.id))
+        location.replace("http://elab-dev.vps.tecnico.ulisboa.pt:8008/execution/"+String(response.data.id))
+      }
+      else{
+        console.log('plotly_results', response);
+        toggleDisable();
+     }
     }).catch(console);  
   
   }

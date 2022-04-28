@@ -1,10 +1,23 @@
 {% load static %}
 
 <!-- necessary for movable window -->
-<script>
+{% if video_config.stream_id is defined  %}
+  <script>
+   var selectedStream = {{apparatus.video_config.stream_id}};
+   server = "{{apparatus.video_config.stream_server}}";
+   console.log("help me test if ")
+   console.log(selectedStream)
+   console.log(server)
+  </script>
+{% else %}
+  <script>
    var selectedStream = {{video_config.stream_id}};
    server = "{{video_config.stream_server}}";
-</script>
+   console.log("help me test else")
+   console.log(selectedStream)
+   console.log(server)
+  </script>
+{% endif %}
 
 <!-- necessary for movable window -->
 <script src="https://cdn.jsdelivr.net/npm/interactjs/dist/interact.min.js"></script>
