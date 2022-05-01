@@ -1,3 +1,6 @@
 [submodule "pendulum"]
 	path = pendulum
 	url = https://github.com/e-lab-FREE/FREE_pendulum.git
+[submodule "dev_MonteCarlo"]
+	path = dev_MonteCarlo
+	url = https://github.com/e-lab-FREE/FREE_MonteCarlo.git
