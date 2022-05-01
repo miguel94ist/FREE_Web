@@ -65,6 +65,7 @@ function save_name(){
 
 
 function queue(config) {
+    new_execution 
     if (Object.keys(new_execution).length  !== 0)
     {
       execution_id = new_execution.id
@@ -111,13 +112,13 @@ function queue(config) {
       if (method_queue === 'post')
       { 
         save = 1;
-        console.log("http://elab-dev.vps.tecnico.ulisboa.pt:8008/execution/"+String(response.data.id))
-        location.replace("http://elab-dev.vps.tecnico.ulisboa.pt:8008/execution/"+String(response.data.id))
+        //console.log("http://elab-dev.vps.tecnico.ulisboa.pt:8008/execution/"+String(response.data.id))
+        //location.replace("http://elab-dev.vps.tecnico.ulisboa.pt:8008/execution/"+String(response.data.id))
+        window.history.pushState("","",'/execution/'+String(response.data.id))
+        new_execution = response.data;
       }
-      else{
-        console.log('plotly_results', response);
-        toggleDisable();
-     }
+      console.log('plotly_results', response);
+      toggleDisable();
     }).catch(console);  
   
   }
