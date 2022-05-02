@@ -26,7 +26,6 @@ var name = ''
 var frist=0;
 let table = "";
 
-
 function toggleDisable(){
     //$("#startButton").toggleClass("disabled");
     $("#startButton").removeClass("disabled");
@@ -44,9 +43,10 @@ function save_name(){
     console.log("OUT : test");
     data_send = config
     data_send["name"] =  $("#name-of-exection").val();
+    console.log(document.getElementById('csrf_token').textContent)
     // '{"experiment_name": "Pendulo", "config_experiment": {"DeltaX":'+ String(DeltaX)+', "Samples":'+String(Samples)+' }}'
     HEADERS = {
-        "X-CSRFToken": getCookie("csrftoken"),
+        "X-CSRFToken": document.getElementById('csrf_token').textContent,
         }
     var endpoint="/api/v1/execution/"+new_execution.id+"/name";
     // print out
@@ -65,7 +65,6 @@ function save_name(){
 
 
 function queue(config) {
-    new_execution 
     if (Object.keys(new_execution).length  !== 0)
     {
       execution_id = new_execution.id
@@ -96,7 +95,7 @@ function queue(config) {
   
     // '{"experiment_name": "Pendulo", "config_experiment": {"DeltaX":'+ String(DeltaX)+', "Samples":'+String(Samples)+' }}'
     HEADERS = {
-      "X-CSRFToken": getCookie("csrftoken"),
+      "X-CSRFToken": document.getElementById('csrf_token').textContent,
       }
     // print out
     console.log('JSON : ' +  endpoint);
@@ -110,8 +109,7 @@ function queue(config) {
       data: data_send,
     }).then(response => {
       if (method_queue === 'post')
-      { 
-        save = 1;
+      {
         //console.log("http://elab-dev.vps.tecnico.ulisboa.pt:8008/execution/"+String(response.data.id))
         //location.replace("http://elab-dev.vps.tecnico.ulisboa.pt:8008/execution/"+String(response.data.id))
         window.history.pushState("","",'/execution/'+String(response.data.id))
@@ -250,21 +248,9 @@ function queue(config) {
 
   
   function start() {
+    execution_id = new_execution.id;
     var endpoint_2="/api/v1/execution/"+execution_id+"/start";
-    // print out
     console.log('JSON : ' +  endpoint_2);
-    // console.log('JSON : ' +  JSON);
-    // data_send = {}
-    // $.ajax({
-    //   url: endpoint_2,   //Your api url
-    //   type: 'PUT',   //type is any HTTP method
-    //   contentType: 'application/json;charset=UTF-8',
-    //   data: JSON,
-    //   success: function (response){
-    //   console.log('PUT response in:' +response);
-    //   }
-    // });
-  
     axios({
       method: 'put', //you can set what request you want to be
       url: endpoint_2,
