@@ -55,6 +55,7 @@ INSTALLED_APPS = [
     'free.videoConfig',
     # APPARATUS TYPES BELOW
     'pendulum',
+    'dev_MonteCarlo',
 ]
 
 MIDDLEWARE = [
