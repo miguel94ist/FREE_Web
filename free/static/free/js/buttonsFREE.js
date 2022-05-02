@@ -217,7 +217,7 @@ function queue(config) {
         {
           if (response.data !== "")
           {
-            buildGraph(response)
+            rist = buildGraph(response)
           }
         }
         console.log(response);
