@@ -25,6 +25,7 @@ let Results=0;
 var name = ''
 var frist=0;
 let table = "";
+let last_result_id =0;
 
 function toggleDisable(){
     //$("#startButton").toggleClass("disabled");
@@ -195,7 +196,6 @@ function queue(config) {
         console.log(Results);
     }
 
-    let last_result_id =0 
     // Receive data from experiment
     function getData(){
       let endpoint_result =  "/api/v1/execution/"+execution_id+"/result/0";
@@ -218,11 +218,13 @@ function queue(config) {
           console.log("aqui")
           if (response.data !== "")
           {
-            buildGraph(response,new_execution.config.R)
-            frist = 1;
-            console.log(frist)
+            frist = buildGraph(response)
+            //frist = 1;
+            // console.log(frist)
+            last_result_id = response.data[0].id+1
           }
         }
+        console.log("EE");
         console.log(response);
         // check for ending of the experiment
         if (response.data.result_type !== 'undefined' && response.data[0].result_type === 'f'){
