@@ -215,9 +215,12 @@ function queue(config) {
         console.log('plotly_results', response.data);
         if (frist === 0)
         {
+          console.log("aqui")
           if (response.data !== "")
           {
-            rist = buildGraph(response)
+            buildGraph(response,new_execution.config.R)
+            frist = 1;
+            console.log(frist)
           }
         }
         console.log(response);
@@ -228,9 +231,10 @@ function queue(config) {
         }
         else{
           if (typeof response.data[0] === 'object'){
+            console.log("here")
             plotRunTime(response)
             keys  = Object.keys(response.data[0].value);
-            
+
             writeLineOnTable(keys,response)
     
             //  console.log("coisas html table ",html);
