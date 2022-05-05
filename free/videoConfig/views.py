@@ -8,7 +8,7 @@ from free.models import Apparatus
 import requests
 import random
 
-janus_server_address = settings.JANUS_SERVER_ADDRESSS
+janus_server_address = settings.JANUS_SERVER_ADDRESS
 janus_stream_admin_key = settings.JANUS_STREAM_ADMIN_KEY
 
 def connect_janus_stream(server_address):
