@@ -102,10 +102,13 @@ DATABASES = {
     }
 }
 
-SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-USE_X_FORWARDED_HOST = True
-USE_X_FORWARDED_PORT = True
-
+# Support reverse proxy in https 
+if env.bool('FREE_REVERSE_PROXY'):
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+    USE_X_FORWARDED_HOST = True
+    USE_X_FORWARDED_PORT = True
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
@@ -138,11 +141,11 @@ LANGUAGE_CODE = 'en'
 
 LANGUAGES = [
     ('en', _('English')),
-    ('pt', _('Portugese')),
+    ('pt', _('Portuguese')),
     ('es', _('Spanish')),
 ]
 
-TIME_ZONE = 'Europe/Prague'
+TIME_ZONE = env.str('TIME_ZONE','Europe/Lisbon')
 
 USE_I18N = True
 
