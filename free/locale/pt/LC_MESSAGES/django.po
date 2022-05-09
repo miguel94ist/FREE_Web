@@ -281,10 +281,8 @@ msgid "List of protocols"
 msgstr "Lista de protocolos"
 
 #: free/templates/free/apparatuses.html:18
-#, fuzzy
-#| msgid "Apparatuses"
 msgid "List of Apparatuses"
-msgstr "Aparatos"
+msgstr "Lista de Aparatos"
 
 #: free/templates/free/apparatuses.html:22
 msgid "List of available Apparatuses"
