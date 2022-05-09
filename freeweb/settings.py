@@ -145,6 +145,11 @@ LANGUAGES = [
     ('es', _('Spanish')),
 ]
 
+LOCALE_PATHS = (
+    os.path.join(BASE_DIR, 'free', 'locale'),
+    os.path.join(BASE_DIR, 'pendulum', 'locale'),
+)
+
 TIME_ZONE = env.str('TIME_ZONE','Europe/Lisbon')
 
 USE_I18N = True
