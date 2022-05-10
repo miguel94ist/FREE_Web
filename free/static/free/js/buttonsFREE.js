@@ -25,6 +25,11 @@ let last_result_id =0;
 document.getElementById('apparatus-dt').innerHTML = String(apparatusID);
 document.getElementById('protocol-dt').innerHTML = String(protocolID);
 
+let html_tabele = document.getElementById("table_result").innerHTML; 
+let original_html_table = document.getElementById("table_result").innerHTML;
+
+
+
 function toggleDisable(){
     //$("#startButton").toggleClass("disabled");
     $("#startButton").removeClass("disabled");
@@ -97,8 +102,13 @@ function goToCreateExecuiton(){
   enableInputs();
   changeTabs()
   restInputValeus();
-  table.destroy();
-  html_tabele = original_html_table;
+  console.log(original_html_table);
+  console.log(html_tabele);
+  //table.destroy();
+  $('#table_result_runtime').DataTable().rows().remove().draw();
+  html_tabele = "";
+  //document.getElementById("table_result").innerHTML = html_tabele;
+  //updateTableRunTime();
   frist = 0;
 }
 
@@ -249,13 +259,11 @@ function queue(config) {
   }
   
   $(document).ready(function(){
-    updateTableRunTime();
-  
-  });
-  
-  let html_tabele = document.getElementById("table_result").innerHTML;
-  let original_html_table = document.getElementById("table_result").innerHTML;
-  
+    updateTableRunTime(); 
+ });
+
+
+
   const writeLineOnTable = (keys,response) => {
     table.destroy();
     html_tabele += `<tr>`;
