@@ -97,6 +97,8 @@ function goToCreateExecuiton(){
   enableInputs();
   changeTabs()
   restInputValeus();
+  table.destroy();
+  html_tabele = ``;
   frist = 0;
 }
 
