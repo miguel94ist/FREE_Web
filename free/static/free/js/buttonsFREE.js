@@ -98,7 +98,7 @@ function goToCreateExecuiton(){
   changeTabs()
   restInputValeus();
   table.destroy();
-  html_tabele = ``;
+  html_tabele = document.getElementById("table_result").innerHTML;
   frist = 0;
 }
 
