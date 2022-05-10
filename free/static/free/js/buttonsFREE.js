@@ -98,7 +98,7 @@ function goToCreateExecuiton(){
   changeTabs()
   restInputValeus();
   table.destroy();
-  html_tabele = document.getElementById("table_result").innerHTML;
+  html_tabele = original_html_table;
   frist = 0;
 }
 
@@ -254,6 +254,7 @@ function queue(config) {
   });
   
   let html_tabele = document.getElementById("table_result").innerHTML;
+  let original_html_table = document.getElementById("table_result").innerHTML;
   
   const writeLineOnTable = (keys,response) => {
     table.destroy();
