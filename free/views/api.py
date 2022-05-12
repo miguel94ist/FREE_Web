@@ -5,6 +5,7 @@ from free.models import *
 import json
 import decimal
 from jsonschema import validate, ValidationError as JSONValidationError
+from freeweb import settings
 
 from free.views.permissions import ApparatusOnlyAccess
 
@@ -164,6 +165,14 @@ class Heartbeat(views.APIView):
         except Apparatus.DoesNotExist:
             return Response({'error': 'Apparatus with this id does not exist!'}, status=404)
         return Response(status=200)
+    
+class Version(views.APIView):
+    """
+    Returns the current version of the FREE server
+
+    """
+    def get(self, *args, **kwargs):
+        return Response({'version': settings.FREE_VERSION})
 
 class AppratusView(generics.RetrieveAPIView):
     """

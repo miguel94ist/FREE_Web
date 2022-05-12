@@ -21,6 +21,8 @@ environ.Env.read_env()
 BASE_DIR = Path(__file__).resolve().parent.parent
 PROJECT_DIR = os.path.dirname(os.path.abspath(__file__))
 
+FREE_VERSION = '0.5.0'
+
 # SECURITY WARNING: don't run with debug turned on in production!
 if env.bool('FREE_PRODUCTION'):
     DEBUG = False
@@ -234,5 +236,3 @@ JANUS_STREAM_ADMIN_KEY = env.str('JANUS_STREAM_ADMIN_KEY')
 PROJECT_NAME=env.str('PROJECT_NAME','World Pendulum Alliance')
 PROJECT_ACRONYMUM=env.str('PROJECT_ACRONYMUM', 'WPA')
 SITE_NAME=env.str('SITE_NAME','') 
-
-APPARATUS_TIMEOUT = 60
