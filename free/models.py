@@ -37,9 +37,8 @@ class Apparatus(models.Model):
         return _('%(apparatus_type)s in %(location)s') % {'apparatus_type': self.apparatus_type.name, 'location': self.location}
 
     @property
-    def status(self):
-        from freeweb import settings
-        if (timezone.now() - self.last_online).total_seconds() < settings.APPARATUS_TIMEOUT:
+    def current_status(self):
+        if (timezone.now() - self.last_online).total_seconds() < self.timeout:
             return (_('Online'))
         else:
             return (_('Offline'))

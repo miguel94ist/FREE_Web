@@ -4,6 +4,7 @@ from free.models import *
 import json
 from django.utils import timezone
 from django.utils.dateparse import parse_datetime
+from time import sleep
 
 def setup_fixtures(self):
     self.user = User.objects.create_user('user', 'em@a.il', 'password')
@@ -31,6 +32,7 @@ def setup_fixtures(self):
         location = 'Dummy',
         secret = 'no',
         owner = 'Nobody',
+        timeout = 1,
     ).save()
 
     self.basic_protocol = Protocol(
@@ -160,7 +162,10 @@ class ExecutionAPI(TestCase):
         response = self.client.put('/api/v1/apparatus/' + str(self.apparatus.pk) + '/heartbeat', 
         HTTP_AUTHENTICATION = 'secret_code')
         self.assertEqual(response.status_code, 200)
-        self.assertEqual('Online', Apparatus.objects.get(pk=self.apparatus.pk).status)
+        self.assertEqual('Online', Apparatus.objects.get(pk=self.apparatus.pk).current_status)
+        sleep(2)
+        self.assertEqual('Offline', Apparatus.objects.get(pk=self.apparatus.pk).current_status)
+        
         
         request_time = timezone.now()
         response = self.client.put('/api/v1/execution/' + str(execution_id) + '/status', {

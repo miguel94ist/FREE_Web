@@ -33,10 +33,11 @@ class ApparatusAdminForm(ModelForm):
 class ApparatusAdmin(SummernoteModelAdmin):
     form = ApparatusAdminForm
     list_filter = ['apparatus_type']
-    
+    readonly_fields = ('last_online', )
     exclude = ['description', 'location']
     
     def __init__(self, *args, **kwargs):
+        
         self.summernote_fields = [f'description_{lang[0]}' for lang in settings.LANGUAGES]
         super().__init__(*args, **kwargs)
 
