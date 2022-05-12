@@ -66,9 +66,11 @@
                        <a class="item" data-tab="configuration">{% trans 'Configuration'%}</a>
                     {% endif %} 
                     {% if final_result.id != None %}
-                       <a class="item " data-tab="results">{% trans 'Results'%}</a>
+                       <a class="item " style="display: none;" data-tab="execution" id="topTabExecution">{% trans 'Execution'%}</a>
+                       <a class="item " data-tab="results" id="topTabResults">{% trans 'Results'%}</a> 
                     {% else %}  
-                       <a class="item " data-tab="execution">{% trans 'Execution'%}</a>
+                       <a class="item " data-tab="execution" id="topTabExecution">{% trans 'Execution'%}</a>
+                       <a class="item " style="display: none;" data-tab="results" id="topTabResults">{% trans 'Results'%}</a> 
                     {% endif %} 
                 </div>
 
@@ -118,15 +120,21 @@
                 </div>
                 {% if final_result.id == None %}
                     <div class="ui bottom attached tab segment" data-tab="execution" id="cena">
+                {% else %}
+                    <div class="ui bottom attached tab segment" style="display: none;" data-tab="execution" id="cena">
+                {% endif %}
+
                         {% block excutiontab %}
                         {% endblock %}
                     </div>
+                {% if final_result.id == None %}
+                    <div class="ui bottom attached tab segment" style="display: none;" data-tab="results" id="cena1">
                 {% else %}
                     <div class="ui bottom attached tab segment" data-tab="results" id="cena1">
+                {% endif %}
                         {% block resultstab %}
                         {% endblock %}     
                     </div>
-                {% endif %}
             </div>
         </div>
     </div>
