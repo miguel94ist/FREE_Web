@@ -174,7 +174,7 @@ class Version(views.APIView):
     def get(self, *args, **kwargs):
         return Response({'version': settings.FREE_VERSION})
 
-class AppratusView(generics.RetrieveAPIView):
+class ApparatusView(generics.RetrieveAPIView):
     """
     Retrieves an information about a given apparatus.
 
