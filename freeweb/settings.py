@@ -114,8 +114,7 @@ if env.bool('FREE_REVERSE_PROXY'):
     CSRF_COOKIE_SECURE = True
 
 LOCALE_PATHS = (
-    os.path.join(BASE_DIR, 'free', 'locale'),
-    os.path.join(BASE_DIR, 'pendulum', 'locale'),
+    os.path.join(PROJECT_DIR, 'locale'),
 )
 
 # Password validation
