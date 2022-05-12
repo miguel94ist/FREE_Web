@@ -113,6 +113,11 @@ if env.bool('FREE_REVERSE_PROXY'):
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
 
+LOCALE_PATHS = (
+    os.path.join(BASE_DIR, 'free', 'locale'),
+    os.path.join(BASE_DIR, 'pendulum', 'locale'),
+)
+
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
 

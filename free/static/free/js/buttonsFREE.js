@@ -1,31 +1,34 @@
 let new_execution = JSON.parse(document.getElementById('execution-config').textContent);
 //console.log("test 28")
 //console.log(new_execution)
-if ( Object.keys(new_execution).length  !== 0)
+if ( Object.keys(new_execution).length  !== 0 && new_execution.status === "C")
 {
-  var apparatus = new_execution.apparatus;
-  var protocol = new_execution.protocol.id;
-  if (new_execution.status === "C" ){
-     //$('.menu .item').tab('change tab','configuration');
-     toggleDisable();
-  }
+  toggleDisable();
 }
 else{
-  var apparatus = JSON.parse(document.getElementById('apparatus-id').textContent);
-  var protocol = JSON.parse(document.getElementById('protocol-id').textContent);
-  console.log("Rossa");
-  console.log(apparatus);
-  console.log(protocol);
+  
 }
+var apparatusID = JSON.parse(document.getElementById('apparatus-id').textContent);
+var protocolID = JSON.parse(document.getElementById('protocol-id').textContent);
+var fullProtocol = JSON.parse(document.getElementById('protocol-config').textContent);
 let save = 0;
 let endpoint = "";
 let method_queue = '';
-let execution_id = 0;
+let executionID = 0;
 let Results=0;
 var name = ''
 var frist=0;
 let table = "";
 let last_result_id =0;
+
+
+document.getElementById('apparatus-dt').innerHTML = String(apparatusID);
+document.getElementById('protocol-dt').innerHTML = String(protocolID);
+
+let html_tabele = document.getElementById("table_result").innerHTML; 
+let original_html_table = document.getElementById("table_result").innerHTML;
+
+
 
 function toggleDisable(){
     //$("#startButton").toggleClass("disabled");
@@ -33,11 +36,102 @@ function toggleDisable(){
 
 }
 
+function changeButtons(){
+  if (document.getElementById("createNew").style.display === "none") 
+  {
+    document.getElementById("createNew").style.display = null;
+    document.getElementById("deleteButton").style.display = null;
+    document.getElementById("saveNameButton").style.display = null;
+    document.getElementById("saveButton").style.display = "none";
+    document.getElementById("startButton").style.display = "none";
+    document.getElementById("clearButton").style.display = "none";
+  } 
+  else {
+    document.getElementById("createNew").style.display = "none";
+    document.getElementById("deleteButton").style.display = "none";
+    document.getElementById("saveNameButton").style.display = "none";
+    document.getElementById("saveButton").style.display = null;
+    document.getElementById("startButton").style.display = null;
+    document.getElementById("clearButton").style.display = null;
+  }
+}
+
+
 function disableButton(){
     //$("#startButton").toggleClass("disabled");
     $("#startButton").addClass("disabled");
-
 }
+
+function changeTabs(){
+  document.getElementById("cena1").style.display = "none";
+  document.getElementById("cena").style.display = null;
+  document.getElementById("topTabResults").style.display = "none";
+  document.getElementById("topTabExecution").style.display = null;
+}
+
+function enableInputs(){
+  for (let paramet = 0; paramet < fullProtocol.required.length; paramet++){
+    $("#range-"+String(fullProtocol.required[paramet])).removeClass("disabled");
+    document.getElementById(String(fullProtocol.required[paramet])).disabled = false;
+  }
+}
+
+function desableInputs(){
+  for (let paramet = 0; paramet < fullProtocol.required.length; paramet++){
+    $("#range-"+String(fullProtocol.required[paramet])).addClass("disabled");
+    document.getElementById(String(fullProtocol.required[paramet])).disabled = true;
+  }  
+}
+
+function restInputValeus(){
+  for (let paramet = 0; paramet < fullProtocol.required.length; paramet++){
+    document.getElementById(String(fullProtocol.required[paramet])).value = Number(fullProtocol.properties[String(fullProtocol.required[paramet])].default);
+    $("#range-"+String(fullProtocol.required[paramet])).range('set value',  Number(fullProtocol.properties[String(fullProtocol.required[paramet])].default)); 
+  }  
+}
+
+
+
+function goToCreateExecuiton(){
+  //location.replace("http://"+window.location.hostname+":"+window.location.port+"/execution/create/"+String(apparatus)+"/"+String(protocol))
+  window.history.pushState("","",'/execution/create/'+String(apparatusID)+"/"+String(protocolID))
+  changeButtons()
+  new_execution = {};
+  disableButton();
+  cleanPlots();
+  enableInputs();
+  changeTabs()
+  restInputValeus();
+  console.log(original_html_table);
+  console.log(html_tabele);
+  //table.destroy();
+  $('#table_result_runtime').DataTable().rows().remove().draw();
+  html_tabele = "";
+  //document.getElementById("table_result").innerHTML = html_tabele;
+  //updateTableRunTime();
+  frist = 0;
+}
+
+function deleteExecution(){
+  // '{"experiment_name": "Pendulo", "config_experiment": {"DeltaX":'+ String(DeltaX)+', "Samples":'+String(Samples)+' }}'
+  HEADERS = {
+      "X-CSRFToken": document.getElementById('csrf_token').textContent,
+      }
+  // console.log("delete")
+  // console.log(new_execution.id)
+  var endpoint="/api/v1/execution/"+new_execution.id;
+
+  axios({
+      method: 'delete', //you can set what request you want to be
+      url: endpoint,
+      headers: HEADERS,
+  }).then(response => {
+      console.log('plotly_results', response);
+      location.replace("http://"+window.location.hostname+":"+window.location.port+"/executions/finished")
+  }).catch(console);
+}
+
+
 
 
 function save_name(){
@@ -66,9 +160,10 @@ function save_name(){
 
 
 function queue(config) {
+  console.log(new_execution)
     if (Object.keys(new_execution).length  !== 0)
     {
-      execution_id = new_execution.id
+      executionID = new_execution.id
       endpoint="/api/v1/execution/"+new_execution.id;
       method_queue = 'put'
       data_send = new_execution
@@ -77,7 +172,7 @@ function queue(config) {
     {
       endpoint="/api/v1/execution";
       method_queue = 'post';
-      data_send = {"apparatus": apparatus, "protocol": protocol}
+      data_send = {"apparatus": apparatusID, "protocol": protocolID}
     }
     // get inputs values from the client side
     config_input.findConfigInput();
@@ -164,12 +259,11 @@ function queue(config) {
   }
   
   $(document).ready(function(){
-    updateTableRunTime();
-  
-  });
-  
-  let html_tabele = document.getElementById("table_result").innerHTML;
-  
+    updateTableRunTime(); 
+ });
+
+
+
   const writeLineOnTable = (keys,response) => {
     table.destroy();
     html_tabele += `<tr>`;
@@ -198,13 +292,13 @@ function queue(config) {
 
     // Receive data from experiment
     function getData(){
-      let endpoint_result =  "/api/v1/execution/"+execution_id+"/result/0";
+      let endpoint_result =  "/api/v1/execution/"+executionID+"/result/0";
       if (frist === 0)
       {
-        endpoint_result = "/api/v1/execution/"+execution_id+"/result/0";
+        endpoint_result = "/api/v1/execution/"+executionID+"/result/0";
       }
       else{
-        endpoint_result = "/api/v1/execution/"+execution_id+"/result/"+last_result_id
+        endpoint_result = "/api/v1/execution/"+executionID+"/result/"+last_result_id
       }
     
       axios({
@@ -254,8 +348,8 @@ function queue(config) {
 
   
   function start() {
-    execution_id = new_execution.id;
-    var endpoint_2="/api/v1/execution/"+execution_id+"/start";
+    executionID = new_execution.id;
+    var endpoint_2="/api/v1/execution/"+executionID+"/start";
     console.log('JSON : ' +  endpoint_2);
     axios({
       method: 'put', //you can set what request you want to be
@@ -271,5 +365,7 @@ function queue(config) {
     
     $('.menu .item').tab('change tab','execution');
     myStartFunction();
+    changeButtons();
+    desableInputs();
   }
   
