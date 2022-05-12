@@ -19,6 +19,7 @@ environ.Env.read_env()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+PROJECT_DIR = os.path.dirname(os.path.abspath(__file__))
 
 # SECURITY WARNING: don't run with debug turned on in production!
 if env.bool('FREE_PRODUCTION'):
@@ -146,8 +147,7 @@ LANGUAGES = [
 ]
 
 LOCALE_PATHS = (
-    os.path.join(BASE_DIR, 'free', 'locale'),
-    os.path.join(BASE_DIR, 'pendulum', 'locale'),
+    os.path.join(PROJECT_DIR, 'locale'),
 )
 
 TIME_ZONE = env.str('TIME_ZONE','Europe/Lisbon')
