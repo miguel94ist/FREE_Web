@@ -158,13 +158,14 @@ class ExecutionAPI(TestCase):
         response = json.loads(response.content)
         self.assertEqual(response["id"], execution_id)
         self.assertEqual(response["status"], "Q")
+        self.assertEqual('Online', Apparatus.objects.get(pk=self.apparatus.pk).current_status)
+        sleep(2)
+        self.assertEqual('Offline', Apparatus.objects.get(pk=self.apparatus.pk).current_status)
         
         response = self.client.put('/api/v1/apparatus/' + str(self.apparatus.pk) + '/heartbeat', 
         HTTP_AUTHENTICATION = 'secret_code')
         self.assertEqual(response.status_code, 200)
-        self.assertEqual('Online', Apparatus.objects.get(pk=self.apparatus.pk).current_status)
-        sleep(2)
-        self.assertEqual('Offline', Apparatus.objects.get(pk=self.apparatus.pk).current_status)
+
         
         
         request_time = timezone.now()
