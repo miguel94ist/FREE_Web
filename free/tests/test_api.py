@@ -99,6 +99,16 @@ class ExecutionAPI(TestCase):
         self.assertEqual(response.status_code, 400) 
 
     def test_execution_flow(self):
+        
+        # Wait until timeout from configs expires
+        sleep(2)
+        # Check the queue before any execution is there
+        response = self.client.get('/api/v1/apparatus/' + str(self.apparatus.pk) + '/nextexecution',
+        HTTP_AUTHENTICATION = 'secret_code')
+        self.assertEqual(response.status_code, 200)
+        # This should still work
+        self.assertEqual('Online', Apparatus.objects.get(pk=self.apparatus.pk).current_status)
+        
         # Configure an execution
         response = self.client.post('/api/v1/execution', {
             'apparatus': self.apparatus.pk, 
@@ -159,6 +169,8 @@ class ExecutionAPI(TestCase):
         self.assertEqual(response["id"], execution_id)
         self.assertEqual(response["status"], "Q")
         self.assertEqual('Online', Apparatus.objects.get(pk=self.apparatus.pk).current_status)
+        sleep(0.5)
+        self.assertEqual('Online', Apparatus.objects.get(pk=self.apparatus.pk).current_status)
         sleep(2)
         self.assertEqual('Offline', Apparatus.objects.get(pk=self.apparatus.pk).current_status)
         
@@ -179,7 +191,7 @@ class ExecutionAPI(TestCase):
         self.assertLess((parse_datetime(response["start"])-request_time).total_seconds(),1)
 
         response = self.client.get('/api/v1/apparatus/999/nextexecution')
-        self.assertEqual(response.status_code, 200)    
+        self.assertEqual(response.status_code, 404)    
 
         # Cannot change status to invalid
         response = self.client.put('/api/v1/execution/' + str(execution_id) + '/status', {

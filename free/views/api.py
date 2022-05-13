@@ -6,6 +6,7 @@ import json
 import decimal
 from jsonschema import validate, ValidationError as JSONValidationError
 from freeweb import settings
+from django.shortcuts import get_object_or_404
 
 from free.views.permissions import ApparatusOnlyAccess
 
@@ -204,7 +205,9 @@ class NextExecution(generics.RetrieveAPIView):
     permission_classes = [ApparatusOnlyAccess]
     serializer_class = ExecutionSerializer
     def get_object(self):
-        obj = Execution.objects.filter(status='Q', apparatus_id=self.kwargs['id']).order_by('start').first()
+        apparatus = get_object_or_404(Apparatus, pk=self.kwargs['id'])
+        self.check_object_permissions(self.request, apparatus)        
+        obj = Execution.objects.filter(status='Q', apparatus=apparatus).order_by('start').first()
         if obj:
             self.check_object_permissions(self.request, obj)
             obj.save()
