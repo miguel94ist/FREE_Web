@@ -1,6 +1,6 @@
 {% load i18n %}
 {% for protocol in value.all %}
     <a href="{% url 'free:execution-create' record.pk protocol.pk %}">
-        <button class='ui negative button'>{% trans 'Run' %} {{protocol}}</button>
+        <button class='ui positive button'>{% trans 'Run' %} {{protocol}}</button>
     </a>
 {% endfor %}

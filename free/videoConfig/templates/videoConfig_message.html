@@ -1,0 +1,49 @@
+  <div style="margin: 10px" class="ui segment raised">
+  <h1> Janus configuration instructions</h1>
+
+  <h2> Server configuration</h2>
+  <div class="ui label big">
+    <i class="exclamation triangle icon"></i>    
+    Verify that Janus is installed on the server
+  </div>
+  <p></p>
+  <div class="ui label big">
+    <i class="exclamation triangle icon"></i>    
+    Verify that the streaming plugin is running and configured:
+  </div>
+
+    <div class="ui raised centered eight  segment">
+      <a class="ui red ribbon label">/var/snap/janus-gateway/common/etc/janus.plugin.streaming.jcfg</a>
+      <p></p>
+      <pre>
+      general :
+      {
+        admin_key = "somesecret";
+        rtp_port_range = "6000-7000";
+      };
+      </pre>
+      <p></p>
+      <div class="ui label big">
+        <i class="exclamation triangle icon"></i>    
+        Modify the <code>admin_key</code> to a better more secure value
+      </div>
+    </div>
+    <h1> FREE configuration instructions</h1>
+    <div class="ui label big">
+      <i class="exclamation triangle icon"></i>    
+      Verify that the janus address and secret are defined in <code>.env</code> file:
+    </div>
+    <div class="ui raised centered eight  segment">
+      <a class="ui red ribbon label">freeweb/.env</a>
+      <p></p>
+      <pre>
+      JANUS_SERVER_ADDRESS=http://ip_address:port/janus
+      JANUS_STREAM_ADMIN_KEY=somesecret
+      </pre>
+      <p></p>
+      <div class="ui label big">
+        <i class="exclamation triangle icon"></i>    
+        The <code>JANUS_STREAM_ADMIN_KEY</code> sould have the same value as the <code>admin_key</code> on janus configuration
+      </div>
+    </div>
+  </div>

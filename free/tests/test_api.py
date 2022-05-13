@@ -4,6 +4,7 @@ from free.models import *
 import json
 from django.utils import timezone
 from django.utils.dateparse import parse_datetime
+from time import sleep
 
 def setup_fixtures(self):
     self.user = User.objects.create_user('user', 'em@a.il', 'password')
@@ -31,6 +32,7 @@ def setup_fixtures(self):
         location = 'Dummy',
         secret = 'no',
         owner = 'Nobody',
+        timeout = 1,
     ).save()
 
     self.basic_protocol = Protocol(
@@ -97,6 +99,16 @@ class ExecutionAPI(TestCase):
         self.assertEqual(response.status_code, 400) 
 
     def test_execution_flow(self):
+        
+        # Wait until timeout from configs expires
+        sleep(2)
+        # Check the queue before any execution is there
+        response = self.client.get('/api/v1/apparatus/' + str(self.apparatus.pk) + '/nextexecution',
+        HTTP_AUTHENTICATION = 'secret_code')
+        self.assertEqual(response.status_code, 200)
+        # This should still work
+        self.assertEqual('Online', Apparatus.objects.get(pk=self.apparatus.pk).current_status)
+        
         # Configure an execution
         response = self.client.post('/api/v1/execution', {
             'apparatus': self.apparatus.pk, 
@@ -156,6 +168,17 @@ class ExecutionAPI(TestCase):
         response = json.loads(response.content)
         self.assertEqual(response["id"], execution_id)
         self.assertEqual(response["status"], "Q")
+        self.assertEqual('Online', Apparatus.objects.get(pk=self.apparatus.pk).current_status)
+        sleep(0.5)
+        self.assertEqual('Online', Apparatus.objects.get(pk=self.apparatus.pk).current_status)
+        sleep(2)
+        self.assertEqual('Offline', Apparatus.objects.get(pk=self.apparatus.pk).current_status)
+        
+        response = self.client.put('/api/v1/apparatus/' + str(self.apparatus.pk) + '/heartbeat', 
+        HTTP_AUTHENTICATION = 'secret_code')
+        self.assertEqual(response.status_code, 200)
+
+        
         
         request_time = timezone.now()
         response = self.client.put('/api/v1/execution/' + str(execution_id) + '/status', {
@@ -168,7 +191,7 @@ class ExecutionAPI(TestCase):
         self.assertLess((parse_datetime(response["start"])-request_time).total_seconds(),1)
 
         response = self.client.get('/api/v1/apparatus/999/nextexecution')
-        self.assertEqual(response.status_code, 200)    
+        self.assertEqual(response.status_code, 404)    
 
         # Cannot change status to invalid
         response = self.client.put('/api/v1/execution/' + str(execution_id) + '/status', {
@@ -269,6 +292,13 @@ class ExecutionAPI(TestCase):
             'config': {'displacement': 7, 'enumerator':'A'} }
         , content_type='application/json')
         self.assertEqual(response.status_code, 200)
+        
+        response = self.client.put('/api/v1/execution/' + str(new_exec_id) + '/name', {
+            'name': 'testname',
+        }, content_type='application/json')
+        self.assertEqual(response.status_code, 200)
+        
+        self.assertEqual('testname', Execution.objects.get(pk=new_exec_id).name)
 
         # UPDATE WITH INVALID SCHEMA
         response = self.client.put('/api/v1/execution/' + str(new_exec_id), {
@@ -309,47 +339,7 @@ class ExecutionAPI(TestCase):
         response = json.loads(response.content)
         self.assertEqual(len(response), 0)
         
-    def test_status_pings(self):
-        import time
-        
-        response = self.client.get(f'/api/v1/apparatus/{self.apparatus.pk}')
-        self.assertEqual(response.status_code, 200)
-        response = json.loads(response.content)
-        self.assertEqual(response['status'], 'offline')
-        
-        response = self.client.post(f'/api/v1/apparatus/{self.apparatus.pk}/setstatus', {
-            'apparatus': self.apparatus.pk, 
-            'status': 'online', 
-            }, content_type='application/json')
-        self.assertEqual(response.status_code, 201)
-        
-        self.assertEqual(Status.objects.filter(apparatus=self.apparatus).count(), 2)
-        
-        response = self.client.get(f'/api/v1/apparatus/{self.apparatus.pk}')
-        self.assertEqual(response.status_code, 200)
-        response = json.loads(response.content)
-        self.assertEqual(response['status'], 'online')
-        
-        response = self.client.post(f'/api/v1/apparatus/{self.apparatus.pk}/setstatus', {
-            'apparatus': self.apparatus.pk, 
-            'status': 'maintenance', 
-            }, content_type='application/json')
-        self.assertEqual(response.status_code, 201)
-        
-        self.assertEqual(Status.objects.filter(apparatus=self.apparatus).count(), 4)
-        
-        response = self.client.get(f'/api/v1/apparatus/{self.apparatus.pk}')
-        self.assertEqual(response.status_code, 200)
-        response = json.loads(response.content)
-        self.assertEqual(response['status'], 'maintenance')
-        
-        time.sleep(2)
-        
-        response = self.client.get(f'/api/v1/apparatus/{self.apparatus.pk}')
-        self.assertEqual(response.status_code, 200)
-        response = json.loads(response.content)
-        self.assertEqual(response['status'], 'offline')
-        
+
         
 
 

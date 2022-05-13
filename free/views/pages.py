@@ -1,6 +1,6 @@
 from django.utils.translation import gettext_lazy as _
 from django.urls import reverse_lazy
-from django.views.generic import TemplateView, DetailView
+from django.views.generic import TemplateView, TemplateView
 from free.views.api import ExecutionSerializer, ResultSerializer
 from free.models import *
 from django_tables2 import Table, TemplateColumn, Column
@@ -12,33 +12,39 @@ class IndexView(TemplateView):
 
 # EXPERIMENT CONTROL & EXECUTIONS
 
-class ExecutionView(LoginRequiredMixin,DetailView):
-    model = Execution
+class ExecutionView(LoginRequiredMixin, TemplateView):
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['execution_json'] = ExecutionSerializer(self.object).data
-        context['video_config'] = Apparatus.objects.get(id=self.object.apparatus.id).video_config
+        self.execution = Execution.objects.get(pk=kwargs['pk'])
+        context['execution_json'] = ExecutionSerializer(self.execution).data
+        context['apparatus'] = self.execution.apparatus
+        context['protocol'] = self.execution.protocol
         try:
-            context['final_result'] = ResultSerializer(Result.objects.get(result_type='f', execution=self.object)).data
+            context['final_result'] = ResultSerializer(Result.objects.get(result_type='f', execution=self.execution)).data
         except:
             context['final_result'] = {}
         return context
 
     def get_template_names(self):
-        return ['free/experiments/' + self.object.apparatus.apparatus_type.slug + '.html']
+        return ['free/experiments/' + self.execution.apparatus.apparatus_type.slug + '.html']
 
-class CreateExecutionView(ExecutionView):    
-    model = Execution
+class CreateExecutionView(LoginRequiredMixin, TemplateView):    
+    
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        self.apparatus = Apparatus.objects.get(pk=kwargs['apparatus_id'])
+        
+        context['execution_json'] = {}
+        context['apparatus'] = self.apparatus
+        context['protocol'] = Protocol.objects.get(pk=kwargs['protocol_id'])
+        context['final_result'] = {}
+        return context
 
-    def get_object(self):
-        return Execution.objects.get_or_create(
-            user = self.request.user,
-            apparatus_id = self.kwargs['apparatus_id'],
-            protocol_id = self.kwargs['protocol_id'],
-            config = '',
-            status = 'N'
-        )[0]
+    def get_template_names(self):
+        return ['free/experiments/' + self.apparatus.apparatus_type.slug + '.html']
+
 
 class ExecutionsTable(Table):
     action = TemplateColumn(template_name='free/execution_link.html')
@@ -52,13 +58,13 @@ class ExecutionsListView(LoginRequiredMixin,SingleTableView):
     table_class = ExecutionsTable
 
     def get_queryset(self):
-        return Execution.objects.filter(user=self.request.user, status=self.status_filter)
+        return Execution.objects.filter(user=self.request.user, status__in =  self.status_filter)
 
 class ExecutionsConfiguredListView(ExecutionsListView):
-    status_filter = 'C'
+    status_filter = ['C','N', 'Q', 'R']
 
 class ExecutionsFinishedListView(ExecutionsListView):
-    status_filter = 'F'
+    status_filter = ['E',  'F', 'A', 'T']
         
 # PROTOCOLS LIST
 

@@ -1,0 +1,96 @@
+{% extends 'free/base.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block title %} Home page {% endblock %}
+{% block headscript%}
+
+
+{% endblock %}
+
+{% block content %}
+
+
+
+<div class="right floated thirteen wide computer sixteen wide phone column" id="content">
+
+  {% if janus_warning %}
+
+  <div class="ui big negative message">
+      <i class="icon"></i>
+      <div class="header">
+        {{ janus_warning }}
+      </div>
+      You may need to delete the stream information on the administration page or on the janus streaaming plugin configuration file
+    </div>
+
+    {%else%}
+
+      {% if janus_error %}
+
+      <div class="ui big negative message">
+          <i class="icon"></i>
+          <div class="header">
+            Janus not runnig or not well configured
+          </div>
+          Follow instructions bellow
+      </div>
+      
+      {% endif %}
+
+  {% endif %}
+
+
+
+  <h3> <a href = '{% url "video-config-list" %}'>Return no Apparatuses List</a></h3>
+
+  {% include 'free/video_window.html' %}
+
+  <h1> {% trans 'Apparatus Information' %}</h1>
+  <pre>{{ ap | pprint }}</pre>
+  <h1>{% trans 'Video Stream information' %}</h1>
+  <pre>{{ stream_info | pprint }}</pre>
+  <br>
+  
+  {% if stream_info %}
+  
+    <a href="{% url "video-config-remove" ap.id %}">
+      <div class="ui teal labeled icon button">
+        {% trans 'Remove stream' %} 
+        <i class="signup icon"></i>
+      </div>
+    </a>
+  
+  {% else %}
+  
+    <a href="{% url "video-config-assign" ap.id %}">
+      <div class="ui teal labeled icon button">
+        {% trans 'Assign stream' %} 
+        <i class="signup icon"></i>
+      </div>
+    </a>
+  
+  {% endif %}
+
+  <h1>Data to be copied into RP </h1>
+    {% if stream_config %}
+      <pre>
+        video_server="{{stream_config.video_server}}"
+        video_port={{stream_config.video_port}}
+        apparatus_location="{{stream_config.apparatus_location}}"
+        apparatus_name="{{stream_config.apparatus_name}}"
+        apparatus_id={{stream_config.apparatus_id}}
+      </pre>  
+    {%else%}
+
+    {%endif%}
+
+  {% if janus_error %}
+    {% include './videoConfig_message.html' %}
+  {% endif %}
+
+{% endblock %}
+
+</div>
+
+  {% include 'free/layout/scripts.html' %}

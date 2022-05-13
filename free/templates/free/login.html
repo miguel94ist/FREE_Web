@@ -53,7 +53,7 @@
                   <form class="ui large form" method="POST" action="{% url 'free:login'%}">
                     {% csrf_token %}
                     <div class="ui segment">
-                      <img class="ui centered medium image" src="http://e-lab.ist.eu/rec.web/javax.faces.resource/elab_logo.png.faces?ln=images" alt=""><br>
+                      <img class="ui centered medium image" src="{% static 'free/images/elab_logo.png' %}" alt=""><br>
                         <div class="field">
                         <div class="ui left icon input">
                             <i class="user icon"></i>

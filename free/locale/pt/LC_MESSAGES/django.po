@@ -3,358 +3,424 @@
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
-#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
+"Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-11-16 21:10-0500\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
+"POT-Creation-Date: 2022-05-09 17:55-0300\n"
+"PO-Revision-Date: 2022-05-09 18:08-0300\n"
+"Language: pt\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"X-Generator: Poedit 2.3.1\n"
+"X-Poedit-Bookmarks: -1,-1,10,-1,-1,-1,-1,-1,-1,-1\n"
 
-#: .\admin.py:9 .\admin.py:10 .\admin.py:11
+#: dev_MonteCarlo/templates/free/experiments/dev_MonteCarlo.html:21
+msgid " Apparatus: "
+msgstr " Aparato: "
+
+#: dev_MonteCarlo/templates/free/experiments/dev_MonteCarlo.html:23
+msgid "  / Protocol: "
+msgstr "  / Protocolo: "
+
+#: dev_MonteCarlo/templates/free/experiments/dev_MonteCarlo.html:29
+msgid "Name of execution:"
+msgstr "Nome da execução:"
+
+#: dev_MonteCarlo/templates/free/experiments/dev_MonteCarlo.html:35
+#: dev_MonteCarlo/templates/free/experiments/dev_MonteCarlo.html:89
+msgid "Save"
+msgstr "Salvar"
+
+#: dev_MonteCarlo/templates/free/experiments/dev_MonteCarlo.html:47
+msgid "Initial Displacement (cm)"
+msgstr "Deslocamento Inicial (cm)"
+
+#: dev_MonteCarlo/templates/free/experiments/dev_MonteCarlo.html:66
+msgid "Number of Samples N"
+msgstr "Número de Amostras N"
+
+#: dev_MonteCarlo/templates/free/experiments/dev_MonteCarlo.html:93
+msgid "Submit"
+msgstr "Enviar"
+
+#: dev_MonteCarlo/templates/free/experiments/dev_MonteCarlo.html:96
+msgid "Clear All"
+msgstr "Limpar Tudo"
+
+#: dev_MonteCarlo/templates/free/experiments/dev_MonteCarlo.html:163
+msgid "Sample Number"
+msgstr "Número da amostra"
+
+#: dev_MonteCarlo/templates/free/experiments/dev_MonteCarlo.html:164
+msgid "Period [s]"
+msgstr "Período [s]"
+
+#: dev_MonteCarlo/templates/free/experiments/dev_MonteCarlo.html:165
+msgid "g [m/s^2]"
+msgstr "g [m/s²]"
+
+#: dev_MonteCarlo/templates/free/experiments/dev_MonteCarlo.html:166
+msgid "Velocity [m/s]"
+msgstr "Velocity [cm/s]"
+
+#: dev_MonteCarlo/templates/free/experiments/dev_MonteCarlo.html:167
+msgid "Temperature [ºC]"
+msgstr "Temperatura [ºC]"
+
+#: free/admin.py:11 free/admin.py:12 free/admin.py:13
 msgid "FREE Administration"
-msgstr ""
+msgstr "Administração do FREE"
 
-#: .\models.py:9
+#: free/models.py:10
 msgid "Name"
-msgstr ""
+msgstr "Nome"
 
-#: .\models.py:10
+#: free/models.py:11
 msgid "Slug name"
-msgstr ""
+msgstr "Nome Slug"
 
-#: .\models.py:11 .\templates\free\experiment.html:18
+#: free/models.py:12 free/models.py:28 free/models.py:63
+#: free/templates/free/experiment.html:62
+#: free/templates/free/experiment.html:65
 msgid "Description"
-msgstr ""
+msgstr "Descrição"
 
-#: .\models.py:12 .\models.py:72 .\models.py:97
-#: .\templates\free\experiments\pendulum.html:12
-msgid "Configuration"
-msgstr ""
-
-#: .\models.py:13
+#: free/models.py:13
 msgid "Scientific area"
-msgstr ""
+msgstr "Área Científica"
 
-#: .\models.py:14
+#: free/models.py:14
 msgid "Lab type"
-msgstr ""
+msgstr "Tipo de Laboratório"
 
-#: .\models.py:20
-msgid "Experiment"
-msgstr ""
+#: free/models.py:20
+msgid "Apparatus type"
+msgstr "Tipo de aparato"
 
-#: .\models.py:21
-msgid "Experiments"
-msgstr ""
+#: free/models.py:21
+msgid "Apparatus types"
+msgstr "Tipos de aparatos"
 
-#: .\models.py:25
+#: free/models.py:25
 #, python-format
 msgid ""
-"After setting/changing the experiment, press \"%(button_name)s\" to see the "
-"list of protocols."
+"After setting/changing the apparatus_type, press \"%(button_name)s\" to see "
+"the list of protocols."
 msgstr ""
+"Depois de selecionar/mudar o tipo de aparato, carregue em \"%(button_name)s"
+"\" para ver a lista de protocolos."
 
-#: .\models.py:25
+#: free/models.py:25
 msgid "Save and continue editing"
-msgstr ""
+msgstr "Salvar e continuar a edição"
 
-#: .\models.py:27
+#: free/models.py:27
 msgid "Location"
-msgstr ""
+msgstr "Localização"
 
-#: .\models.py:28
+#: free/models.py:29
 msgid "Secret"
-msgstr ""
+msgstr "Segredo"
 
-#: .\models.py:29
+#: free/models.py:30
 msgid "Owner"
-msgstr ""
+msgstr "Dono/Responsável"
 
-#: .\models.py:30
+#: free/models.py:31
+msgid "Connection timeout"
+msgstr "Tempo de conexão esgotado"
+
+#: free/models.py:32 free/models.py:62 free/models.py:89
+#: free/templates/free/experiment.html:63
+#: free/templates/free/experiment.html:66
+msgid "Configuration"
+msgstr "Configuração"
+
+#: free/models.py:33
 msgid "Video configuration"
-msgstr ""
+msgstr "Configuração do Vídeo"
 
-#: .\models.py:33
+#: free/models.py:34
+msgid "Last ping"
+msgstr "Último ping"
+
+#: free/models.py:37
 #, python-format
-msgid "%(experiment)s in %(location)s"
-msgstr ""
+msgid "%(apparatus_type)s in %(location)s"
+msgstr "%(apparatus_type)s em %(location)s"
 
-#: .\models.py:44
-msgid "Apparatus"
-msgstr ""
-
-#: .\models.py:45
-msgid "Apparatuses"
-msgstr ""
-
-#: .\models.py:55
+#: free/models.py:43
 msgid "Online"
-msgstr ""
+msgstr "Online"
 
-#: .\models.py:56
+#: free/models.py:45
 msgid "Offline"
-msgstr ""
+msgstr "Offline"
 
-#: .\models.py:57 .\models.py:86
-msgid "Running"
-msgstr ""
+#: free/models.py:49
+msgid "Apparatus"
+msgstr "Aparato"
 
-#: .\models.py:62 .\models.py:129
-msgid "Time"
-msgstr ""
+#: free/models.py:50 free/templates/free/menus.html:8
+msgid "Apparatuses"
+msgstr "Aparatos"
 
-#: .\models.py:63 .\models.py:66 .\models.py:98
-msgid "Status"
-msgstr ""
-
-#: .\models.py:67
-msgid "Statuses"
-msgstr ""
-
-#: .\models.py:78
+#: free/models.py:69
 msgid "Protocol"
-msgstr ""
+msgstr "Protocolo"
 
-#: .\models.py:79 .\templates\free\layout\sidebar.html:12
+#: free/models.py:70
 msgid "Protocols"
-msgstr ""
+msgstr "Protocolos"
 
-#: .\models.py:83
+#: free/models.py:74
 msgid "New"
-msgstr ""
+msgstr "Novo"
 
-#: .\models.py:84
+#: free/models.py:75
 msgid "Configured"
-msgstr ""
+msgstr "Configurado"
 
-#: .\models.py:85
+#: free/models.py:76
 msgid "In queue"
-msgstr ""
+msgstr "Em fila de espera"
 
-#: .\models.py:87
+#: free/models.py:77
+msgid "Running"
+msgstr "Em execução"
+
+#: free/models.py:78
 msgid "Error"
-msgstr ""
+msgstr "Erro"
 
-#: .\models.py:88
+#: free/models.py:79
 msgid "Finished"
-msgstr ""
+msgstr "Termidada"
 
-#: .\models.py:89
+#: free/models.py:80
 msgid "Aborted"
-msgstr ""
+msgstr "Abortada"
 
-#: .\models.py:90
+#: free/models.py:81
 msgid "Timeout"
-msgstr ""
+msgstr "Tempo esgotado"
 
-#: .\models.py:104
+#: free/models.py:90
+msgid "Status"
+msgstr "Estado"
+
+#: free/models.py:96
 #, python-format
 msgid "Execution of %(protocol)s"
-msgstr ""
+msgstr "Execução de %(protocol)s"
 
-#: .\models.py:107 .\templates\free\experiments\pendulum.html:16
+#: free/models.py:99 free/templates/free/experiment.html:71
 msgid "Execution"
-msgstr ""
+msgstr "Execução"
 
-#: .\models.py:108
+#: free/models.py:100
 msgid "Executions"
-msgstr ""
+msgstr "Execuções"
 
-#: .\models.py:123
+#: free/models.py:115
 msgid "Partial"
-msgstr ""
+msgstr "Parcial"
 
-#: .\models.py:124
+#: free/models.py:116
 msgid "Final"
-msgstr ""
+msgstr "Final"
 
-#: .\models.py:130
+#: free/models.py:121
+msgid "Time"
+msgstr "Tempo"
+
+#: free/models.py:122
 msgid "Result type"
-msgstr ""
+msgstr "Tipo de resultado"
 
-#: .\models.py:131
+#: free/models.py:123
 msgid "Value"
-msgstr ""
+msgstr "Valor"
 
-#: .\models.py:134
+#: free/models.py:126
 #, python-format
 msgid "Result of %(execution)s"
-msgstr ""
+msgstr "Resultado das %(execution)s"
 
-#: .\models.py:138
+#: free/models.py:130
 msgid "Result"
-msgstr ""
+msgstr "Resultado"
 
-#: .\models.py:139 .\templates\free\experiments\pendulum.html:14
+#: free/models.py:131 free/templates/free/experiment.html:69
 msgid "Results"
-msgstr ""
+msgstr "Resultados"
 
-#: .\models.py:142
+#: free/models.py:134
 msgid "Student"
-msgstr ""
+msgstr "Estudante"
 
-#: .\models.py:143
+#: free/models.py:135
 msgid "Teacher"
-msgstr ""
+msgstr "Professor"
 
-#: .\models.py:144
+#: free/models.py:136
 msgid "Administrator"
-msgstr ""
+msgstr "Administrador"
 
-#: .\models.py:152
+#: free/models.py:144
 msgid "Profile of "
-msgstr ""
+msgstr "Perfil de "
 
-#: .\templates\free\apparatuses.html:5
+#: free/templates/free/apparatuses.html:5
 msgid "List of protocols"
-msgstr ""
+msgstr "Lista de protocolos"
 
-#: .\templates\free\apparatuses.html:18
-msgid "List of Protocols"
-msgstr ""
+#: free/templates/free/apparatuses.html:18
+msgid "List of Apparatuses"
+msgstr "Lista de Aparatos"
 
-#: .\templates\free\apparatuses.html:22
-msgid "List of available Experiments"
-msgstr ""
+#: free/templates/free/apparatuses.html:22
+msgid "List of available Apparatuses"
+msgstr "Lista de aparatos disponíveis"
 
-#: .\templates\free\base.html:15
+#: free/templates/free/base.html:15
 msgid "FREE"
-msgstr ""
+msgstr "FREE"
 
-#: .\templates\free\execution_link.html:2
+#: free/templates/free/execution_link.html:2
 msgid "Show"
-msgstr ""
+msgstr "Mostrar"
 
-#: .\templates\free\executions.html:6
+#: free/templates/free/executions.html:6
 msgid "List of executions"
-msgstr ""
+msgstr "Lista de execuções"
 
-#: .\templates\free\executions.html:17
+#: free/templates/free/executions.html:17
 msgid "List of Executions"
-msgstr ""
+msgstr "Lista de Execuções"
 
-#: .\templates\free\executions.html:31
+#: free/templates/free/executions.html:31
 msgid "List of your executions"
-msgstr ""
+msgstr "Lista das suas execuções"
 
-#: .\templates\free\experiments\pendulum.html:5
-msgid "Pendulum"
-msgstr ""
+#: free/templates/free/experiment.html:112
+msgid "Configuration data"
+msgstr "Dados de configuração"
 
-#: .\templates\free\experiments\pendulum.html:25
-msgid "Initial Displacement"
-msgstr ""
-
-#: .\templates\free\experiments\pendulum.html:42
-msgid "Number of Samples N"
-msgstr ""
-
-#: .\templates\free\experiments\pendulum.html:60
-msgid "Save"
-msgstr ""
-
-#: .\templates\free\experiments\pendulum.html:63
-msgid "Submit"
-msgstr ""
-
-#: .\templates\free\experiments\pendulum.html:66
-msgid "Clear All"
-msgstr ""
-
-#: .\templates\free\experiments\pendulum.html:92
-msgid "Video stream "
-msgstr ""
-
-#: .\templates\free\experiments\pendulum.html:108
-#: .\templates\free\experiments\pendulum.html:155
-msgid "Sample Number"
-msgstr ""
-
-#: .\templates\free\experiments\pendulum.html:109
-#: .\templates\free\experiments\pendulum.html:156
-msgid "Period [s]"
-msgstr ""
-
-#: .\templates\free\experiments\pendulum.html:110
-#: .\templates\free\experiments\pendulum.html:157
-msgid "g [m/s^2]"
-msgstr ""
-
-#: .\templates\free\experiments\pendulum.html:111
-#: .\templates\free\experiments\pendulum.html:158
-msgid "Velocity [m/s]"
-msgstr ""
-
-#: .\templates\free\experiments\pendulum.html:112
-#: .\templates\free\experiments\pendulum.html:159
-msgid "Temperature [ºC]"
-msgstr ""
-
-#: .\templates\free\layout\sidebar.html:11
-msgid "Home"
-msgstr ""
-
-#: .\templates\free\layout\sidebar.html:13
-msgid "Configured Executions"
-msgstr ""
-
-#: .\templates\free\layout\sidebar.html:14
-msgid "Finished Executions"
-msgstr ""
-
-#: .\templates\free\layout\sidebar.html:16
-#: .\templates\free\layout\topbar.html:27
-msgid "Logout"
-msgstr ""
-
-#: .\templates\free\layout\sidebar.html:18 .\templates\free\login.html:70
-msgid "Login"
-msgstr ""
-
-#: .\templates\free\layout\topbar.html:13
-#: .\templates\free\layout\topbar.html:41
-msgid "Elab"
-msgstr ""
-
-#: .\templates\free\layout\topbar.html:20
+#: free/templates/free/layout/topbar.html:21
 msgid "Hi"
-msgstr ""
+msgstr "Olá"
 
-#: .\templates\free\layout\topbar.html:25
+#: free/templates/free/layout/topbar.html:26
 msgid "Administration"
-msgstr ""
+msgstr "Adminstração"
 
-#: .\templates\free\login.html:50
+#: free/templates/free/layout/topbar.html:27
+msgid "Video Config"
+msgstr "Configuração do Vídeo"
+
+#: free/templates/free/layout/topbar.html:29
+msgid "Logout"
+msgstr "Sair"
+
+#: free/templates/free/layout/topbar.html:43
+msgid "Elab"
+msgstr "Elab"
+
+#: free/templates/free/login.html:51
 msgid "Log-in to FREE"
-msgstr ""
+msgstr "Entrar no FREE"
 
-#: .\templates\free\login.html:60
+#: free/templates/free/login.html:61
 msgid "Username"
-msgstr ""
+msgstr "Usuário"
 
-#: .\templates\free\login.html:67
+#: free/templates/free/login.html:68
 msgid "Password"
-msgstr ""
+msgstr "Senha"
 
-#: .\templates\free\login.html:75
+#: free/templates/free/login.html:71
+msgid "Login"
+msgstr "Login"
+
+#: free/templates/free/login.html:76
 msgid "Your username and password didn\\"
-msgstr ""
+msgstr "O seu usuário e senha não\\"
 
-#: .\templates\free\protocols.html:4
+#: free/templates/free/menus.html:7
+msgid "Home"
+msgstr "Início"
+
+#: free/templates/free/menus.html:9
+msgid "Configured Executions"
+msgstr "Execuções Configuradas"
+
+#: free/templates/free/menus.html:10
+msgid "Finished Executions"
+msgstr "Execuçoes Terminadas"
+
+#: free/templates/free/protocols.html:4
 msgid "Run"
-msgstr ""
+msgstr "Excecutar"
 
-#: .\views\pages.py:73
+#: free/templates/free/sponsor_logos.html:33
+msgid "Sponsors"
+msgstr "Patrocínio"
+
+#: free/videoConfig/templates/videoConfig.html:49
+msgid "Apparatus Information"
+msgstr "Informações do Aparato"
+
+#: free/videoConfig/templates/videoConfig.html:51
+msgid "Video Stream information"
+msgstr "Informações do Video"
+
+#: free/videoConfig/templates/videoConfig.html:59
+msgid "Remove stream"
+msgstr "Remover Stream"
+
+#: free/videoConfig/templates/videoConfig.html:68
+msgid "Assign stream"
+msgstr "Atribuir Stream"
+
+#: free/views/pages.py:74
 msgid "Current status"
-msgstr ""
+msgstr "Estado actual"
+
+#: freeweb/settings.py:143
+msgid "English"
+msgstr "Inglês"
+
+#: freeweb/settings.py:144
+msgid "Portuguese"
+msgstr "Português"
+
+#: freeweb/settings.py:145
+msgid "Spanish"
+msgstr "Espanhol"
+
+#~ msgid "Hardware error"
+#~ msgstr "Erro de Hardware"
+
+#~ msgid "Maintenance"
+#~ msgstr "Manutenção"
+
+#~ msgid "Reserved"
+#~ msgstr "Reservado"
+
+#~ msgid "Is last?"
+#~ msgstr "É o último?"
+
+#~ msgid "Statuses"
+#~ msgstr "Estados"
+
+#~ msgid "List of Protocols"
+#~ msgstr "Lista de Protocolos"
 
 #~ msgid "Test translated heading"
 #~ msgstr "Título traduzido do teste"

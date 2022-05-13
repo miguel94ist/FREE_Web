@@ -19,6 +19,9 @@ environ.Env.read_env()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+PROJECT_DIR = os.path.dirname(os.path.abspath(__file__))
+
+FREE_VERSION = '0.5.0'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 if env.bool('FREE_PRODUCTION'):
@@ -52,8 +55,10 @@ INSTALLED_APPS = [
     'django_tables2',
     'django_summernote',
     'social_django', # required for oauth (Google, ...) athentication
+    'free.videoConfig',
     # APPARATUS TYPES BELOW
     'pendulum',
+    'dev_MonteCarlo',
 ]
 
 MIDDLEWARE = [
@@ -81,6 +86,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'free.context_processors.free_extras.site_info',
             ],
         },
     },
@@ -99,6 +105,17 @@ DATABASES = {
     }
 }
 
+# Support reverse proxy in https 
+if env.bool('FREE_REVERSE_PROXY'):
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+    USE_X_FORWARDED_HOST = True
+    USE_X_FORWARDED_PORT = True
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+
+LOCALE_PATHS = (
+    os.path.join(PROJECT_DIR, 'locale'),
+)
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
@@ -131,11 +148,15 @@ LANGUAGE_CODE = 'en'
 
 LANGUAGES = [
     ('en', _('English')),
-    ('pt', _('Portugese')),
+    ('pt', _('Portuguese')),
     ('es', _('Spanish')),
 ]
 
-TIME_ZONE = 'Europe/Prague'
+LOCALE_PATHS = (
+    os.path.join(PROJECT_DIR, 'locale'),
+)
+
+TIME_ZONE = env.str('TIME_ZONE','Europe/Lisbon')
 
 USE_I18N = True
 
@@ -212,3 +233,10 @@ if env.bool('FREE_FENIX_OAUTH'):
     SOCIAL_AUTH_FENIX_AUTH_KEY=env.str('SOCIAL_AUTH_FENIX_AUTH_KEY')
     SOCIAL_AUTH_FENIX_AUTH_SECRET=env.str('SOCIAL_AUTH_FENIX_AUTH_SECRET')
 
+JANUS_SERVER_ADDRESS=env.str('JANUS_SERVER_ADDRESS')
+JANUS_STREAM_ADMIN_KEY = env.str('JANUS_STREAM_ADMIN_KEY')
+
+
+PROJECT_NAME=env.str('PROJECT_NAME','World Pendulum Alliance')
+PROJECT_ACRONYMUM=env.str('PROJECT_ACRONYMUM', 'WPA')
+SITE_NAME=env.str('SITE_NAME','') 

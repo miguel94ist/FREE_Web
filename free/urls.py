@@ -37,20 +37,22 @@ urlpatterns = [
     path('execution/<int:pk>', views.ExecutionView.as_view(), name='execution'),
 
     # REST API
+    path('api/v1/version', views.Version.as_view(), name='api-version'),
     path('api/v1/apparatus_types', views.ApparatusTypeListAPI.as_view(), name='api-apparatus_type-list'),
 
     path('api/v1/execution', views.ExecutionConfigure.as_view(), name='api-execution-configure' ),
     path('api/v1/execution/<int:id>', views.ExecutionRetrieveUpdateDestroy().as_view(), name='api-execution'),
+    path('api/v1/execution/<int:id>/name', views.ExecutionUpdateName.as_view(), name='api-execution-update-name'),
     path('api/v1/execution/<int:id>/start', views.ExecutionStart.as_view(), name='api-execution-start'),
     path('api/v1/execution/<int:id>/status', views.ChangeExecutionStatus.as_view(), name='api-execution-status-change'),
     path('api/v1/execution/<int:id>/result', views.ResultList.as_view(), name='api-result-list'),
     path('api/v1/execution/<int:id>/result/<int:last_id>', views.ResultListFiltered.as_view(), name='api-result-list-filtered'),
     
     path('api/v1/apparatus', views.ApparatusListAPI.as_view(), name='api-apparatus-list'),
-    path('api/v1/apparatus/<int:id>', views.AppratusView.as_view(), name='api-apparatus-view'),
+    path('api/v1/apparatus/<int:id>/heartbeat', views.Heartbeat.as_view(), name='api-apparatus-heartbeat'),
+    path('api/v1/apparatus/<int:id>', views.ApparatusView.as_view(), name='api-apparatus-view'),
     path('api/v1/apparatus/<int:id>/nextexecution', views.NextExecution.as_view(), name='api-execution-next'),
     path('api/v1/apparatus/<int:id>/queue', views.ExecutionQueue.as_view(), name='api-execution-queue'),
-    path('api/v1/apparatus/<int:id>/setstatus', views.AddApparatusStatus.as_view(), name='api-apparatus-status-add'),
 
     path('api/v1/result', views.AddResult.as_view(), name='api-result-add'),
 ]

@@ -33,19 +33,15 @@ class ApparatusAdminForm(ModelForm):
 class ApparatusAdmin(SummernoteModelAdmin):
     form = ApparatusAdminForm
     list_filter = ['apparatus_type']
-    
+    readonly_fields = ('last_online', )
     exclude = ['description', 'location']
     
     def __init__(self, *args, **kwargs):
+        
         self.summernote_fields = [f'description_{lang[0]}' for lang in settings.LANGUAGES]
         super().__init__(*args, **kwargs)
 
 admin.site.register(Apparatus, ApparatusAdmin)
-
-class StatusAdmin(admin.ModelAdmin):
-    list_display = ['apparatus', 'status', 'time']
-    list_filter = ['apparatus', 'status', 'time']
-admin.site.register(Status, StatusAdmin)
 
 class ProtocolAdmin(SummernoteModelAdmin):
     list_display = ['__str__', 'apparatus_type']

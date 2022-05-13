@@ -1,0 +1,80 @@
+{% extends 'free/base.html' %}
+{% load static %}
+{% load i18n %}
+
+
+{% block headscript%}
+{% endblock %}
+
+{% block content %}
+
+<div class="right floated thirteen wide computer sixteen wide phone column" id="content">
+
+
+  {% if janus_error %}
+
+  <div class="ui big negative message">
+    <i class="icon"></i>
+    <div class="header">
+      Janus not running or not well configured
+    </div>
+    Verify instructions bellow
+  </div>
+  
+  {% endif %}
+  <h1>Existing aparatus</h1>
+  <table class="ui celled table">
+    <thead>
+      <tr><th>Apparatus</th>
+      <th>Video Configuration</th>
+      <th></th>
+    </tr></thead>
+    <tbody>
+    {% for v in aparatus_list %}
+    <tr>
+      <td> {{v.apparatus_type}} {{v.id}} in {{v.location}} </td>
+      <td>{{ v.video_config}}</td>
+      <td>   
+        
+        <a href="{% url "video-config" v.id %}">
+          <div class="ui teal labeled icon button">
+            Configure Video
+            <i class="signup icon"></i>
+          </div>
+        </a>
+
+        
+        
+      </td>
+    </tr>
+  {% endfor %}
+  </tbody>
+  </table>
+  {% if janus_error %}
+  {% include './videoConfig_message.html' %}
+  {% else %}
+  <h1> Existing video streams</h1>
+
+  <table class="ui celled table">
+    <thead>
+      <tr><th>id</th>
+      <th>Description</th>
+    </tr></thead>
+    <tbody>
+
+  {% for s in  janus_info %}
+  <tr>
+    <td>{{ s.id}} </td>
+    <td>{{ s.description}}</td>
+    </td>
+  </tr>
+  {% endfor %}
+  </tbody>
+  </table>
+
+  {% endif %}
+  </div>
+</div>
+{% endblock %}
+
+{% include 'free/layout/scripts.html' %}

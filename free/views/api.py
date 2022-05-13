@@ -5,6 +5,8 @@ from free.models import *
 import json
 import decimal
 from jsonschema import validate, ValidationError as JSONValidationError
+from freeweb import settings
+from django.shortcuts import get_object_or_404
 
 from free.views.permissions import ApparatusOnlyAccess
 
@@ -33,11 +35,10 @@ class ApparatusSerializer(serializers.ModelSerializer):
     read_only = True
     protocols = ProtocolSerializer(many=True)
     apparatus_type = ApparatusTypeSerializer()
-    status = serializers.SlugRelatedField(slug_field='status', read_only=True)
     
     class Meta:
         model = Apparatus
-        fields = ['apparatus_type', 'protocols', 'location', 'owner', 'video_config', 'config', 'status']
+        fields = ['apparatus_type', 'protocols', 'location', 'owner', 'video_config', 'config']
 
 class ExecutionSerializer(serializers.ModelSerializer):
     protocol = ProtocolSerializer()
@@ -83,6 +84,8 @@ class ExecutionUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Execution
         fields = ['config']
+        
+
 
 class ExecutionConfigure(generics.CreateAPIView):
     """
@@ -114,6 +117,21 @@ class ExecutionRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
 
     def perform_update(self, serializer):
         serializer.save(status = 'C')
+        
+class ExecutionUpdateNameSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Execution
+        fields = ['name']        
+        
+class ExecutionUpdateName(generics.UpdateAPIView):
+    """
+    Changes the name of the execution.
+
+    It's possible to change the name of the execution in any state.
+    """
+    queryset = Execution.objects.all()
+    lookup_field = 'id'
+    serializer_class = ExecutionUpdateNameSerializer
 
 class ExecutionStart(views.APIView):
     """
@@ -134,8 +152,30 @@ class ExecutionStart(views.APIView):
         execution.save()
 
         return Response(status = 200)
+    
+class Heartbeat(views.APIView):
+    """
+    Notifies the system that the Apparatus is alive
 
-class AppratusView(generics.RetrieveAPIView):
+
+    """
+    permission_classes = [ApparatusOnlyAccess]
+    def put(self, *args, **kwargs):
+        try:
+            apparatus = Apparatus.objects.get(pk=kwargs['id'])
+        except Apparatus.DoesNotExist:
+            return Response({'error': 'Apparatus with this id does not exist!'}, status=404)
+        return Response(status=200)
+    
+class Version(views.APIView):
+    """
+    Returns the current version of the FREE server
+
+    """
+    def get(self, *args, **kwargs):
+        return Response({'version': settings.FREE_VERSION})
+
+class ApparatusView(generics.RetrieveAPIView):
     """
     Retrieves an information about a given apparatus.
 
@@ -165,7 +205,9 @@ class NextExecution(generics.RetrieveAPIView):
     permission_classes = [ApparatusOnlyAccess]
     serializer_class = ExecutionSerializer
     def get_object(self):
-        obj = Execution.objects.filter(status='Q', apparatus_id=self.kwargs['id']).order_by('start').first()
+        apparatus = get_object_or_404(Apparatus, pk=self.kwargs['id'])
+        self.check_object_permissions(self.request, apparatus)        
+        obj = Execution.objects.filter(status='Q', apparatus=apparatus).order_by('start').first()
         if obj:
             self.check_object_permissions(self.request, obj)
             obj.save()
@@ -270,22 +312,3 @@ class ExecutionQueue(generics.ListAPIView):
     serializer_class = ExecutionSerializer
     def get_queryset(self):
         return Execution.objects.filter(state='Q', apparatus_id=self.kwargs['apparatus_id']).order_by('queue_time')
-    
-# APPARATUS STATUS
-
-class ApparatusStatusSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Status
-        fields = ['apparatus', 'status']
-        
-class AddApparatusStatus(generics.CreateAPIView):
-    """
-    Writes an apparatus heartbeat status.
-    
-    **APPARATUS AUTHENTICATION REQUIRED**
-    """
-    permission_classes = [ApparatusOnlyAccess]
-    serializer_class = ApparatusStatusSerializer
-    
-    def perform_create(self, serializer):
-        serializer.validated_data['apparatus'].update_status(serializer.validated_data['status'])
