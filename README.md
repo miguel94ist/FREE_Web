@@ -4,7 +4,7 @@
 Navigate to your preferred folder and download the latest release of the application:
 
 ```
-wget https://github.com/e-lab-FREE/FREE_Web/releases/latest/download/FREE_Web_0_5_0.zip -O FREE_Web.zip
+wget https://github.com/e-lab-FREE/FREE_Web/releases/latest/download/FREE_Web_0_6_0.zip -O FREE_Web.zip
 ```
 
 Unzip the package:
