@@ -51,7 +51,7 @@ Right now, the application release is shipped with pre-filled example database i
 
 Download the database and put it into the project root:
 ```
-wget https://github.com/e-lab-FREE/FREE_Web/releases/latest/download/db_template.sqlite3 -O db.sqlite3
+wget https://github.com/e-lab-FREE/FREE_Web/releases/latest/download/db_template_0_5_0.sqlite3 -O db.sqlite3
 ```
 
 This database contains a Pendulum experiment, as well as two example user accounts.
