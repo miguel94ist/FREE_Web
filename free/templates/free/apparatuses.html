@@ -32,3 +32,16 @@
 
 {% endif %}
 {% endblock %}
+
+{% block script %}
+<script>
+$(function() {
+    $(".table td:contains(Online)").each(function() {
+        $(this).html("<span style='color:green'>Online</span>");
+    });
+    $(".table td:contains(Offline)").each(function() {
+        $(this).html("<span style='color:red'>Offline</span>");
+    });
+});
+</script>
+{% endblock %}
