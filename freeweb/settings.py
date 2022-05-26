@@ -21,7 +21,7 @@ environ.Env.read_env()
 BASE_DIR = Path(__file__).resolve().parent.parent
 PROJECT_DIR = os.path.dirname(os.path.abspath(__file__))
 
-FREE_VERSION = '0.6.0'
+FREE_VERSION = '0.5.1'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 if env.bool('FREE_PRODUCTION'):
@@ -98,12 +98,34 @@ WSGI_APPLICATION = 'freeweb.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+DBMS = env.str('FREE_DBMS', 'sqlite').lower()
+
+if 'sqlite' in DBMS:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
     }
-}
+elif 'postgres' in DBMS:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql_psycopg2',
+            'OPTIONS': {
+                'service': 'dbservice',
+                'passfile': '.dbpass',
+            },
+        }
+    }
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.mysql',
+            'OPTIONS': {
+                'read_default_file': BASE_DIR / 'my.cnf',
+            }
+        }
+    }
 
 # Support reverse proxy in https 
 if env.bool('FREE_REVERSE_PROXY'):
@@ -144,7 +166,7 @@ LOGIN_URL = 'free:login'
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/
 
-LANGUAGE_CODE = 'en'
+LANGUAGE_CODE = env.str('DEFAULT_LANGUAGE', 'en') 
 
 LANGUAGES = [
     ('en', _('English')),
