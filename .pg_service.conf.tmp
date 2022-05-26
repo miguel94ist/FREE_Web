@@ -1,0 +1,5 @@
+[dbservice]
+host=localhost
+user=USER
+dbname=NAME
+port=5432
