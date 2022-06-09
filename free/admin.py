@@ -72,6 +72,8 @@ class UserAdmin(BaseUserAdmin):
     def get_form(self, request, obj=None, **kwargs):
         if obj:
             self.inlines = (UserProfileInline,)
+        else:
+            self.inlines = ()
         return super().get_form(request, obj, **kwargs)
 
 admin.site.unregister(User)

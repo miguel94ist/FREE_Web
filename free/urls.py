@@ -49,6 +49,7 @@ urlpatterns = [
     path('api/v1/execution/<int:id>/status', views.ChangeExecutionStatus.as_view(), name='api-execution-status-change'),
     path('api/v1/execution/<int:id>/result', views.ResultList.as_view(), name='api-result-list'),
     path('api/v1/execution/<int:id>/result/<int:last_id>', views.ResultListFiltered.as_view(), name='api-result-list-filtered'),
+    path('api/v1/execution/<int:id>/result/<int:last_id>/<int:limit>', views.ResultListFilteredLimited.as_view(), name='api-result-list-filtered-limited'),
     
     path('api/v1/apparatus', views.ApparatusListAPI.as_view(), name='api-apparatus-list'),
     path('api/v1/apparatus/<int:id>/heartbeat', views.Heartbeat.as_view(), name='api-apparatus-heartbeat'),

@@ -39,10 +39,9 @@ class Apparatus(models.Model):
     @property
     def current_status(self):
         if (timezone.now() - self.last_online).total_seconds() < self.timeout:
-            return (_('Online'))
+            return 'Online'
         else:
-            return (_('Offline'))
-
+            return 'Offline'
 
     class Meta:
         verbose_name = _('Apparatus')
