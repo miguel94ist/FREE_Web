@@ -36,6 +36,8 @@ urlpatterns = [
     path('execution/create/<int:apparatus_id>/<int:protocol_id>', views.CreateExecutionView.as_view(), name='execution-create'),
     path('execution/<int:pk>', views.ExecutionView.as_view(), name='execution'),
 
+    path('apparatus/<int:pk>/video', views.ApparatusVideoView.as_view(), name='apparatus-Video'),
+
     # REST API
     path('api/v1/version', views.Version.as_view(), name='api-version'),
     path('api/v1/apparatus_types', views.ApparatusTypeListAPI.as_view(), name='api-apparatus_type-list'),

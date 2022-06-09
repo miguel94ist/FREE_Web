@@ -44,48 +44,52 @@
 <!-- necessary for movable window -->
 <script>
 const position = { x: 0, y: 0 }
+//$( document ).ready(function() {
+  console.log("xxxx")
+  interact('.draggable').draggable({
+  listeners: {
+    start (event) {
+      console.log(event.type, event.target)
+    },
+    move (event) {
+      position.x += event.dx
+      position.y += event.dy
+      event.target.style.transform =
+        `translate(${position.x}px, ${position.y}px)`
+    },
+  },
+  })
 
-interact('.draggable').draggable({
- listeners: {
-   start (event) {
-     console.log(event.type, event.target)
-   },
-   move (event) {
-     position.x += event.dx
-     position.y += event.dy
-     event.target.style.transform =
-       `translate(${position.x}px, ${position.y}px)`
-   },
- },
-})
+  interact('.resizable')
+  .resizable({
+    edges: { top: true, left: true, bottom: true, right: true },
+    invert: 'reposition',
+    modifiers: [
+      interact.modifiers.aspectRatio({
+        ratio: 'preserve',
+      }),
+    ],
+    listeners: {
+      move: function (event) {
+        let { x, y } = event.target.dataset
 
-interact('.resizable')
- .resizable({
-   edges: { top: true, left: true, bottom: true, right: true },
-   invert: 'reposition',
-   modifiers: [
-     interact.modifiers.aspectRatio({
-       ratio: 'preserve',
-     }),
-   ],
-   listeners: {
-     move: function (event) {
-       let { x, y } = event.target.dataset
 
-       x = (parseFloat(x) || 0) + event.deltaRect.left
-       y = (parseFloat(y) || 0) + event.deltaRect.top
-       Object.assign(
-         event.target.style, 
-         {
-           width: `${event.rect.width}px`,
-           height: `${event.rect.height}px`,
-           transform: `translate(${x/2}px, ${y/2}px)`
-         }
-       )
-       Object.assign(event.target.dataset, { x, y })
-     }
-   }
- })
+
+        x = (parseFloat(x) || 0) + event.deltaRect.left
+        y = (parseFloat(y) || 0) + event.deltaRect.top
+        Object.assign(
+          event.target.style, 
+          {
+            width: `${event.rect.width}px`,
+            height: `${event.rect.height}px`,
+            transform: `translate(${x/2}px, ${y/2}px)`
+          }
+        )
+        Object.assign(event.target.dataset, { x, y })
+      }
+    }
+  })
+//})
 </script>
 
 

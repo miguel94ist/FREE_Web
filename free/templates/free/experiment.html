@@ -10,134 +10,683 @@
 {{protocol.id|json_script:"protocol-id"}}
 {{execution_json|json_script:"execution-config"}}
 {{final_result|json_script:"final-result"}}
-//{{apparatus.video_config|json_script:"video-config"}}
+
+{{video_config|json_script:"video-config"}}
+
+<script>
+    var next_result_id =0;
+
+    X_CSRFToken = document.getElementById('csrf_token').textContent
+
+    protocol_config = JSON.parse(document.getElementById('protocol-config').textContent)
+
+    protocol_input_arguments = protocol_config.properties
+
+    current_execution = JSON.parse(document.getElementById('execution-config').textContent);
+
+    var execution_status;
+    execution_status = current_execution['status']
+    if (execution_status === undefined)
+         execution_status = ''
+
+
+    var apparatus_id = JSON.parse(document.getElementById('apparatus-id').textContent);
+    var protocol_id = JSON.parse(document.getElementById('protocol-id').textContent);
+
+</script>
+
+
 {% endblock %}
 
 
 {% block head %}
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fomantic-ui/2.6.4/components/range.min.css">
 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fomantic-ui/2.8.4/components/slider.css">
-<style>
-    /* Chrome, Safari, Edge, Opera */
-    input::-webkit-outer-spin-button,
-    input::-webkit-inner-spin-button {
-      -webkit-appearance: none;
-      margin: 0;
-    }
-    
-    /* Firefox */
-    input[type=number] {
-      -moz-appearance: textfield;
-    }
-</style>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.css" type="text/css"/>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fomantic-ui/2.6.4/components/range.min.css">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fomantic-ui/2.8.4/components/slider.css">
-<link rel="stylesheet" href="https://cdn.datatables.net/1.10.18/css/dataTables.semanticui.min.css">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fomantic-ui/2.8.8/semantic.min.css">
-<link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/dataTables.semanticui.min.css">
-<link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.2.2/css/buttons.semanticui.min.css">
+    <!-- datatables -->
+    <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.11.5/js/dataTables.semanticui.min.js"></script>
+
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/dataTables.semanticui.min.css">
+
+
+    <!-- datatables  buutons (copy , csv excel)-->
+    <script src="https://cdn.datatables.net/buttons/2.2.2/js/dataTables.buttons.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.semanticui.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.html5.min.js"></script>
+
+    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.2.2/css/buttons.semanticui.min.css">
+
+
+    <!-- Video -->
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/webrtc-adapter/8.0.0/adapter.min.js" ></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/spin.js/2.3.2/spin.min.js"></script>
+
+
+    {% block experiment_head %}
+    {% endblock %} 
 
 
 {% endblock %}  
 
-{% block title %}
-    {{apparatus.apparatus_type.name}} {{apparatus.id}} in {{apparatus.location}}
-{% endblock %}
 
 
 {% block content %}
 
-    <div class="right floated thirteen wide computer sixteen wide phone column"  id="content">
-            {% include 'free/video_window.html' %}
+  
+<div class="right floated thirteen wide computer sixteen wide phone column"  id="content">
+    <div class="ui container">
+        <h1 >{{apparatus.apparatus_type.name}} {{apparatus.id}} in {{apparatus.location}} (<span id="exec_status"></span>)</h1>  
+        <div class="ui icon buttons">
+        <button class="ui button" onclick="open_video_window()">
+            <i class="play icon"></i>
+            Open Video
+        </button>
+        <button class="ui button" onclick="close_video_window()">
+            <i class="stop icon"></i>
+            Close Video
+        </button>
+        </div>
+    </div> 
 
-        <div class="ui container grid" >
-            <div style="padding-top:17px;padding-bottom:10px">
-               <h1 >{{apparatus.apparatus_type.name}} {{apparatus.id}} in {{apparatus.location}}</h1>
-            </div> 
-            <div class="row">
-                <div class="ui top attached tabular menu">
-                    {% if execution_json.id != None and execution_json.status != "F" %}
-                       <a class="item" data-tab="description">{% trans 'Description' %}</a>
-                       <a class="active item" data-tab="configuration">{% trans 'Configuration'%}</a>
-                    {% else %}  
-                       <a class="active item" data-tab="description">{% trans 'Description' %}</a>
-                       <a class="item" data-tab="configuration">{% trans 'Configuration'%}</a>
-                    {% endif %} 
-                    {% if final_result.id != None %}
-                       <a class="item " style="display: none;" data-tab="execution" id="topTabExecution">{% trans 'Execution'%}</a>
-                       <a class="item " data-tab="results" id="topTabResults">{% trans 'Results'%}</a> 
-                    {% else %}  
-                       <a class="item " data-tab="execution" id="topTabExecution">{% trans 'Execution'%}</a>
-                       <a class="item " style="display: none;" data-tab="results" id="topTabResults">{% trans 'Results'%}</a> 
-                    {% endif %} 
-                </div>
+          
+    <div class="ui  container ">
 
-                <!-- MANDATORY EXPERIMENT DESCRIPTION FROM DB -->
-                {% if execution_json.id == None or execution_json.status == "F" %}
-                 <div class="ui bottom attached active tab segment" data-tab="description" >
-                {% else %} 
-                 <div class="ui bottom attached tab segment" data-tab="description" >
-                {% endif %}
-                    <section class="intro">
-                    <div class="row" style="display:table; content:""; clear:both;">
-                        <div class="column " style="float:left;width:70%; ">
-                            <figure class="" >
-                                <img
-                                src="{% with 'free/images/'|add:apparatus.apparatus_type.slug|add:'.png' as image_static %}
-                                {% static image_static %}
-                                {% endwith %}"
-                                alt="{{apparatus.apparatus_type.slug}}"
-                                width="100%">
-                            </figure>
-                        </div>
-                        <div class=" column " style="float:left; width:30%;">
-                            <figure class="" display="right">
-                                <img src="{% static 'free/images/WPA.jpeg' %}" width="85%" bottom="0px">
-                            </figure>
-                        </div>
-                    </div>
-                    {{apparatus.apparatus_type.description|safe}}
-                    <h2> Details</h2>
-                    {{apparatus.description|safe}}
-                    <h2> Protocol details</h2>
-                    {{protocol.description|safe}}
-                    </section>
-                    <!--end of the description-->
-                </div>
-                {% if execution_json.id != None and execution_json.status != "F" %}
-                 <div  class="ui bottom attached active tab segment"  data-tab="configuration">
-                {% else %} 
-                 <div class="ui bottom attached tab segment" data-tab="configuration" >
-                {% endif %}
-                    <h2>{% trans 'Configuration data'%}</h2>
+    <div class="ui top attached tabular menu">
+        <a class="item" id="description-tab-slip" data-tab="description-tab">{% trans 'Description' %}</a>
+        <a class="active item" id="configuration-tab-slip" data-tab="configuration-tab">{% trans 'Configuration'%}</a>
+        <a class="item" id="execution-tab-slip" data-tab="execution-tab">{% trans 'Execution'%}</a>
 
-                    {% block configtab %}
 
-                    <!-- TAB CONTENT WILL BE INJECTED HERE -->
-                    {% endblock %}
-                </div>
-                {% if final_result.id == None %}
-                    <div class="ui bottom attached tab segment" data-tab="execution" id="cena">
-                {% else %}
-                    <div class="ui bottom attached tab segment" style="display: none;" data-tab="execution" id="cena">
-                {% endif %}
+    </div>
 
-                        {% block excutiontab %}
-                        {% endblock %}
-                    </div>
-                {% if final_result.id == None %}
-                    <div class="ui bottom attached tab segment" style="display: none;" data-tab="results" id="cena1">
-                {% else %}
-                    <div class="ui bottom attached tab segment" data-tab="results" id="cena1">
-                {% endif %}
-                        {% block resultstab %}
-                        {% endblock %}     
-                    </div>
+    <!-- MANDATORY EXPERIMENT DESCRIPTION FROM DB -->
+    <div class="ui bottom attached tab segment" data-tab="description-tab" >
+        <div class="ui grid" >
+            <div class="ten wide column ">
+                <figure class="" >
+                    <img
+                    src="{% with 'free/images/'|add:apparatus.apparatus_type.slug|add:'.png' as image_static %}
+                    {% static image_static %}
+                    {% endwith %}"
+                    alt="{{apparatus.apparatus_type.slug}}"
+                    width="100%">
+                </figure>
+            </div>
+            <div class="six wide column ">
+                    <img src="{% static 'free/images/WPA.jpeg' %}" width="100%">
             </div>
         </div>
+        {{apparatus.apparatus_type.description|safe}}
+        <h2> Details</h2>
+        {{apparatus.description|safe}}
+        <h2> Protocol details</h2>
+        {{protocol.description|safe}}
+        <!--end of the description-->
+    </div>    
+                
+                
+
+
+    <div  class="ui active bottom attached tab segment "  data-tab="configuration-tab">
+        
+        <h2>{% trans 'Configuration data'%}</h2>
+
+        <div id="config-input" class="ui equal width aligned padded">
+            <div class="ui container">
+                <div class="ui right pointing label">
+                    {% trans 'Execution name:' %}
+                </div>
+                <div class="ui input" >
+                    <input type="text" onchange="onInputChanged()" id="execution_name"  placeholder="New Execution">
+                </div>
+
+            </div>
+            <div class="ui section divider"></div>
+            {% block configtab %}
+            <!-- TAB CONTENT WILL BE INJECTED HERE -->
+            {% endblock %}
+        </div>
+
+        <div class="ui divider"></div>
+        <div class="row">   
+            <div class="column">
+                <div class="ui blue button " onclick="create_experiment()" id="createButton">{% trans 'Create'%}</div>
+                <div class="ui blue button" onclick="save_experiment()" id="saveButton">{% trans 'Save'%}</div>
+                <div class="ui green button" onclick="submit_experiment()" id="startButton">{% trans 'Submit'%}</div>
+                <div class="ui orange button" id="reloadButton" onclick="reloadInputValues()">{% trans 'Reload Values'%}</div>
+                <div class="ui orange button" id="resetButton" onclick="resetInputValues()">{% trans 'Reset to default'%}</div>
+                <div class="ui green button" id="createNewExpButton" onclick="gotoCreateExecution()">{% trans 'Create New Execution'%}</div>
+                <div class="ui red button" id="deleteButton" onclick="deleteExecution()">{% trans 'Delete'%} {% trans 'Execution'%}</div>
+                <div class="ui red button" id="deleteResultsButton" onclick="deleteExecution()">{% trans 'Delete'%} {% trans 'Results'%}</div>
+            </div>
+            <div class="ui floating message hidden" id="buttonMessage">
+                <p>Way to go!</p>
+                </div>
+        </div>
     </div>
+    <div class="ui bottom attached tab segment " data-tab="execution-tab">
+        {% comment %}
+                <div class="ui red button hiden" id="replayButton" onclick="replayExecution()">{% trans 'Replay'%} {% trans 'Execution'%}</div>
+        {% endcomment %}
+        {% block executiontab %}
+        {% endblock %}
+    </div>
+
+    </div>
+</div>
+
 {% endblock %}
 
-{% include 'free/layout/scripts.html' %}
+
+
+
+{% block script %}
+
+    {% block protocol_auxiliary_functions %}
+    {% endblock%}
+
+<script>
+
+var apparatus_video_window
+
+function open_video_window(){
+    if(apparatus_video_window == undefined)
+        apparatus_video_window = window.open("{% url "free:apparatus-Video" apparatus.id %}", "_blank", "popup")
+}
+
+function close_video_window(){
+    apparatus_video_window.close()
+    apparatus_video_window = undefined
+}
+$( window ).on( "unload",function() {
+    apparatus_video_window.close()
+});
+
+
+
+
+function gotoCreateExecution(){
+    window.location.href = '/execution/create/'+current_execution.apparatus+'/'+current_execution.protocol.id
+}
+
+
+function submit_experiment() {
+    executionID = current_execution.id;
+    endpoint="/api/v1/execution/"+executionID+"/start";
+    HEADERS = {
+      "X-CSRFToken": X_CSRFToken,
+      }
+    axios({
+      method: 'put', 
+      url: endpoint,
+      headers: HEADERS,
+    }).then(response => {
+      console.log('plotly_results', response);
+      //execution_status = 'NS'
+      //  update_button_info(execution_status)
+      execution_status = 'Q'
+      update_tab_visibility()
+        update_button_input_status(execution_status)
+        popup_message("experiment submited")
+        start_pooling_results()
+        next_result_id = 0;
+        
+    }).catch(error => {
+      if (error.response !== undefined) {
+      console.error('Error : ', error.response.data);
+      popup_message("error submiting experimnet")
+      }
+    });
+}
+
+
+function start_pooling_results() {
+       // Results = setInterval(getData,500)
+       setTimeout(getData, 500);
+    }
+
+function getData(){
+    executionID = current_execution.id;
+    endpoint =  "/api/v1/execution/"+executionID+"/result/"+next_result_id;
+    console.log(next_result_id);
+    HEADERS = {
+      "X-CSRFToken": X_CSRFToken,
+      }
+    axios({
+        method: 'get', //you can set what request you want to be
+        url: endpoint,
+        headers: HEADERS,
+    }).then(response => {
+        console.log('plotly_results', response);
+        data_len = response.data.length
+        console.log(data_len)
+        if (data_len > 0){
+        //    table_insert_experiment_data(response.data)
+            process_experiment_data(response.data)
+            if(response.data[data_len-1].result_type ==='p'){
+                execution_status = 'R'
+                update_button_input_status(execution_status)
+                next_result_id =response.data[data_len-1].id+1
+                setTimeout(getData, 500);
+            }
+            if(next_result_id != 0 && response.data[data_len-1].result_type ==='f'){
+                execution_status = 'F'
+                update_button_input_status(execution_status)
+                next_result_id =response.data[data_len-1].id+1
+            }
+            if(next_result_id == 0 && response.data[data_len-1].result_type ==='f'){
+                execution_status = 'F'
+                update_button_input_status(execution_status)
+                next_result_id =response.data[data_len-1].id+1
+            }
+        }else{
+            setTimeout(getData, 500);
+        }
+
+    }).catch(error => {
+        console.error('Error : ', error.response.data);
+    });
+    
+}
+
+function process_experiment_data(data){
+    for (line in data){
+        console.log(data[line])
+        if(data[line].result_type == 'p'){
+            table_insert_partial_data(data[line])
+            process_partial_data(data[line])
+        }
+        if(data[line].result_type == 'f'){
+            process_final_data(data[line])
+        }
+    }
+}
+
+
+
+
+function table_insert_partial_data(data){
+    console.log(data)
+    table_columns = jQuery( "#results_table > thead> tr> th" );
+    col_id = []
+    for ( ind = 0, len = table_columns.length; ind < len; ind++ ) {
+        col_id.push($(table_columns[ind]).attr("id"))
+    }
+    var t = $('#results_table').DataTable();
+    row_data = []
+    for (c_id in col_id){
+        console.log(data.value)
+        console.log(col_id[c_id])
+        row_data.push(data.value[col_id[c_id]])
+    }
+
+    t.row.add(row_data).draw()
+}
+
+
+
+
+
+
+function popup_message(str){
+    $("#buttonMessage").show()
+    $("#buttonMessage").html(str)
+    setTimeout(function() {
+        $("#buttonMessage").hide('blind', {}, 500)
+    }, 3000);
+}  
+
+function resetInputValues(){
+
+    input_list = jQuery( ".free-input" );
+    for ( ind = 0, len = input_list.length; ind < len; ind++ ) {
+    
+        i = $(input_list[ind]);
+        console.log(i.val())
+        console.log(i.attr("id"))
+        console.log( protocol_input_arguments[i.attr("id")].default)
+        new_val = protocol_input_arguments[i.attr("id")].default
+        i.prop("value", new_val).trigger('change');
+    }
+    execution_status = 'NS'
+    update_button_input_status(execution_status)
+    popup_message("values reseted")
+}
+
+function reloadInputValues(){
+
+    input_list = jQuery( ".free-input" );
+    for ( ind = 0, len = input_list.length; ind < len; ind++ ) {
+
+        i = $(input_list[ind]);
+        console.log(i.val())
+        console.log(i.attr("id"))
+        console.log(current_execution.config[i.attr("id")])
+        new_val = current_execution.config[i.attr("id")]
+        i.prop("value", new_val).trigger('change');
+    }
+    $("#execution_name").val(current_execution.name)
+    execution_status = 'C'
+    update_button_input_status(execution_status)
+    popup_message("values reloaded")
+
+}
+
+function onInputChanged(){
+    if (execution_status === 'C'){
+            execution_status = 'NS'
+            update_button_input_status(execution_status)
+        
+    }
+}
+
+function disable_config_input(){
+    child = $("#config-input").find("*").addClass('disabled');
+
+}
+
+function update_tab_visibility(execution_status){
+    if (execution_status === ''){
+        $('.ui.menu').find('.item').tab('change tab', 'description-tab')
+    }else{
+        if (execution_status === 'C' || execution_status === 'NS' ){
+            $('.ui.menu').find('.item').tab('change tab', 'configuration-tab')
+        }else{
+            $('.ui.menu').find('.item').tab('change tab', 'execution-tab')
+        }
+    }
+}
+
+function update_button_input_status(execution_status){
+    if (execution_status !== '' && execution_status !== 'C' && execution_status !== 'NS'){
+        disable_config_input()
+    }
+    // new execution
+    if (execution_status === ''){
+        $( "#exec_status").html("New not saved");
+        $("#createButton").removeClass('disabled');
+        $("#saveButton").css("display", 'none')
+        $("#saveButton").hide()
+        $("#startButton").addClass('disabled');
+        $("#reloadButton").addClass('disabled');
+        $("#resetButton").addClass('disabled');
+        $("#createNewExpButton").css("display", 'none')
+        $("#deleteButton").css("display", 'none')
+        $("#deleteResultsButton").css("display", 'none')
+        $( "#replayButton").css("display", 'none')
+        $("#resetButton").addClass('disabled');
+        $("#saveNameButton").addClass('disabled');
+    }
+    if (execution_status === 'C'){
+        $( "#exec_status").html("Saved");
+        $("#createButton").hide()
+        $("#saveButton").show()
+        $("#saveButton").addClass('disabled');
+        $("#startButton").removeClass('disabled');
+        $("#reloadButton").addClass('disabled');
+        $("#resetButton").removeClass('disabled');
+        $("#createNewExpButton").hide();
+        $("#deleteButton").show()
+        $("#deleteResultsButton").hide();
+        $( "#replayButton").css("display", 'none')
+        $("#saveNameButton").addClass('disabled');
+    }
+    if (execution_status === 'NS'){
+        $( "#exec_status").html("Modified");
+        $("#createButton").hide()
+        $("#saveButton").removeClass('disabled');
+        $("#startButton").addClass('disabled');
+        $("#reloadButton").removeClass('disabled');
+        $("#resetButton").removeClass('disabled');
+        $("#createNewExpButton").hide();
+        $("#deleteButton").show()
+        $("#deleteResultsButton").hide();
+        $( "#replayButton").css("display", 'none')
+    }
+    if (execution_status === 'Q'){
+        $( "#exec_status").html("Waiting for execution");
+        $("#createButton").hide()
+        $("#saveButton").hide();
+        $("#startButton").hide();
+        $("#reloadButton").hide();
+        $("#resetButton").hide();
+        $("#createNewExpButton").show();
+        $("#deleteButton").show()
+        $("#deleteResultsButton").hide();
+        $( "#replayButton").css("display", 'none')
+        $("#saveNameButton").addClass('disabled');
+    }
+    if (execution_status === 'R'){
+        $( "#exec_status").html("Running execution");
+        $("#createButton").hide()
+        $("#saveButton").hide();
+        $("#startButton").hide();
+        $("#reloadButton").hide();
+        $("#resetButton").hide();
+        $("#createNewExpButton").show();
+        $("#deleteButton").hide()
+        $("#deleteResultsButton").hide();
+        $( "#replayButton").css("display", 'none')
+        $("#saveNameButton").addClass('disabled');
+
+    }
+    if (execution_status === 'F'){
+        $( "#exec_status").html("Finished execution");
+        $("#createButton").hide()
+        $("#saveButton").hide();
+        $("#startButton").hide();
+        $("#reloadButton").hide();
+        $("#resetButton").hide();
+        $("#createNewExpButton").show();
+        $("#deleteButton").hide()
+        $("#deleteResultsButton").show();
+        $( "#replayButton").show();
+        $("#saveNameButton").addClass('disabled');
+
+    }
+    if (execution_status === 'A'){
+        $( "#exec_status").html("Aborted execution");
+        $("#createButton").hide()
+        $("#saveButton").hide();
+        $("#startButton").hide();
+        $("#reloadButton").hide();
+        $("#resetButton").hide();
+        $("#createNewExpButton").show();
+        $("#deleteButton").hide()
+        $("#deleteResultsButton").show();
+        $( "#replayButton").css("display", 'none')
+        $("#saveNameButton").addClass('disabled');
+
+    }
+    if (execution_status === 'T'){
+        $( "#exec_status").html("Timed out execution");
+        $("#createButton").hide()
+        $("#saveButton").hide();
+        $("#startButton").hide();
+        $("#reloadButton").hide();
+        $("#resetButton").hide();
+        $("#createNewExpButton").show();
+        $("#deleteButton").show()
+        $("#deleteResultsButton").hide();
+        $( "#replayButton").css("display", 'none')
+        $("#saveNameButton").addClass('disabled');
+
+    }
+    if (execution_status === 'E'){
+        $( "#exec_status").html("Error execution");
+        $("#createButton").hide()
+        $("#saveButton").hide();
+        $("#startButton").hide();
+        $("#reloadButton").hide();
+        $("#resetButton").hide();
+        $("#createNewExpButton").show();
+        $("#deleteButton").show()
+        $("#deleteResultsButton").hide();
+        $( "#replayButton").css("display", 'none')
+        $("#saveNameButton").addClass('disabled');
+
+    }
+}
+
+
+function retrieve_execution_configuration(){
+    var form_config = {};
+    input_list = jQuery( ".free-input" );
+
+    for ( ind = 0, len = input_list.length; ind < len; ind++ ) {
+        i = $(input_list[ind]);
+        if((protocol_input_arguments[i.attr("id")]["type"]) == 'integer'){
+            form_config[i.attr("id")] =  parseInt(i.val());
+        }
+    }
+    return form_config ;
+}
+
+
+function save_experiment() {
+    form_config = retrieve_execution_configuration();
+    console.log(form_config );
+
+
+    endpoint = "/api/v1/execution/" + current_execution.id
+    method_queue = 'put'
+    data_send = Object.assign({},  current_execution );
+
+    data_send["config"] = form_config;
+    
+    name = $("#execution_name").val();
+    if (name !== undefined){
+      data_send["name"] = name 
+    }
+    else{
+      data_send["name"] = ""
+    }
+   
+  
+    HEADERS = {
+      "X-CSRFToken": X_CSRFToken,
+      }
+    // print out
+    console.log('JSON : ' +  endpoint);
+    console.log('JSON : ' +  data_send);
+  
+  
+    axios({
+      method: method_queue, 
+      url: endpoint,
+      headers: HEADERS,
+      data: data_send,
+    }).then(response => {
+        execution_status = 'C'
+        current_execution.config = response.data.config;
+        update_button_input_status(execution_status)
+        popup_message("experiment sucessfully saved")
+    }).catch(console);  
+  
+  }
+
+function create_experiment() {
+    form_config = retrieve_execution_configuration();
+    console.log(form_config );
+
+
+    endpoint="/api/v1/execution";
+    method_queue = 'post';
+    data_send = {"apparatus": apparatus_id, "protocol": protocol_id}
+    
+    data_send["config"] = form_config;
+    
+  
+    if ($("#execution_name").val() !== undefined){
+      name = $("#execution_name").val();
+      data_send["name"] = name 
+    }
+    else{
+      data_send["name"] = ""
+    }
+   
+  
+    HEADERS = {
+      "X-CSRFToken": X_CSRFToken,
+      }
+    // print out
+    console.log('JSON : ' +  endpoint);
+    console.log('JSON : ' +  data_send);
+  
+  
+    axios({
+      method: method_queue, //you can set what request you want to be
+      url: endpoint,
+      headers: HEADERS,
+      data: data_send,
+    }).then(response => {
+        // we should do a redirect to the new page.....
+        window.location.href = '/execution/'+String(response.data.id)
+        current_execution = response.data;
+        execution_status = 'C'
+
+        update_button_input_status(execution_status)
+        popup_message("experiment sucessfully created")
+
+    }).catch(console);  
+  
+}
+
+
+$( document ).ready(function() {
+ 
+
+    $('.tabular.menu .item').tab(); 
+
+
+    $(".free-input").change(onInputChanged)
+
+    update_button_input_status(execution_status)
+
+    var results_table = $('#results_table').DataTable({
+            'buttons': [ 'copy',
+                {
+                    extend: 'csv',
+                    title: 'Pendulum_results__'  
+                },
+                {
+                    extend: 'excel',
+                    title: 'Pendulum_results__'
+                },
+            ], 
+            "columns": [
+                { "type": "num"},
+                null,
+                null,
+                null,
+            ],
+            order: [[0, 'desc']],
+        });
+        results_table.buttons().container().appendTo(
+            $('div.eight.column:eq(0)', results_table.table().container()) 
+        );
+
+
+    on_ready_experiment_UI()
+
+    if(execution_status != ''){
+        old_status = execution_status 
+        reloadInputValues()
+        on_save_experiment_UI()
+        execution_status = old_status 
+    }
+    update_tab_visibility(execution_status)
+
+   
+    if(execution_status === 'Q'){
+        start_pooling_results()
+    }
+    if(execution_status === 'R'){
+        start_pooling_results()
+    }
+    if(execution_status === 'F'){
+        start_pooling_results()
+    }
+
+});
+</script>
+{% endblock%}

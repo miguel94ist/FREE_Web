@@ -1,6 +1,6 @@
 from django.utils.translation import gettext_lazy as _
 from django.urls import reverse_lazy
-from django.views.generic import TemplateView, TemplateView
+from django.views.generic import TemplateView, TemplateView, DetailView
 from free.views.api import ExecutionSerializer, ResultSerializer
 from free.models import *
 from django_tables2 import Table, TemplateColumn, Column
@@ -28,6 +28,14 @@ class ExecutionView(LoginRequiredMixin, TemplateView):
 
     def get_template_names(self):
         return ['free/experiments/' + self.execution.apparatus.apparatus_type.slug + '.html']
+
+class ApparatusVideoView(LoginRequiredMixin, DetailView):
+    template_name = 'free/apparatus_video.html'
+    def get_queryset(self):
+        print(self.kwargs['pk'])
+        return Apparatus.objects.filter(id=self.kwargs['pk'])
+        #.get(pk=self.kwargs['pk'])
+
 
 class CreateExecutionView(LoginRequiredMixin, TemplateView):    
     

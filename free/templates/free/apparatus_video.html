@@ -1,0 +1,80 @@
+{% extends 'free/base.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block headscript%}
+<script id="csrf_token" type="application/json">{{csrf_token}}</script>
+{{apparatus.config|json_script:"apparatus-config"}}
+{{apparatus.id|json_script:"apparatus-id"}}
+
+<script>
+    var next_result_id =0;
+    X_CSRFToken = document.getElementById('csrf_token').textContent
+
+
+    console.log({{apparatus_id}})
+
+    var selectedStream = {{apparatus.video_config.stream_id}};
+      server = "{{apparatus.video_config.stream_server}}";
+      console.log("Configured Video stream "+selectedStream+" on "+server)
+ 
+
+</script>
+
+
+{% endblock %}
+
+
+{% block head %}
+
+<script type="text/javascript" src="{% static 'free/js/janus.js' %}" ></script>
+<script type="text/javascript" src="{% static 'free/js/streaming_simple.js' %}"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.slim.min.js" integrity="sha256-u7e5khyithlIdTpu22PHhENmPcRdFiHRjhAuHcs05RI=" crossorigin="anonymous"></script>
+<script src="https://cdn.datatables.net/1.11.5/js/dataTables.semanticui.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.js"></script>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.css" type="text/css"/>
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/webrtc-adapter/8.0.0/adapter.min.js" ></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/spin.js/2.3.2/spin.min.js"></script>
+
+
+
+
+{% endblock %}  
+
+{% block layout %}
+{% endblock %}       
+{% block title %} 
+    {{apparatus.apparatus_type.name}} {{apparatus.id}} in {{apparatus.location}}
+{% endblock %}
+
+{% block content %}
+<div class="ui grid">
+  <div class="left three wide column">
+      <div class="ui top aligned  image">
+        <h2  class=" item"><img src="{% static 'free/images/elab_logo.png' %}" id="logo-elab"></h2> 
+    </div>
+      {% include 'free/sponsor_logos.html' %}
+  </div>
+
+  <div class="right floated thirteen wide  column">
+
+    <h1 >{{apparatus.apparatus_type.name}} {{apparatus.id}} in {{apparatus.location}}</h1>  
+
+
+    <div class="ui raised very  container segment ">
+        <div id="stream"> </div>
+        <div class="ui floating message " id="videoMessage">
+          <p>Way to go!</p>
+        </div>
+    </div>
+
+  </div>   
+
+</div>
+{% endblock %}
+
+
+
+

@@ -266,7 +266,7 @@ class ResultListFiltered(generics.ListAPIView):
     serializer_class = ResultSerializer
     
     def get_queryset(self):
-        return Result.objects.filter(execution_id=self.kwargs['id'], pk__gte=self.kwargs['last_id'])
+        return Result.objects.filter(execution_id=self.kwargs['id'], pk__gte=self.kwargs['last_id']).order_by('time')
 
 
 class ExecutionStatusSerializer(serializers.ModelSerializer):
