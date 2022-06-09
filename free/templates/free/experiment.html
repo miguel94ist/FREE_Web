@@ -347,7 +347,9 @@ function resetInputValues(){
         new_val = protocol_input_arguments[i.attr("id")].default
         i.prop("value", new_val).trigger('change');
     }
-    execution_status = 'NS'
+    if(execution_status === 'C'){
+        execution_status = 'NS'
+    }
     update_button_input_status(execution_status)
     popup_message("values reseted")
 }
@@ -368,7 +370,6 @@ function reloadInputValues(){
     execution_status = 'C'
     update_button_input_status(execution_status)
     popup_message("values reloaded")
-
 }
 
 function onInputChanged(){
@@ -640,7 +641,6 @@ $( document ).ready(function() {
 
     $(".free-input").change(onInputChanged)
 
-    update_button_input_status(execution_status)
 
     var results_table = $('#results_table').DataTable({
             'buttons': [ 'copy',
@@ -673,7 +673,12 @@ $( document ).ready(function() {
         reloadInputValues()
         on_save_experiment_UI()
         execution_status = old_status 
+    }else{
+        resetInputValues()
+        //execution_status = ''
     }
+
+    update_button_input_status(execution_status)
     update_tab_visibility(execution_status)
 
    
