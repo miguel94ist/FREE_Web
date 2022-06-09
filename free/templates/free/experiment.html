@@ -246,7 +246,7 @@ function start_pooling_results() {
 
 function getData(){
     executionID = current_execution.id;
-    endpoint =  "/api/v1/execution/"+executionID+"/result/"+next_result_id;
+    endpoint =  "/api/v1/execution/"+executionID+"/result/"+next_result_id+'/50';
     console.log(next_result_id);
     HEADERS = {
       "X-CSRFToken": X_CSRFToken,
