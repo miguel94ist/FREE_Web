@@ -105,7 +105,7 @@ if 'mysql' in DBMS or 'mariadb' in DBMS:
         'default': {
             'ENGINE': 'django.db.backends.mysql',
             'OPTIONS': {
-                'read_default_file': BASE_DIR / 'my.cnf',
+                'read_default_file': BASE_DIR.as_posix() + 'my.cnf',
             }
         }
     }
@@ -123,7 +123,7 @@ else: # defaults to sqlite
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': BASE_DIR / 'db.sqlite3',
+            'NAME': BASE_DIR.as_posix() + 'db.sqlite3',
         }
     }
 
@@ -191,11 +191,11 @@ DJANGO_TABLES2_TEMPLATE = 'django_tables2/semantic.html'
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
-STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATIC_ROOT = BASE_DIR.as_posix() + 'staticfiles'
 STATIC_URL = '/static/'
 
 MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
+MEDIA_ROOT = BASE_DIR.as_posix() + 'media'
 
 STATICFILES_DIRS = []
 
@@ -208,7 +208,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 WEBPACK_LOADER = {
     'DEFAULT': {
         'BUNDLE_DIR_NAME': 'bundles/',
-        'STATS_FILE': BASE_DIR / 'assets/webpack-stats.json'
+        'STATS_FILE': BASE_DIR.as_posix() + 'assets/webpack-stats.json'
     }
 }
 
