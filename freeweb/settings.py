@@ -100,11 +100,13 @@ WSGI_APPLICATION = 'freeweb.wsgi.application'
 
 DBMS = env.str('FREE_DBMS', 'sqlite').lower()
 
-if 'sqlite' in DBMS:
+if 'mysql' in DBMS or 'mariadb' in DBMS:
     DATABASES = {
         'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': BASE_DIR / 'db.sqlite3',
+            'ENGINE': 'django.db.backends.mysql',
+            'OPTIONS': {
+                'read_default_file': BASE_DIR / 'my.cnf',
+            }
         }
     }
 elif 'postgres' in DBMS:
@@ -117,13 +119,11 @@ elif 'postgres' in DBMS:
             },
         }
     }
-else:
+else: # defaults to sqlite
     DATABASES = {
         'default': {
-            'ENGINE': 'django.db.backends.mysql',
-            'OPTIONS': {
-                'read_default_file': BASE_DIR / 'my.cnf',
-            }
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
         }
     }
 
