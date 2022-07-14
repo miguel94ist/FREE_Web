@@ -348,7 +348,7 @@ CREATE TABLE `free_apparatus` (
   PRIMARY KEY (`id`),
   KEY `free_apparatus_apparatus_type_id_9a01e43f_fk_free_appa` (`apparatus_type_id`),
   CONSTRAINT `free_apparatus_apparatus_type_id_9a01e43f_fk_free_appa` FOREIGN KEY (`apparatus_type_id`) REFERENCES `free_apparatustype` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
