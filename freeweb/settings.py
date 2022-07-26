@@ -59,6 +59,7 @@ INSTALLED_APPS = [
     # APPARATUS TYPES BELOW
     'pendulum',
     'dev_MonteCarlo',
+    'inclined_plane',
 ]
 
 MIDDLEWARE = [
