@@ -60,6 +60,9 @@ INSTALLED_APPS = [
     'pendulum',
     'dev_MonteCarlo',
     'inclined_plane',
+    'langmuir',
+    'photovoltaic_panel_angle_sweep',
+    'photovoltaic_panel_load_resistance_sweep',
 ]
 
 MIDDLEWARE = [
