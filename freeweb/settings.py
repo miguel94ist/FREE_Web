@@ -63,6 +63,7 @@ INSTALLED_APPS = [
     'langmuir',
     'photovoltaic_panel_angle_sweep',
     'photovoltaic_panel_load_resistance_sweep',
+    'photovoltaic_panel_load_resistor_findmax',
 ]
 
 MIDDLEWARE = [
