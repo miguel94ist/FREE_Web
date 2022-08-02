@@ -64,6 +64,9 @@ INSTALLED_APPS = [
     'photovoltaic_panel_angle_sweep',
     'photovoltaic_panel_load_resistance_sweep',
     'photovoltaic_panel_load_resistor_findmax',
+    'cavity',
+    'planck',
+    'colisione',
 ]
 
 MIDDLEWARE = [

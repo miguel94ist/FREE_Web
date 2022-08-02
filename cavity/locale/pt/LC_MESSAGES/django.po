@@ -1,0 +1,115 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2022-08-01 15:15+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: templates/free/experiments/cavity.html:33
+msgid "Start Frequency [MHz]"
+msgstr ""
+
+#: templates/free/experiments/cavity.html:43
+msgid "End Frequency [MHz]"
+msgstr ""
+
+#: templates/free/experiments/cavity.html:56
+msgid "Step Frequency [MHz]"
+msgstr ""
+
+#: templates/free/experiments/cavity.html:67
+msgid "Number of Iteration"
+msgstr ""
+
+#: templates/free/experiments/cavity.html:81
+msgid "Gas Injection Time [ms]"
+msgstr ""
+
+#: templates/free/experiments/cavity.html:92
+msgid "Gas Selection"
+msgstr ""
+
+#: templates/free/experiments/cavity.html:123
+msgid "Background Pressure [Pa]"
+msgstr ""
+
+#: templates/free/experiments/cavity.html:174
+msgid "Time"
+msgstr ""
+
+#: templates/free/experiments/cavity.html:175
+msgid "Voltage [V]"
+msgstr ""
+
+#: templates/free/experiments/cavity.html:176
+msgid "Current[uA]"
+msgstr ""
+
+#: templates/free/experiments/cavity.html:177
+msgid "Pressure[mBar]"
+msgstr ""
+
+#: templates/free/experiments/pendulum-plotly.html:26
+msgid "Initial Displacement (cm)"
+msgstr "Deslocamento Inicial (cm)"
+
+#: templates/free/experiments/pendulum-plotly.html:36
+msgid "Number of Samples N"
+msgstr "Número de Amostras N"
+
+#: templates/free/experiments/pendulum-plotly.html:81
+msgid "Sample Number"
+msgstr "Amostra"
+
+#: templates/free/experiments/pendulum-plotly.html:82
+msgid "Period [s]"
+msgstr "Período [s]"
+
+#: templates/free/experiments/pendulum-plotly.html:83
+msgid "g [m/s^2]"
+msgstr ""
+
+#: templates/free/experiments/pendulum-plotly.html:84
+msgid "Velocity [cm/s]"
+msgstr "Velocidade [cm/s]"
+
+#: templates/free/experiments/pendulum-plotly.html:85
+msgid "Temperature [ºC]"
+msgstr "Temperatura [ºC]"
+
+#~ msgid "Pendulum"
+#~ msgstr "Pêndulo"
+
+#~ msgid "Configuration"
+#~ msgstr "Configuração"
+
+#~ msgid "Results"
+#~ msgstr "Resultados"
+
+#~ msgid "Execution"
+#~ msgstr "Execução"
+
+#~ msgid "save"
+#~ msgstr "gravar"
+
+#~ msgid "Submit"
+#~ msgstr "Submeter"
+
+#~ msgid "Clear All"
+#~ msgstr "Limpar tudo"
+
+#~ msgid "Video stream "
+#~ msgstr "Vídeo"

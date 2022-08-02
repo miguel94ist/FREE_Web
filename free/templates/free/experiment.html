@@ -337,34 +337,47 @@ function popup_message(str){
 
 function resetInputValues(){
 
-    input_list = jQuery( ".free-input" );
-    for ( ind = 0, len = input_list.length; ind < len; ind++ ) {
-    
-        i = $(input_list[ind]);
-        console.log(i.val())
-        console.log(i.attr("id"))
-        console.log( protocol_input_arguments[i.attr("id")].default)
-        new_val = protocol_input_arguments[i.attr("id")].default
-        i.prop("value", new_val).trigger('change');
-    }
-    if(execution_status === 'C'){
-        execution_status = 'NS'
-    }
-    update_button_input_status(execution_status)
-    popup_message("values reseted")
+  	input_list = jQuery( ".free-input" );
+  	for ( ind = 0, len = input_list.length; ind < len; ind++ ) {
+           	if(["radio"].includes(input_list[ind].type) )
+        	{
+                	console.log("ROSSA");
+                	console.log(input_list[ind].checked);
+        	}
+		else{
+			i = $(input_list[ind]);
+    			console.log(i.val())
+    			console.log(i.attr("id"))
+    			console.log( protocol_input_arguments[i.attr("id")].default)
+    			new_val = protocol_input_arguments[i.attr("id")].default
+   			i.prop("value", new_val).trigger('change');
+		}
+    	}
+    	if(execution_status === 'C'){
+    	    	execution_status = 'NS'
+    	}
+    	update_button_input_status(execution_status)
+    	popup_message("values reseted")
 }
 
 function reloadInputValues(){
 
     input_list = jQuery( ".free-input" );
     for ( ind = 0, len = input_list.length; ind < len; ind++ ) {
+	if(["radio"].includes(input_list[ind].type) )
+        {
+                console.log("ROSSA");
+                console.log(input_list[ind].checked);
+        }
+	else{
 
-        i = $(input_list[ind]);
-        console.log(i.val())
-        console.log(i.attr("id"))
-        console.log(current_execution.config[i.attr("id")])
-        new_val = current_execution.config[i.attr("id")]
-        i.prop("value", new_val).trigger('change');
+       		i = $(input_list[ind]);
+        	console.log(i.val())
+        	console.log(i.attr("id"))
+        	console.log(current_execution.config[i.attr("id")])
+        	new_val = current_execution.config[i.attr("id")]
+        	i.prop("value", new_val).trigger('change');
+   	}
     }
     $("#execution_name").val(current_execution.name)
     execution_status = 'C'
@@ -528,16 +541,43 @@ function update_button_input_status(execution_status){
     }
 }
 
+function evaluted_type(i)
+{
+	if((protocol_input_arguments[i.attr("id")]["type"]) == 'integer'){
+                        return  parseInt(i.val());
+                }
+                else if ((protocol_input_arguments[i.attr("id")]["type"]) == 'number')
+                {
+                        return Number(i.val());
+                }
+                else
+                {
+                        console.log("Type is not integer or number");
+			return "ERROR"
+                }
+
+}
 
 function retrieve_execution_configuration(){
     var form_config = {};
     input_list = jQuery( ".free-input" );
-
+    console.log(input_list)
     for ( ind = 0, len = input_list.length; ind < len; ind++ ) {
-        i = $(input_list[ind]);
-        if((protocol_input_arguments[i.attr("id")]["type"]) == 'integer'){
-            form_config[i.attr("id")] =  parseInt(i.val());
-        }
+	if(["radio"].includes(input_list[ind].type) )
+	{
+		console.log("ROSSA");
+        	console.log(input_list[ind].checked);
+		if (input_list[ind].checked)
+		{
+			i = $(input_list[ind]);
+			console.log(i.attr("id"))
+			form_config[i.attr("id")] = evaluted_type(i);
+		}
+	}
+	else {
+		i = $(input_list[ind]);
+		form_config[i.attr("id")] = evaluted_type(i);
+    	}
     }
     return form_config ;
 }

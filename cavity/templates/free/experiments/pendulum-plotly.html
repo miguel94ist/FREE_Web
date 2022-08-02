@@ -1,0 +1,370 @@
+{% extends 'free/experiment.html' %}
+{% load static %}
+{% load i18n %}
+
+
+{% block experiment_head %}
+    <!-- pendulum libraries -->
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
+    <!-- slider  -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fomantic-ui/2.8.4/components/slider.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fomantic-ui/2.8.4/components/slider.min.css">
+
+ 
+
+{% endblock %}  
+
+
+{% block configtab %}
+<!-- Begin of the configuration tab-->
+    
+    
+        <div class="ui two column grid container">
+            <div class="column">
+                <div class="ui segment">
+                    <legend> <h3>{% trans 'Initial Displacement (cm)'%}</h3></legend>
+                    <div class="ui labeled slider "  id="slider-n_samples" ></div>
+                        <br>
+                        <div class="ui input" >
+                            <input class="free-input" type="number" id="n_samples">
+                        </div>
+                </div>
+            </div>
+            <div class="column">
+                <div class="ui segment">
+                    <legend><h3>{% trans 'Number of Samples N'%}</h3></legend>
+                    <div class="ui labeled slider" id="slider-tb_samples" ></div>
+                        <br></br>
+                        <div class="ui input">
+                            <input class="free-input" type="number" id="tb_samples">
+                        </div>
+                </div>
+            </div>
+        </div>
+<!-- End of the configuration tab-->
+{% endblock %}
+
+
+
+<!-- Begin of the execution tab-->
+{% block executiontab %}
+
+<div class="ui grid stackable">
+    <div class="row">
+    <div class=" ten wide column">
+        <h3>Histogram of the pendulum periods</h3>
+       <div>
+            <div  id="myplot1"></div>
+        </div>
+    </div>
+</div>
+<div class="row">
+
+    <div class=" five wide column">
+        <h3>Velocidade Linear vs Amostra</h3>
+            <div >
+                <div id="myplot"></div>
+            </div>
+    </div>
+    <div class=" five wide column">
+        <h3>Period vs. number of samples</h3>
+        <div>
+            <div  id="myplot2"></div>
+        </div>
+    </div>
+    </div>
+</div>
+    <table id="results_table" class="ui celled table display" style="width:100%">
+        <thead>
+            <tr>
+                <th id="Sample_number">{% trans "Sample Number" %}</th>
+                <th id="Val1">{% trans "Period [s]" %}</th>
+                <th id="Val2">{% trans "g [m/s^2]" %}</th>
+                <th id="Val3">{% trans "Velocity [cm/s]" %}</th>
+                <th id="Val4">{% trans "Temperature [ºC]" %}</th>
+            </tr>
+        </thead>
+    </table>
+{% endblock %}   
+<!-- End of the execution tab-->
+
+		
+{% block protocol_auxiliary_functions %}
+
+<script>
+    var receive_error_velocity
+    var receive_error_period
+
+
+
+function process_final_data(data_line){
+
+
+}
+
+function process_partial_data(data_line){
+    sample_number = parseInt(data_line.value.Sample_number) 
+    val3 = parseFloat(data_line.value.Val3)
+    val1 = parseFloat(data_line.value.Val1)
+   
+ 
+
+
+    Plotly.extendTraces('myplot', {x: [[sample_number]],y: [[val3]],'error_y.array': [[receive_error_velocity]]}, [0,]);
+   Plotly.extendTraces('myplot1', {x:  [[val1]]}, [0]);
+   Plotly.extendTraces('myplot2', {x: [[sample_number]],y: [[val1]],'error_y.array': [[receive_error_period]]}, [0]);
+
+}
+
+function on_save_experiment_UI(){
+
+}
+
+
+
+
+
+function on_ready_experiment_UI(){
+
+    configure_slider("n_samples")
+    configure_slider("tb_deltaX")
+    buildPlot1(0,'myplot');
+    buildPlot2(0,'myplot1');
+    buildPlot3(0,'myplot2');
+    receive_error_velocity = 0.1;
+    receive_error_period = 0.0005;//response.data.value.e_period;
+
+ 
+
+}
+function configure_slider(name){
+        $('#slider-'+name).slider({
+            min:  protocol_input_arguments[name].minimum,
+            max: protocol_input_arguments[name].maximum, 
+            step: protocol_input_arguments[name].multipleOf,
+            start: protocol_input_arguments[name].default,
+            input: '#'+name,
+            onChange: function(value) {
+                console.log("QQQQQQQQQQQQQQQQQQ "+value)
+                $('#'+name).prop("value", value)
+                onInputChanged()
+           }
+        })
+        $('#'+name).change(function() {
+            if($(this).val() > protocol_input_arguments[name].maximum)
+                $(this).prop("value", protocol_input_arguments[name].maximum)
+            if($(this).val() < protocol_input_arguments[name].minimum)
+                $(this).prop("value", protocol_input_arguments[name].minimum)
+            $("#slider-"+name).slider('set value', $(this).val())
+            });
+    }
+
+
+function buildPlot1(res, plotdiv) {
+
+console.log(res);
+var trace1 = {
+      x: [],
+      y: [],
+  error_y: {
+    type: 'data',
+    color: '#85144B',
+    array: [],
+    thickness: 1.5,
+    width:3,
+    visible: true
+  },
+  mode: 'lines+markers',
+  line: {
+    color: "#1f77b4", 
+    width: 1
+  },marker: {
+    color: "rgb(0, 255, 255)", 
+    size: 6, 
+    line: {
+      color: "black", 
+      width: 0.5
+    }
+  },
+  type:"scatter",
+      /*line: {
+        color: '#80CAF6',
+        shape: 'linear'
+      },*/
+      
+      name: "res[1]"
+    };
+
+  var output_data = [trace1];
+
+  var layout = {
+    margin: {
+    l: 50,
+    r: 50,
+    b: 50,
+    t: 50,
+    pad: 4
+  },
+    showlegend:false, 
+    xaxis: {
+          title: gettext('# Samples'),
+          titlefont:{
+                color: 'black',
+                size: 14
+                },
+               howticklabels: false
+               // rangemode: 'tozero'
+              
+               //rangeslider: {}
+          },
+    yaxis: {
+          title: gettext('Linear velocity [cm/s]'),
+          fixedrange: true,
+          titlefont:{
+                color: 'black',
+                size: 14
+                }
+               // rangemode: 'tozero'
+          }
+   };
+
+   Plotly.newPlot(plotdiv, output_data, layout, {responsive: true});
+ 
+}
+
+
+
+
+
+
+
+///////////////////
+
+function buildPlot2(res,plotdiv) {
+console.log(res);
+var trace2 = {
+  // no histograma so é x ou é y.
+      x: [],
+      //y: [],
+  visible: true,
+ // mode: 'lines+markers',
+  type: 'histogram',
+  nbins: 50,
+  // xbins: {
+
+  //   end: 1000, 
+
+  //   size: 0.06, 
+
+  //   start: .5
+
+  // },
+      line: {
+        color: '#80CAF6',
+        shape: 'linear'
+      },
+  opacity:0.5,
+      
+      name: res[2]
+    };
+
+  var output_data = [trace2];
+
+  var layout = {
+
+    bargap: 0.05, 
+    bargroupgap: 0.2,
+   
+  
+
+    xaxis: {
+          
+          title: gettext('Period [s]'),
+          titlefont:{
+                color: 'black',
+                size: 14
+                }
+              //  rangemode: 'tozero'
+          },
+    yaxis: {
+      //range:[0.19,0.21],
+          title: gettext('# Samples'),
+          titlefont:{
+                color: 'black',
+                size: 14
+                }
+               // rangemode: 'tozero'
+          }
+   };
+
+   Plotly.newPlot(plotdiv, output_data, layout, {responsive: true});
+ 
+}
+
+
+function buildPlot3(res,plotdiv) {
+console.log(res);
+var trace3 = {
+      x: [],
+      y: [],
+  error_y: {
+    type: 'data',
+    color: '#85144B',
+    array: [],
+    thickness: 1.5,
+    width:3,
+    visible: true
+  },
+  mode: 'lines+markers',
+  line: {
+    color: "#1f77b4", 
+    width: 1
+  },marker: {
+    color: "rgb(0, 255, 255)", 
+    size: 6, 
+    line: {
+      color: "black", 
+      width: 0.5
+    }
+  },
+  type:"scatter",
+      
+      name: res[3]
+    };
+
+  var output_data = [trace3];
+
+  var layout = {
+ 
+
+    xaxis: {
+          
+          title: gettext('# Samples'),
+          titlefont:{
+                color: 'black',
+                size: 14
+                }
+              //  rangemode: 'tozero'
+          },
+    yaxis: {
+      //range:[0.19,0.21],
+          title: gettext('Period [s]'),
+          titlefont:{
+                color: 'black',
+                size: 14
+                }
+                //rangemode: 'tozero'
+          }
+   };
+
+   Plotly.newPlot(plotdiv, output_data, layout,  {responsive: true});
+ 
+  }
+
+
+
+</script>
+{% endblock %}   
+
+

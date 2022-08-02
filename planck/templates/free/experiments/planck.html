@@ -30,109 +30,77 @@
         <div class="ui two column grid container">
             <div class="column">
                 <div class="ui segment">
-                    <legend> <h3>{% trans 'Sweeping Voltage [Vpp]'%}</h3></legend>
-                    <div style="padding-top: 5%;"  class="ui blue small bottom aligned labeled  slider"  id="slider-max_duty" ></div>
-                        
-                        <div class="ui input" >
-                            <input class="free-input" type="number" id="max_duty">
-                        </div>
-                </div>
-            </div>
-            <div class="column">
-                <div class="ui segment">
-                    <legend><h3>{% trans 'Period for Sweeping Signal  [ms]'%}</h3></legend>
-                    <div style="padding-top: 5%;"  class="ui blue small bottom aligned labeled  slider" id="slider-sigperiod" ></div>
-                        
-                        <div class="ui input">
-                            <input class="free-input" type="number" id="sigperiod">
-                        </div>
-                </div>
-            </div>
-        </div>
-		<!-- 2 -->
-        <div class="ui two column grid container">
-            <div class="column">
-                <div class="ui segment">
-                    <legend> <h3>{% trans 'Number of Samples per Period'%}</h3></legend>
-                    <div style="padding-top: 5%;"  class="ui blue small bottom aligned labeled slider"  id="slider-numsamps" ></div>
-                        
-                        <div class="ui input" >
-                            <input class="free-input" type="number" id="numsamps">
-                        </div>
-                </div>
-            </div>
-			
-			 <div class="column">
-                <div class="ui segment">
-                    <legend> <h3>{% trans 'Number of Periods '%}</h3></legend>
-                    <div style="padding-top: 5%;"  class="ui blue small bottom aligned labeled slider"  id="slider-numperiod" ></div>
-                        
-                        <div class="ui input" >
-                            <input class="free-input" type="number" id="numperiod">
-                        </div>
-                </div>
-            </div>
-           
-        </div>
-		<!--3-->
-		<div class="ui two column grid container">
-            <div class="column">
-                <div class="ui segment">
-                    <legend> <h3>{% trans 'Gas Injection Time [ms]'%}</h3></legend>
-                    <div style="padding-top: 5%;"  class="ui blue small bottom aligned labeled slider"  id="slider-pressure" ></div>
-                        
-                        <div class="ui input" >
-                            <input class="free-input" type="number" id="pressure">
-                        </div>
-                </div>
-            </div>
-			
-			 <div class="column">
-                <div class="ui segment">
-                    <legend> <h3>{% trans 'Gas Selection'%}</h3></legend>
+                    <legend> <h3>{% trans 'Color '%}</h3></legend>
 					
-                    <div class="field" id="radio">
-                        <div class="ui  blue radio checkbox langmuir">
-                             <input type="radio" name="frequency" checked="checked"  value="1">
-                                 <label>Helium</label>
-                        </div>
+					
+                    <div  class="field" id="radio">
+                        		<div class="ui  blue radio checkbox langmuir">
+                             			<input class="free-input"  type="radio" id="color_selector" name="color_type" checked="checked"  value="1">
+                                 		<label>Blue</label>
+                        		</div>
 						
-                        <div class="field">
-                            <div class="ui radio checkbox langmuir">
-                                <input type="radio" name="frequency"  value="2">
-                                    <label>Nitrogen</label>
-                            </div>
-                        </div>		
+                        		<div class="field">
+                            			<div class="ui radio checkbox langmuir">
+                                			<input class="free-input"  type="radio" id="color_selector" name="color_type"  value="2">
+                                    			<label>yellow</label>
+                            			</div>
+                       			</div>		
 						
-					    <div class="field">
-                            <div class="ui radio checkbox langmuir">
-                                <input type="radio" name="frequency"  value="3">
-                                    <label>Argon</label>
-                            </div>
-                        </div>
+					            <div class="field">
+                            			<div class="ui radio checkbox langmuir">
+                                			<input class="free-input" type="radio" id="color_selector"  name="color_type" value="3">
+                                    			<label>Violet</label>
+                            			</div>
+                        		</div>
+								
+								<div class="field">
+                            			<div class="ui radio checkbox langmuir">
+                                			<input class="free-input" type="radio" id="color_selector"  name="color_type" value="4">
+                                    			<label>Green</label>
+                            			</div>
+                        		</div>
+								<div class="field">
+                            			<div class="ui radio checkbox langmuir">
+                                			<input class="free-input" type="radio" id="color_selector"  name="color_type" value="5">
+                                    			<label>Red</label>
+                            			</div>
+                        		</div>
+								
 							 
-				    </div>
+				</div>
+                    
+                       
                 </div>
             </div>
-           
-        </div>
-		<!--4-->
-		<div class="ui two column grid container">
             <div class="column">
                 <div class="ui segment">
-                    <legend> <h3>{% trans 'Background Pressure [Pa]'%}</h3></legend>
-                    <div style="padding-top: 5%;"  class="ui blue small bottom aligned labeled  slider"  id="slider-pump_press" ></div>
-                        
-                        <div class="ui input" >
-                            <input class="free-input" type="number" id="pump_press">
+                    <legend><h3>{% trans 'Intensity (%)'%}</h3></legend>
+                    <div style="padding-top: 5%;"  class="ui blue small bottom aligned labeled  slider"  id="slider-intensity" ></div>
+                        <div class="ui input">
+                            <input class="free-input" type="number" id="intensity">
                         </div>
                 </div>
             </div>
-           
+			<!--2-->
+			<div class="column">
+                <div class="ui segment">
+                    <legend> <h3>{% trans 'Time between samples'%}</h3></legend>
+                    <div style="padding-top: 5%;"  class="ui blue small bottom aligned labeled  slider"  id="slider-tb_samples" ></div>
+                        <div class="ui input" >
+                            <input class="free-input" type="number" id="tb_samples">
+                        </div>
+                </div>
+            </div>
+            <div class="column">
+                <div class="ui segment">
+                    <legend><h3>{% trans 'Number of Samples'%}</h3></legend>
+                    <div style="padding-top: 5%;"  class="ui blue small bottom aligned labeled  slider"  id="slider-n_samples" ></div>
+                        <div class="ui input">
+                            <input class="free-input" type="number" id="n_samples">
+                        </div>
+                </div>
+            </div>
         </div>
-		
-		
-		
 <!-- End of the configuration tab-->
 {% endblock %}
 
@@ -143,14 +111,13 @@
 <div class="ui grid stackable">
     <div class="row">
         <div class=" ten wide column">
-            <h3>Distance vs Time</h3>
+            <h3>Voltage vs Time</h3>
                 <div >
                     <canvas id="plot_period_histogram"></canvas>
                 </div>
         </div>
    
     </div>
-	
     <div class="row">
         
         <div class="eight wide column">
@@ -171,10 +138,11 @@
     <table id="results_table" class="ui celled table display" style="width:100%">
         <thead>
             <tr>
-                <th id="time">{% trans "Time" %}</th>
-                <th id="adc_value1">{% trans "Voltage [V]" %}</th>
-                <th id="adc_value2">{% trans "Current[uA]" %}</th>
-                <th id="adc_value3">{% trans "Pressure[mBar]" %}</th>
+                <th id="Sample_number">{% trans "Sample Number" %}</th>
+                <th id="Val1">{% trans "Time [s]" %}</th>
+                <th id="Val2">{% trans " ? time " %}</th>
+                <th id="Val3">{% trans "Voltage [V]" %}</th>
+                <th id="Val4">{% trans " ? voltage " %}</th>
             </tr>
         </thead>
     </table>
@@ -245,15 +213,9 @@ function on_save_experiment_UI(){
 
 function on_ready_experiment_UI(){
 
-    configure_slider("max_duty")
-    configure_slider("sigperiod")
-	configure_slider("numsamps")
-	configure_slider("numperiod")
-	configure_slider("pressure")
-	configure_radio()
-	configure_slider("pump_press")
-	
-	
+    configure_slider("intensity")
+    configure_slider("tb_samples")
+	configure_slider("n_samples")
     receive_error_velocity = 0.1;
     receive_error_period = 0.0005;//response.data.value.e_period;
 
@@ -396,8 +358,8 @@ function configure_slider(name){
 	
 function configure_radio() {
          $('.ui.radio.checkbox').checkbox();
-         gas_selector = $('#radio').find('[name="frequency"]:checked').val();
-         console.log(gas_selector)
+         color_selector = $('#radio').find('[name="frequency"]:checked').val();
+         console.log(color_selector)
          if (gas_selector === undefined){
                  console.log("error")
                  gas_selector = 1
@@ -407,4 +369,6 @@ function configure_radio() {
 
 
 </script>
-{% endblock %}
+{% endblock %}   
+
+
