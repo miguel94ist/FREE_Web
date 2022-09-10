@@ -251,7 +251,7 @@ function on_ready_experiment_UI(){
     else{
       configure_slider("angle")
     }
-	
+		
     buildPlot1(0,'plot_angle_time');
     buildPlot2(0,'plot_resistance_time');
     buildPlot3(0,'plot_voltage_time');

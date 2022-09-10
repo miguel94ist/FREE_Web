@@ -35,34 +35,34 @@
 					
                     <div  class="field" id="radio">
                         		<div class="ui  blue radio checkbox langmuir">
-                             			<input class="free-input"  type="radio" id="color_selector" name="color_type" checked="checked"  value="1">
+                             			<input class="free-input"  type="radio" id="color" name="frequency" checked="checked"  value="1">
                                  		<label>Blue</label>
                         		</div>
 						
                         		<div class="field">
                             			<div class="ui radio checkbox langmuir">
-                                			<input class="free-input"  type="radio" id="color_selector" name="color_type"  value="2">
-                                    			<label>yellow</label>
+                                			<input class="free-input"  type="radio" id="color" name="frequency"  value="2">
+                                    			<label>Violet</label>
                             			</div>
                        			</div>		
 						
 					            <div class="field">
                             			<div class="ui radio checkbox langmuir">
-                                			<input class="free-input" type="radio" id="color_selector"  name="color_type" value="3">
-                                    			<label>Violet</label>
+                                			<input class="free-input" type="radio" id="color"  name="frequency" value="3">
+                                    			<label>Red</label>
                             			</div>
                         		</div>
 								
 								<div class="field">
                             			<div class="ui radio checkbox langmuir">
-                                			<input class="free-input" type="radio" id="color_selector"  name="color_type" value="4">
-                                    			<label>Green</label>
+                                			<input class="free-input" type="radio" id="color"  name="frequency" value="4">
+                                    			<label>yellow</label>
                             			</div>
                         		</div>
 								<div class="field">
                             			<div class="ui radio checkbox langmuir">
-                                			<input class="free-input" type="radio" id="color_selector"  name="color_type" value="5">
-                                    			<label>Red</label>
+                                			<input class="free-input" type="radio" id="color"  name="frequency" value="5">
+                                    			<label>Green</label>
                             			</div>
                         		</div>
 								
@@ -113,11 +113,12 @@
         <div class=" ten wide column">
             <h3>Voltage vs Time</h3>
                 <div >
-                    <canvas id="plot_period_histogram"></canvas>
+                    <canvas id="plot_time_voltage"></canvas>
                 </div>
         </div>
    
     </div>
+	<!--
     <div class="row">
         
         <div class="eight wide column">
@@ -133,16 +134,14 @@
                 </div>
         </div>
     </div>
+	-->
 </div>
 
     <table id="results_table" class="ui celled table display" style="width:100%">
         <thead>
             <tr>
-                <th id="Sample_number">{% trans "Sample Number" %}</th>
-                <th id="Val1">{% trans "Time [s]" %}</th>
-                <th id="Val2">{% trans " ? time " %}</th>
-                <th id="Val3">{% trans "Voltage [V]" %}</th>
-                <th id="Val4">{% trans " ? voltage " %}</th>
+                <th id="time">{% trans "Time (s)" %}</th>
+                <th id="voltage">{% trans "Voltage [V]" %}</th>
             </tr>
         </thead>
     </table>
@@ -153,13 +152,13 @@
 {% block protocol_auxiliary_functions %}
 
 <script>
-    var receive_error_velocity
-    var receive_error_period
+   // var receive_error_voltage
+    //var receive_error_period
 
-    var plot_sample_velocity
-    var plot_sample_period
-    var plot_period_histogram
- var period_data = []
+   // var plot_sample_velocity
+    //var plot_sample_period
+    var plot_time_voltage
+    //var period_data = []
 
 
 function process_final_data(data_line){
@@ -168,22 +167,22 @@ function process_final_data(data_line){
 }
 
 function process_partial_data(data_line){
-    sample_number = parseInt(data_line.value.Sample_number) 
-    val3 = parseFloat(data_line.value.Val3)
-    val1 = parseFloat(data_line.value.Val1)
+    time = parseFloat(data_line.value.time) 
+    voltage = parseFloat(data_line.value.voltage)
+
    
-    plot_sample_velocity.data.datasets[0].data.push({
-        x: sample_number, 
-        y: val3,
-        yMin: val3 - receive_error_velocity,
-        yMax: val3 + receive_error_velocity,
+    plot_time_voltage.data.datasets[0].data.push({
+        x: time, 
+        y: voltage,
+       // yMin: voltage - receive_error_voltage,
+        //yMax: voltage + receive_error_voltage,
     });
-    plot_sample_velocity.update();
+    plot_time_voltage.update();
 
 
 
-    period_data.push(val1)
-
+   // period_data.push(val1)
+/*
     bin1 = d3.bin()
     histo = bin1(period_data);
     const bins = histo.map((k, i) => (k.x0+ " .. "+k.x1 ));
@@ -200,7 +199,7 @@ function process_partial_data(data_line){
         yMax: val1 + receive_error_period,
     });
     plot_sample_period.update();
-
+*/
 }
 
 function on_save_experiment_UI(){
@@ -213,15 +212,16 @@ function on_save_experiment_UI(){
 
 function on_ready_experiment_UI(){
 
+    configure_radio()
     configure_slider("intensity")
     configure_slider("tb_samples")
 	configure_slider("n_samples")
-    receive_error_velocity = 0.1;
-    receive_error_period = 0.0005;//response.data.value.e_period;
+   // receive_error_voltage = 0.1;
+    //receive_error_period = 0.0005;//response.data.value.e_period;
 
-    ctx = $("#plot_sample_velocity")[0].getContext('2d');
-    plot_sample_velocity = new Chart(ctx, {
-        type: 'scatterWithErrorBars',
+    ctx = $("#plot_time_voltage")[0].getContext('2d');
+    plot_time_voltage = new Chart(ctx, {
+        type: 'scatter',
         data: {
             datasets: [{
                 borderColor: "blue",
@@ -240,21 +240,22 @@ function on_ready_experiment_UI(){
                 y: {
                     title:{
                         display: true, 
-                        text: gettext('Linear velocity [cm/s]'),
-                    },
-                    min: 8.5,
-                    max: 9.5,
+                        text: gettext('Voltage [V]'),
+                    }
+                   // min: 8.5,
+                    //max: 9.5,
                 },
                 x: {
                     title:{
                         display: true, 
-                        text: gettext('# Samples'),
+                        text: gettext('Time[s]'),
                     },
                 },
             },
         }
     });
 
+/*
     ctx = $("#plot_period_histogram")[0].getContext('2d');
     plot_period_histogram = new Chart(ctx, {
         type: 'bar',
@@ -294,11 +295,13 @@ function on_ready_experiment_UI(){
             },
         }
     });
+	
+	*/
 
 
 
 
-
+/*
     ctx = $("#plot_sample_period")[0].getContext('2d');
     plot_sample_period = new Chart(ctx, {
         type: 'scatterWithErrorBars',
@@ -332,6 +335,7 @@ function on_ready_experiment_UI(){
             },
         }
     });
+	*/
 
 }
 function configure_slider(name){
@@ -358,8 +362,8 @@ function configure_slider(name){
 	
 function configure_radio() {
          $('.ui.radio.checkbox').checkbox();
-         color_selector = $('#radio').find('[name="frequency"]:checked').val();
-         console.log(color_selector)
+         gas_selector = $('#radio').find('[name="frequency"]:checked').val();
+         console.log(gas_selector)
          if (gas_selector === undefined){
                  console.log("error")
                  gas_selector = 1

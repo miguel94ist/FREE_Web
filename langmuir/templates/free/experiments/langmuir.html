@@ -93,20 +93,20 @@
 					
                     <div class="field" id="radio">
                         <div class="ui  blue radio checkbox langmuir">
-                             <input type="radio" name="frequency" checked="checked"  value="1">
+                             <input  class="free-input"  type="radio" id="gas_selector" name="gas_type" checked="checked"  value="1">
                                  <label>Helium</label>
                         </div>
 						
                         <div class="field">
                             <div class="ui radio checkbox langmuir">
-                                <input type="radio" name="frequency"  value="2">
+                                <input  class="free-input"  type="radio" id="gas_selector" name="gas_type"  value="2">
                                     <label>Nitrogen</label>
                             </div>
                         </div>		
 						
 					    <div class="field">
                             <div class="ui radio checkbox langmuir">
-                                <input type="radio" name="frequency"  value="3">
+                                <input  class="free-input"  type="radio" id="gas_selector" name="gas_type"  value="3">
                                     <label>Argon</label>
                             </div>
                         </div>
@@ -143,9 +143,9 @@
 <div class="ui grid stackable">
     <div class="row">
         <div class=" ten wide column">
-            <h3>Distance vs Time</h3>
+            <h3>Current vs Voltage</h3>
                 <div >
-                    <canvas id="plot_period_histogram"></canvas>
+                    <div id="plot_current_voltage"></div>
                 </div>
         </div>
    
@@ -154,18 +154,30 @@
     <div class="row">
         
         <div class="eight wide column">
-            <h3>Velocidade Linear vs Amostra</h3>
+            <h3>Voltage vs Time</h3>
                 <div >
-                    <canvas id="plot_sample_velocity"></canvas>
+                    <div id="plot_voltage_time"></div>
                 </div>
         </div>
         <div class="eight wide column">
-            <h3>Velocidade Linear vs Amostra</h3>
+            <h3>Current vs Time</h3>
                 <div >
-                    <canvas id="plot_sample_period"></canvas>
+                    <div id="plot_current_time"></div>
                 </div>
         </div>
     </div>
+	
+	<div class="row">
+        <div class=" ten wide column">
+            <h3>Pressure vs Time</h3>
+                <div >
+                    <div id="plot_pressure_time"></div>
+                </div>
+        </div>
+   
+    </div>
+	
+	
 </div>
 
     <table id="results_table" class="ui celled table display" style="width:100%">
@@ -184,14 +196,16 @@
 		
 {% block protocol_auxiliary_functions %}
 
-<script>
-    var receive_error_velocity
-    var receive_error_period
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 
-    var plot_sample_velocity
-    var plot_sample_period
-    var plot_period_histogram
- var period_data = []
+<script>
+    //var receive_error_velocity
+    //var receive_error_period
+
+    //var plot_current_time
+    //var plot_voltage_time
+    //var plot_current_voltage
+    //var period_data = []
 
 
 function process_final_data(data_line){
@@ -199,46 +213,46 @@ function process_final_data(data_line){
 
 }
 
+
+/*
 function process_partial_data(data_line){
-    sample_number = parseInt(data_line.value.Sample_number) 
-    val3 = parseFloat(data_line.value.Val3)
-    val1 = parseFloat(data_line.value.Val1)
+    voltage = parseFloat(data_line.value.adc_value1) 
+    current = parseFloat(data_line.value.adc_value2)
+    pressure = parseFloat(data_line.value.adc_value3)
+	time = data_line.value.time
    
-    plot_sample_velocity.data.datasets[0].data.push({
-        x: sample_number, 
-        y: val3,
-        yMin: val3 - receive_error_velocity,
-        yMax: val3 + receive_error_velocity,
+    plot_current_voltage.data.datasets[0].data.push({
+        x: voltage, 
+        y: current
+       // yMin: val3 - receive_error_velocity,
+      //  yMax: val3 + receive_error_velocity,
     });
-    plot_sample_velocity.update();
+    plot_current_voltage.update();
 
-
-
-    period_data.push(val1)
-
-    bin1 = d3.bin()
-    histo = bin1(period_data);
-    const bins = histo.map((k, i) => (k.x0+ " .. "+k.x1 ));
-    const data = histo.map((k, i) => (k.length));
-    plot_period_histogram.data.labels = bins
-    plot_period_histogram.data.datasets[0].data = data
-    plot_period_histogram.update();
-
-
-    plot_sample_period.data.datasets[0].data.push({
-        x: sample_number, 
-        y: val1,
-        yMin: val1 - receive_error_period,
-        yMax: val1 + receive_error_period,
+    plot_voltage_time.data.datasets[0].data.push({
+        x: time, 
+        y: voltage
+       // yMin: val1 - receive_error_period,
+       // yMax: val1 + receive_error_period,
     });
-    plot_sample_period.update();
+    plot_voltage_time.update();
+	
+	
+	plot_current_time.data.datasets[0].data.push({
+        x: time, 
+        y: current
+      //  yMin: val1 - receive_error_period,
+        //yMax: val1 + receive_error_period,
+    });
+    plot_current_time.update();
 
 }
+
+*/
 
 function on_save_experiment_UI(){
 
 }
-
 
 
 
@@ -254,12 +268,99 @@ function on_ready_experiment_UI(){
 	configure_slider("pump_press")
 	
 	
-    receive_error_velocity = 0.1;
-    receive_error_period = 0.0005;//response.data.value.e_period;
+	buildPlot1(0,'plot_current_voltage');
+    buildPlot2(0,'plot_voltage_time');
+    buildPlot3(0,'plot_current_time');
+	buildPlot4(0, 'plot_pressure_time');
+	
+	
+    //receive_error_velocity = 0.1;
+   // receive_error_period = 0.0005;//response.data.value.e_period;
 
-    ctx = $("#plot_sample_velocity")[0].getContext('2d');
-    plot_sample_velocity = new Chart(ctx, {
-        type: 'scatterWithErrorBars',
+
+/*
+    ctx = $("#plot_current_voltage")[0].getContext('2d');
+    plot_current_voltage = new Chart(ctx, {
+        type: 'line',
+        data: {
+            datasets: [{
+                borderColor: "blue",
+                backgroundColor: "blue",
+                data: [ ],
+            },],
+        },
+		reponsive:true,
+        options: {
+            plugins: {
+                legend: {
+                    display: false,
+                }, 
+                autocolors: false,
+            },
+            scales: {
+                y: {
+                    title:{
+                        display: true, 
+                        text: gettext('Current [µA]'),
+                    }
+                  //  min: 8.5,
+                    //max: 9.5,
+                },
+                x: {
+                    title:{
+                        display: true, 
+                        text: gettext('Voltage[V]'),
+                    },
+                },
+            },
+        }
+    });
+
+    ctx = $("#plot_voltage_time")[0].getContext('2d');
+    plot_voltage_time = new Chart(ctx, {
+        type: 'line',
+        data: {
+            datasets: [{
+                borderColor: "blue",
+                backgroundColor: "blue",
+                data: [ ],
+            },],
+        },
+		responsive:true,
+        options: {
+            plugins: {
+                legend: {
+                    display: false,
+                }, 
+                autocolors: false,
+            },
+            scales: {
+                y: {
+                    title:{
+                        display: true, 
+                        text: gettext('Voltage [V]'),
+                    }
+                   // min: 8.5,
+                   // max: 9.5,
+                },
+				
+                x: {
+
+                    title:{
+                        display: true, 
+                        text: gettext('Elapsed Time[HH:MM:SS]'),
+                    },
+                },
+            },
+        }
+    });
+
+
+
+
+    ctx = $("#plot_current_time")[0].getContext('2d');
+    plot_current_time = new Chart(ctx, {
+        type: 'line',
         data: {
             datasets: [{
                 borderColor: "blue",
@@ -278,98 +379,20 @@ function on_ready_experiment_UI(){
                 y: {
                     title:{
                         display: true, 
-                        text: gettext('Linear velocity [cm/s]'),
-                    },
-                    min: 8.5,
-                    max: 9.5,
+                        text: gettext('Current [µA]'),
+                    }
+                  //  min: 8.5,
+                    //max: 9.5,
                 },
                 x: {
                     title:{
                         display: true, 
-                        text: gettext('# Samples'),
+                        text: gettext('Elapsed Time[HH:MM:SS]'),
                     },
                 },
             },
         }
-    });
-
-    ctx = $("#plot_period_histogram")[0].getContext('2d');
-    plot_period_histogram = new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: [],
-            datasets: [{
-                borderColor: "blue",
-                backgroundColor: "blue",
-                data: [],
-            },],
-        },
-        options: {
-            offset: false,
-            animation: true,
-            scales: {   
-                x: {
-                    title:{
-                        display: true, 
-                        text: gettext('Period [s]'),
-                    },
-                    grid: {
-                        offset: true
-                        }
-                },
-                y: {
-                    ticks: {
-                        beginAtZero: true
-                    },
-                    
-                }
-            },
-            plugins: {
-                legend: {
-                    display: false,
-                }, 
-                autocolors: false,
-            },
-        }
-    });
-
-
-
-
-
-    ctx = $("#plot_sample_period")[0].getContext('2d');
-    plot_sample_period = new Chart(ctx, {
-        type: 'scatterWithErrorBars',
-        data: {
-            datasets: [{
-                borderColor: "blue",
-                backgroundColor: "blue",
-                data: [ ],
-            },],
-        },
-        options: {
-            plugins: {
-                legend: {
-                    display: false,
-                }, 
-                autocolors: false,
-            },
-            scales: {
-                y: {
-                    title:{
-                        display: true, 
-                        text: gettext('Period [s]'),
-                    },
-                },
-                x: {
-                    title:{
-                        display: true, 
-                        text: gettext('# Samples'),
-                    },
-                },
-            },
-        }
-    });
+    });*/
 
 }
 function configure_slider(name){
@@ -396,7 +419,7 @@ function configure_slider(name){
 	
 function configure_radio() {
          $('.ui.radio.checkbox').checkbox();
-         gas_selector = $('#radio').find('[name="frequency"]:checked').val();
+         gas_selector = $('#radio').find('[name="gas_type"]:checked').val();
          console.log(gas_selector)
          if (gas_selector === undefined){
                  console.log("error")
@@ -404,6 +427,281 @@ function configure_radio() {
             }
 
 }
+
+
+/* plots plotly.....
+*/
+
+
+function process_partial_data(data_line){
+    voltage = parseFloat(data_line.value.adc_value1) 
+    current = parseFloat(data_line.value.adc_value2)
+    pressure = parseFloat(data_line.value.adc_value3)
+	time = data_line.value.time
+   
+ 
+
+
+   Plotly.extendTraces('plot_current_voltage', {x: [[voltage]],y: [[current]]}, [0,]);
+   Plotly.extendTraces('plot_voltage_time', {x:  [[time]], y:[[voltage]]}, [0]);
+   Plotly.extendTraces('plot_current_time', {x: [[time]],y: [[current]]}, [0]);
+   Plotly.extendTraces('plot_pressure_time', {x: [[time]],y: [[pressure]]}, [0]);
+
+}
+
+
+function buildPlot1(res, plotdiv) {
+
+console.log(res);
+var trace1 = {
+      x: [],
+      y: [],
+  error_y: {
+    type: 'data',
+    color: '#85144B',
+    array: [],
+    thickness: 1.5,
+    width:3,
+    visible: true
+  },
+  mode: 'markers',
+  line: {
+    color: "#1f77b4", 
+    width: 1
+  },marker: {
+    color: "rgb(0, 255, 255)", 
+    size: 6, 
+    line: {
+      color: "black", 
+      width: 0.5
+    }
+  },
+  type:"scatter",
+      /*line: {
+        color: '#80CAF6',
+        shape: 'linear'
+      },*/
+      
+      name: "res[1]"
+    };
+
+  var output_data = [trace1];
+
+  var layout = {
+    margin: {
+    l: 50,
+    r: 50,
+    b: 50,
+    t: 50,
+    pad: 4
+  },
+    showlegend:false, 
+    xaxis: {
+          title: gettext('Voltage[V]'),
+          titlefont:{
+                color: 'black',
+                size: 14
+                },
+               howticklabels: false
+               // rangemode: 'tozero'
+              
+               //rangeslider: {}
+          },
+    yaxis: {
+          title: gettext('Current [µA]'),
+          fixedrange: true,
+          titlefont:{
+                color: 'black',
+                size: 14
+                }
+               // rangemode: 'tozero'
+          }
+   };
+
+   Plotly.newPlot(plotdiv, output_data, layout, {responsive: true});
+ 
+}
+
+function buildPlot2(res,plotdiv) {
+console.log(res);
+var trace2 = {
+      x: [],
+      y: [],
+  error_y: {
+    type: 'data',
+    color: '#85144B',
+    array: [],
+    thickness: 1.5,
+    width:3,
+    visible: true
+  },
+  mode: 'lines+markers',
+  line: {
+    color: "#1f77b4", 
+    width: 1
+  },marker: {
+    color: "rgb(0, 255, 255)", 
+    size: 6, 
+    line: {
+      color: "black", 
+      width: 0.5
+    }
+  },
+  type:"scatter",
+      
+      name: res[2]
+    };
+
+  var output_data = [trace2];
+
+  var layout = {
+ 
+
+    xaxis: {
+          
+          title: gettext('Elapsed Time[ms]'),
+          titlefont:{
+                color: 'black',
+                size: 14
+                }
+              //  rangemode: 'tozero'
+          },
+    yaxis: {
+      //range:[0.19,0.21],
+          title: gettext('Voltage [V]'),
+          titlefont:{
+                color: 'black',
+                size: 14
+                }
+                //rangemode: 'tozero'
+          }
+   };
+
+   Plotly.newPlot(plotdiv, output_data, layout,  {responsive: false});
+ 
+  }
+  
+  
+
+function buildPlot3(res,plotdiv) {
+console.log(res);
+var trace3 = {
+      x: [],
+      y: [],
+  error_y: {
+    type: 'data',
+    color: '#85144B',
+    array: [],
+    thickness: 1.5,
+    width:3,
+    visible: true
+  },
+  mode: 'lines+markers',
+  line: {
+    color: "#1f77b4", 
+    width: 1
+  },marker: {
+    color: "rgb(0, 255, 255)", 
+    size: 6, 
+    line: {
+      color: "black", 
+      width: 0.5
+    }
+  },
+  type:"scatter",
+      
+      name: res[3]
+    };
+
+  var output_data = [trace3];
+
+  var layout = {
+ 
+
+    xaxis: {
+          
+          title: gettext('Elapsed Time[ms]'),
+          titlefont:{
+                color: 'black',
+                size: 14
+                }
+              //  rangemode: 'tozero'
+          },
+    yaxis: {
+      //range:[0.19,0.21],
+          title: gettext('Current [µA]'),
+          titlefont:{
+                color: 'black',
+                size: 14
+                }
+                //rangemode: 'tozero'
+          }
+   };
+
+   Plotly.newPlot(plotdiv, output_data, layout,  {responsive: false});
+ 
+  }
+  
+ function buildPlot4(res,plotdiv) {
+console.log(res);
+var trace4 = {
+      x: [],
+      y: [],
+  error_y: {
+    type: 'data',
+    color: '#85144B',
+    array: [],
+    thickness: 1.5,
+    width:3,
+    visible: true
+  },
+  mode: 'lines+markers',
+  line: {
+    color: "#1f77b4", 
+    width: 1
+  },marker: {
+    color: "rgb(0, 255, 255)", 
+    size: 6, 
+    line: {
+      color: "black", 
+      width: 0.5
+    }
+  },
+  type:"scatter",
+      
+      name: res[4]
+    };
+
+  var output_data = [trace4];
+
+  var layout = {
+ 
+
+    xaxis: {
+          
+          title: gettext('Elapsed Time[ms]'),
+          titlefont:{
+                color: 'black',
+                size: 14
+                }
+              //  rangemode: 'tozero'
+          },
+    yaxis: {
+      //range:[0.19,0.21],
+          title: gettext('Pressure [mbar]'),
+          titlefont:{
+                color: 'black',
+                size: 14
+                }
+                //rangemode: 'tozero'
+          }
+   };
+
+   Plotly.newPlot(plotdiv, output_data, layout,  {responsive: false});
+ 
+  }
+
+
 
 
 </script>

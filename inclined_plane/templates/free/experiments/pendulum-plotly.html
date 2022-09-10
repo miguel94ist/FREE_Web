@@ -24,20 +24,20 @@
             <div class="column">
                 <div class="ui segment">
                     <legend> <h3>{% trans 'Initial Displacement (cm)'%}</h3></legend>
-                    <div class="ui labeled slider "  id="slider-n_samples" ></div>
+                    <div class="ui labeled slider "  id="slider-deltaX" ></div>
                         <br>
                         <div class="ui input" >
-                            <input class="free-input" type="number" id="n_samples">
+                            <input class="free-input" type="number" id="deltaX">
                         </div>
                 </div>
             </div>
             <div class="column">
                 <div class="ui segment">
                     <legend><h3>{% trans 'Number of Samples N'%}</h3></legend>
-                    <div class="ui labeled slider" id="slider-tb_samples" ></div>
+                    <div class="ui labeled slider" id="slider-samples" ></div>
                         <br></br>
                         <div class="ui input">
-                            <input class="free-input" type="number" id="tb_samples">
+                            <input class="free-input" type="number" id="samples">
                         </div>
                 </div>
             </div>
@@ -82,7 +82,7 @@
                 <th id="Val1">{% trans "Period [s]" %}</th>
                 <th id="Val2">{% trans "g [m/s^2]" %}</th>
                 <th id="Val3">{% trans "Velocity [cm/s]" %}</th>
-                <th id="Val4">{% trans "Temperature [ºC]" %}</th>
+                <th id="Val4">{% trans "Temperature [ÂºC]" %}</th>
             </tr>
         </thead>
     </table>
@@ -127,8 +127,8 @@ function on_save_experiment_UI(){
 
 function on_ready_experiment_UI(){
 
-    configure_slider("n_samples")
-    configure_slider("tb_deltaX")
+    configure_slider("samples")
+    configure_slider("deltaX")
     buildPlot1(0,'myplot');
     buildPlot2(0,'myplot1');
     buildPlot3(0,'myplot2');
@@ -244,7 +244,7 @@ var trace1 = {
 function buildPlot2(res,plotdiv) {
 console.log(res);
 var trace2 = {
-  // no histograma so é x ou é y.
+  // no histograma so Ã© x ou Ã© y.
       x: [],
       //y: [],
   visible: true,

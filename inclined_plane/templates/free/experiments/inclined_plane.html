@@ -32,7 +32,7 @@
                 <div class="ui segment">
                     <legend> <h3>{% trans 'Number of Samples'%}</h3></legend>
                     <div style="padding-top: 5%;"  class="ui blue small bottom aligned labeled  slider"  id="slider-n_samples" ></div>
-                        <br>
+                        
                         <div class="ui input" >
                             <input class="free-input" type="number" id="n_samples">
                         </div>
@@ -42,7 +42,7 @@
                 <div class="ui segment">
                     <legend><h3>{% trans 'Time Between Samples[ms]'%}</h3></legend>
                     <div style="padding-top: 5%;"  class="ui blue small bottom aligned labeled  slider" id="slider-tb_samples" ></div>
-                        <br>
+                        
                         <div class="ui input">
                             <input class="free-input" type="number" id="tb_samples">
                         </div>
@@ -56,7 +56,7 @@
                 <div class="ui segment">
                     <legend> <h3>{% trans 'Height [mm]'%}</h3></legend>
                     <div style="padding-top: 5%;"  class="ui blue small bottom aligned labeled slider"  id="slider-altura" ></div>
-                        <br>
+                      
                         <div class="ui input" >
                             <input class="free-input" type="number" id="altura">
                         </div>
@@ -77,12 +77,12 @@
         <div class=" ten wide column">
             <h3>Distance vs Time</h3>
                 <div >
-                    <canvas id="plot_period_histogram"></canvas>
+                    <canvas id="plot_time_distance"></canvas>
                 </div>
         </div>
    
     </div>
-	
+	<!--
     <div class="row">
         
         <div class="eight wide column">
@@ -97,17 +97,15 @@
                     <canvas id="plot_sample_period"></canvas>
                 </div>
         </div>
-    </div>
+    </div>-->
+	
 </div>
 
     <table id="results_table" class="ui celled table display" style="width:100%">
         <thead>
             <tr>
-                <th id="Sample_number">{% trans "Time" %}</th>
-                <th id="Val1">{% trans "Distance [mm]" %}</th>
-                <!--<th id="Val2">{% trans "g [m/s^2]" %}</th>
-                <th id="Val3">{% trans "Velocity [cm/s]" %}</th>
-                <th id="Val4">{% trans "Temperature [ºC]" %}</th>-->
+                <th id="time">{% trans "Time" %}</th>
+                <th id="position">{% trans "Distance [mm]" %}</th>
             </tr>
         </thead>
     </table>
@@ -118,13 +116,13 @@
 {% block protocol_auxiliary_functions %}
 
 <script>
-    var receive_error_velocity
-    var receive_error_period
+    //var receive_error_velocity=0
+    //var receive_error_period
 
-    var plot_sample_velocity
-    var plot_sample_period
-    var plot_period_histogram
- var period_data = []
+    var plot_time_distance
+    //var plot_sample_period
+    //var plot_period_histogram
+    //var period_data = []
 
 
 function process_final_data(data_line){
@@ -133,23 +131,23 @@ function process_final_data(data_line){
 }
 
 function process_partial_data(data_line){
-    sample_number = parseInt(data_line.value.Sample_number) 
-    val3 = parseFloat(data_line.value.Val3)
-    val1 = parseFloat(data_line.value.Val1)
+    time = parseFloat(data_line.value.time) 
+    position = parseFloat(data_line.value.position)
+    
    
-    plot_sample_velocity.data.datasets[0].data.push({
-        x: sample_number, 
-        y: val3,
-        yMin: val3 - receive_error_velocity,
-        yMax: val3 + receive_error_velocity,
+    plot_time_distance.data.datasets[0].data.push({
+        x: time, 
+        y: position
+       // yMin: val3 - receive_error_velocity,
+       // yMax: val3 + receive_error_velocity,
     });
-    plot_sample_velocity.update();
+    plot_time_distance.update();
 
 
 
-    period_data.push(val1)
+    //period_data.push(val1)
 
-    bin1 = d3.bin()
+    /*bin1 = d3.bin()
     histo = bin1(period_data);
     const bins = histo.map((k, i) => (k.x0+ " .. "+k.x1 ));
     const data = histo.map((k, i) => (k.length));
@@ -165,7 +163,7 @@ function process_partial_data(data_line){
         yMax: val1 + receive_error_period,
     });
     plot_sample_period.update();
-
+*/
 }
 
 function on_save_experiment_UI(){
@@ -181,11 +179,10 @@ function on_ready_experiment_UI(){
     configure_slider("n_samples")
     configure_slider("tb_samples")
 	configure_slider("altura")
-    receive_error_velocity = 0.1;
-    receive_error_period = 0.0005;//response.data.value.e_period;
+	
 
-    ctx = $("#plot_sample_velocity")[0].getContext('2d');
-    plot_sample_velocity = new Chart(ctx, {
+    ctx = $("#plot_time_distance")[0].getContext('2d');
+    plot_time_distance = new Chart(ctx, {
         type: 'scatterWithErrorBars',
         data: {
             datasets: [{
@@ -205,22 +202,24 @@ function on_ready_experiment_UI(){
                 y: {
                     title:{
                         display: true, 
-                        text: gettext('Linear velocity [cm/s]'),
-                    },
-                    min: 8.5,
-                    max: 9.5,
+                        text: gettext('Position [mm]'),
+                    }
+                    //min: 8.5,
+                    //max: 9.5,
                 },
                 x: {
                     title:{
                         display: true, 
-                        text: gettext('# Samples'),
+                        text: gettext('Time [s]'),
                     },
                 },
             },
         }
     });
 
-    ctx = $("#plot_period_histogram")[0].getContext('2d');
+
+  
+    /*ctx = $("#plot_period_histogram")[0].getContext('2d');
     plot_period_histogram = new Chart(ctx, {
         type: 'bar',
         data: {
@@ -259,12 +258,13 @@ function on_ready_experiment_UI(){
             },
         }
     });
+	*/
 
 
 
 
 
-    ctx = $("#plot_sample_period")[0].getContext('2d');
+    /*ctx = $("#plot_sample_period")[0].getContext('2d');
     plot_sample_period = new Chart(ctx, {
         type: 'scatterWithErrorBars',
         data: {
@@ -296,7 +296,7 @@ function on_ready_experiment_UI(){
                 },
             },
         }
-    });
+    });*/
 
 }
 function configure_slider(name){
