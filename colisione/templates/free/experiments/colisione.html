@@ -65,14 +65,20 @@
 <!-- Begin of the execution tab-->
 {% block executiontab %}
 <div class="ui grid stackable">
-    <div class="row">
-        <div class=" ten wide column">
-            <h3>Voltage vs Time</h3>
+   <div class="row">
+        
+        <div class="eight wide column">
+            <h3>Velocidade Final do carro 1</h3>
                 <div >
                     <div id="plot_time_velocity"></div>
                 </div>
         </div>
-   
+        <div class="eight wide column">
+            <h3>Velocidade final do carro 2</h3>
+                <div >
+                    <div id="plot_time_velocity2"></div>
+                </div>
+        </div>
     </div>
     
 </div>
@@ -111,7 +117,8 @@ function on_ready_experiment_UI(){
     configure_slider("poder_acel2")
 	configure_slider("cam_segue")
 	
-	buildPlot1(0,'plot_time_velocity');
+	buildPlot1(0,'plot_time_velocity')
+	buildPlot2(0,'plot_time_velocity2')
 	
 	
 }
@@ -142,15 +149,16 @@ function configure_slider(name){
 /* build plots*/
 
 function process_partial_data(data_line){
-    time = parseFloat(data_line.value.delta_tempo_carro1) 
-	t1 = parseFloat(data_line.value.delta_tempo_carro2)
+    t1 = parseFloat(data_line.value.delta_tempo_carro1) 
+	t2 = parseFloat(data_line.value.delta_tempo_carro2)
 	
    
  
-   console.log('t', time)
+  // console.log('t', time)
 
   // Plotly.update('plot_time_velocity',  {value: time},{}, [0]);
-   Plotly.extendTraces('plot_time_velocity', {x: [[time]],y: [[]]}, [0]);
+  Plotly.update('plot_time_velocity', {value: t1}, {}, [0]);
+  Plotly.update('plot_time_velocity2', {value: t2}, {}, [0]);
 //Plotly.update('myDiv', {value: rand()}, {}, [0])
 }
 
@@ -158,11 +166,12 @@ function buildPlot1(res, plotdiv) {
 
 console.log(res);
 var trace1 = {
-     
+
+    // domain = {'x': [0, 1], 'y': [0, 1]},
       x: [],
       y: [],
-      value: 0,
-      title: {text: "Velocity  do carro1" },
+      value: 30,
+      title: {text: "carro1" },
 
       mode: 'gauge+number',
       type:"indicator",
@@ -173,7 +182,34 @@ var trace1 = {
   var output_data = [trace1];
 
   var layout = {
-  width: 600, height: 500, margin: { t: 0, b: 0 }
+  width: 500, height: 400, margin: { t: 0, b: 0 }
+   
+  }
+   Plotly.newPlot(plotdiv, output_data, layout);
+ 
+}
+
+function buildPlot2(res, plotdiv) {
+
+console.log(res);
+var trace2 = {
+
+    // domain = {'x': [0, 1], 'y': [0, 1]},
+      x: [],
+      y: [],
+      value: 0,
+      title: {text: "carro2" },
+
+      mode: 'gauge+number',
+      type:"indicator",
+ 
+      name: "res[2]"
+    };
+
+  var output_data = [trace2];
+
+  var layout = {
+  width: 500, height: 400, margin: { t: 0, b: 0 }
    
   }
    Plotly.newPlot(plotdiv, output_data, layout);
