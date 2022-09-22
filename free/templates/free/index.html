@@ -8,63 +8,28 @@
 
     {% if user.is_authenticated %}
 
-        <!--content-->
-        <div class="right floated thirteen wide computer sixteen wide phone column" id="content">
 
-            <img class="imgrad" src="{% static 'free/images/WPA.jpeg' %}" alt="">
-            {% comment %} <div class="ui container grid">
-                <div class="row">
-                    <div class="fifteen wide computer sixteen wide phone centered column">
-                        <h2><i class="home icon"></i> {% trans 'Dashboard' %}</h2>
-                        <div class="ui divider"></div>
-                        <div class="ui grid">
-                            <div class="center aligned row">
-                                <div class="eight wide mobile four wide tablet four wide computer column">
-                                    <img class="ui centered small circular image"
-                                    src="static/images/limo.jpg"/>
-                                    <div class="ui large basic label">{% trans 'Go' %}!</div>
-                                    <p>{% trans 'Pendulum Experiment' %}</p>
-                                </div>
-                                <!-- Repeat-->
-                                <div class="eight wide mobile four wide tablet four wide computer column">
-                                    <img class="ui centered small circular image"
-                                    src="static/images/solar_tuk.png"/>
-                                    <div class="ui large basic label">{% trans 'Go' %}!</div>
-                                    <p>{% trans 'Langmuir Experiment' %}</p>
-                                    </div>
-                                    <div class="eight wide mobile four wide tablet four wide computer column">
-                                    <img class="ui centered small circular image"
-                                    src="static/images/limo.jpg"/>
-                                    <div class="ui large basic label">{% trans 'Go' %}!</div>
-                                    <p>{% trans 'Photovoltaics' %}</p>
-                                    </div>
-                                    <div class="eight wide mobile four wide tablet four wide computer column">
-                                    <img class="ui centered small circular image"
-                                    src="static/images/limo.jpg"/>
-                                    <div class="ui large basic button">{% trans 'Go' %}!</div>
-                                    <p>{% trans 'Waves' %}</p>
-                                    </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                </div>
-            </div> {% endcomment %}
-            
-        </div>
-    {% else %}
-
-
-
+    <!--content-->
+    <div class="right floated thirteen wide computer sixteen wide phone column" id="content">
         <img class="imgrad" src="{% static 'free/images/WPA.jpeg' %}" alt="">
+    </div>
 
-
-        {# button to login page #}
-        <a href="{% url 'free:login' %}">
-        <div class="ui teal labeled icon button">
-        LOG IN
-        <i class="signup icon"></i>
+    {% else %}
+    <div class="ui one column grid">
+        <div class="row">
+          <div class="column">
+            <a href="{% url 'free:login' %}">
+                <div class="ui teal labeled icon button">
+                LOG IN
+                <i class="signup icon"></i>
+                </div>
+            </a>
+          </div>
         </div>
-        </a>
+        <div class="column centered">
+            <img width="50%" class="imgrad" src="{% static 'free/images/WPA.jpeg' %}" alt="">
+        </div>
+    </div>
+
     {% endif %}
 {% endblock %}

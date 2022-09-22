@@ -40,24 +40,13 @@
     </head>
     <body>  
 
-        {% block layout %}
-        
         {% if user.is_authenticated %}
+            {% include 'free/layout/layout.html' %}
+        {% else %}
 
-          <div class="ui grid">
-            <div class="ui row">
-        
-                {% include 'free/layout/topbar.html' %}
-        
-                {% include 'free/layout/sidebar.html' %}
-        
-            </div>
-        
-        </div>
-        {% endif %}
 
-      
-        {% endblock %}
+
+        {% endif %} 
 
         {% block content %}
         {% endblock %}

@@ -29,12 +29,13 @@
       <div class="ui form">
         <div class="inline  field">
           <label>Threshold</label>
-           <input class="three wide" type="number" id="days-input" placeholder="Number of days">
-        </div>
-        <button class="ui button" onclick="delete_older()">Submit</button>
+           <input class="three wide" type="number" id="days-input" placeholder="Number of days"> 
+           <label>           Threshold should be higher than 30. <br>Smaller values will delete more experiments.        </label>
+    
+        </div>     
+        <button class="ui button" onclick="delete_older()">Submit</button> 
     </div>
-
-</div>
+    </div>
 </div>
 
 <script>
@@ -91,7 +92,7 @@
             x: {
                 title:{
                     display: true,
-                    text: "Days since creation"
+                    text: "Experiment Age (Days since creation)"
                 },
             }
             }
