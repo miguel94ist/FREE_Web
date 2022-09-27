@@ -148,12 +148,14 @@ Follow the instructions in https://python-social-auth.readthedocs.io/en/latest/b
   - Select Certificates and secrets on the menu
      - New client secret
      - Add
-  - Save the ***Secret ID***
+  - Save the ***Value***
     - this value should be put in the .env file
+    :warning: **The secret Value dissapears after closing this page** :warning:
 - Edit .env file:
    - activate ***FREE_MS_OAUTH***:
       - FREE_MS_OAUTH=true
    - copy  the value of ***Application (client) ID*** to ***SSOCIAL_AUTH_MICROSOFT_GRAPH_KEY***
    - copy the value of ***Secret ID*** to ***SOCIAL_AUTH_MICROSOFT_GRAPH_SECRET***
    - restart the FREE installation
+
 
