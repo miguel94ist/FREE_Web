@@ -10,6 +10,7 @@ future==0.18.2
 iso8601==1.0.2
 jsonschema==4.0.1
 markdown==3.3.4
+Pillow==9.2.0
 pip-chill==1.0.1
 pyopenssl==22.0.0
 pyyaml==5.4.1
