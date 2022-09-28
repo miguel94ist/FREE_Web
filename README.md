@@ -104,7 +104,7 @@ the version of the proxy should the the most recent change the ***server_info.in
 - HTTPS = True
 
 ### janus configuration
-If the FREE server is configured to use HTTPS it is necessary to also furtner configure janus to also use HTTPS:
+If the FREE server is configured to use HTTPS it is necessary to also furtner configure janus to also use HTTPS.
 It is necessary to create the certificate in the same way as decribes to daphne, for instance:
 ```
 sudo openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout janus_private.key -out janus_public.crt
@@ -116,7 +116,8 @@ This certifcate should be placed in a system directory before editing the janus.
 -Set the certificate directory:
    - cert_pem = "/some_system_directory/janus_public.crt"
    - cert_key = "/some_system_directory/janus_private.key"
-
+In the .env file it is also necessary to update the protocolo of jando from http to https:
+- JANUS_SERVER_ADDRESS="https://janus-server-addrerss:8088/janus"
 
 ## External Authentication
 FREE now allows the use of external services  from Google and Microsoft for user authentication.
