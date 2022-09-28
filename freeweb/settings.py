@@ -173,8 +173,8 @@ DJANGO_TABLES2_TEMPLATE = 'django_tables2/semantic.html'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATIC_URL = '/static/'
 
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
+MEDIA_URL = '/images/'
+MEDIA_ROOT =  os.path.join(BASE_DIR, 'free/media')
 
 STATICFILES_DIRS = []
 

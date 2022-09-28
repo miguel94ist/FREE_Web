@@ -84,12 +84,7 @@
                     <div class="row" style="display:table; content:""; clear:both;">
                         <div class="column " style="float:left;width:70%; ">
                             <figure class="" >
-                                <img
-                                src="{% with 'free/images/'|add:apparatus.apparatus_type.slug|add:'.png' as image_static %}
-                                {% static image_static %}
-                                {% endwith %}"
-                                alt="{{apparatus.apparatus_type.slug}}"
-                                width="100%">
+                                <img src="{{apparatus.image.url}}" alt="{{apparatus.apparatus_type.slug}}" width="100%"> 
                             </figure>
                         </div>
                         <div class=" column " style="float:left; width:30%;">
