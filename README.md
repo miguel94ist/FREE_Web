@@ -103,6 +103,21 @@ If the FREE server is configured to use HTTPS it is necessary to also configure 
 the version of the proxy should the the most recent change the ***server_info.ini*** file:
 - HTTPS = True
 
+### janus configuration
+If the FREE server is configured to use HTTPS it is necessary to also furtner configure janus to also use HTTPS:
+It is necessary to create the certificate in the same way as decribes to daphne, for instance:
+```
+sudo openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout janus_private.key -out janus_public.crt
+```
+This certifcate should be placed in a system directory before editing the janus.transport.http.jcfg configuration file:
+- Disabel HTTP: http = false
+- Enable HTTPS: https = true
+- define the HTTPS port: secure_port = 8088
+-Set the certificate directory:
+   - cert_pem = "/some_system_directory/janus_public.crt"
+   - cert_key = "/some_system_directory/janus_private.key"
+
+
 ## External Authentication
 FREE now allows the use of external services  from Google and Microsoft for user authentication.
 To configure these services it is necessary to have HTTPS working and have a fixed public numeric address (or DNS name) for the FREE installation (for instance https://free.some-university.edu:8000/) and follow the next instructions.

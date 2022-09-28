@@ -18,7 +18,7 @@ def connect_janus_stream(server_address):
         "transaction": "transaction-x",
     }
     try:
-        response = requests.post(f'{server_address}/', json = data)
+        response = requests.post(f'{server_address}/', json = data, verify=False)
     except:
         return None
 
@@ -41,7 +41,7 @@ def connect_janus_stream(server_address):
         "transaction": "transaction-x",
     }
 
-    response = requests.post(f'{server_address}/'+str(session_id), json = data)
+    response = requests.post(f'{server_address}/'+str(session_id), json = data, verify=False)
     json_ret = response.json()
 
     if(response.status_code != 200 or  json_ret['janus']!='success'):
@@ -68,7 +68,7 @@ def list_streams(server_address, connection):
         "transaction": "transaction-x",
     }
 
-    response = requests.post(f'{server_address}/{session_id}/{plugin_id}', json = data)
+    response = requests.post(f'{server_address}/{session_id}/{plugin_id}', json = data, verify=False)
     json_ret = response.json()
    
     try:
@@ -94,7 +94,7 @@ def stream_info(server_address, stream_id):
         "transaction": "transaction-x",
     }
     try:
-        response = requests.post(f'{server_address}/{session_id}/{plugin_id}', json = data)
+        response = requests.post(f'{server_address}/{session_id}/{plugin_id}', json = data, verify=False)
         json_ret = response.json()
     except:
         return None
@@ -134,7 +134,7 @@ def create_stream(server_address, stream_admin_key, name, description,stream_sec
         "transaction": "transaction-x",
     }
  
-    response = requests.post(f'{server_address}/{session_id}/{plugin_id}', json = data)
+    response = requests.post(f'{server_address}/{session_id}/{plugin_id}', json = data, verify=False)
     json_ret = response.json()
     
     if(json_ret['janus']!= 'success'):
@@ -166,7 +166,7 @@ def destroy_stream(server_address, stream_admin_key, stream_id, stream_secret):
         "transaction": "transaction-x",
     }
 
-    response = requests.post(f'{server_address}/{session_id}/{plugin_id}', json = data)
+    response = requests.post(f'{server_address}/{session_id}/{plugin_id}', json = data, verify=False)
     json_ret = response.json()
 
     if(json_ret['janus']!= 'success'):
