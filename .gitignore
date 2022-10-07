@@ -12,3 +12,4 @@ __pycache__
 /assets/semantic-ui/themes
 db.sqlite3
 /*.zip
+/freeweb/certificates/*
