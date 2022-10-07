@@ -80,7 +80,7 @@ class ExecutionsFinishedListView(ExecutionsListView):
 class ApparatusTable(Table):
 
     protocols = TemplateColumn(template_name='free/protocols.html')
-    current_status = TemplateColumn(verbose_name=_('Current status'), template_name='free/current_status.html')
+    current_status = TemplateColumn(verbose_name=_('Current status'), template_name='free/current_status.html', order_by='last_online')
 
     class Meta:
         model = Apparatus
