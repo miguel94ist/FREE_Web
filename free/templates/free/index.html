@@ -11,7 +11,106 @@
         <!--content-->
         <div class="right floated thirteen wide computer sixteen wide phone column" id="content">
 
-            <img class="imgrad" src="{% static 'free/images/WPA.jpeg' %}" alt="">
+          <!--  <img class="imgrad" src="{% static 'free/images/WPA.jpeg' %}" alt="">-->
+        <div class="ui container grid">
+        <div class="row">
+           <div class="fifteen wide computer sixteen wide phone centered column">
+		    <section>
+                <div class="big-title text-center">
+                            <h1> Elab Free </h1>
+                            <h5> Welcome to the new elab platform. </h5> 
+                </div>
+			</section>
+			
+			
+		   
+		    <div class="ui divider"></div>
+			
+			The e-lab is a space where real experiments can be carried out via the Internet. 
+			The experiments are physically assembled and installed in a laboratory of the <a href="https://tecnico.ulisboa.pt/pt/" t>Instituto Superior Tecnico</a> or in partner science schools and centers. 
+			The experience is controlled by its administrator, who is no more than the first member of the waiting list of users interested in carrying it out.
+			There is also a list that allows, for example, a teacher to carry out the experiment and his students to receive the image and the data at the same time, even though they 
+			may be in physically distant locations.<br> <br>
+			
+			<p>The data from the experiments and the image of the events (videos) are captured through sensors connected, directly or indirectly, 
+			to a central computer, from where they are broadcast via the Internet. Each control room , which corresponds to a particular experiment, has its own space,
+			where an experimental protocol, suggestions for variants of the experiment, as well as explanations and data analysis are suggested.
+			<br>
+			
+			Control room, experimental apparatus, protocol and experimental setup are key concepts in e-lab:
+
+			<ul>
+                    <li>
+                      <strong> Control room  </strong> virtual environment for controlling a real experimental apparatus included in a given laboratory.
+                    </li>
+					<li>
+                      <strong>  Experimental apparatus </strong>equipment that allows carrying out a certain experiment.
+                    </li>
+					<li>
+                      <strong> Experimental Setup  </strong> configuration of the experimental apparatus according to the protocol to be performed.
+                    </li>
+					<li>
+                      <strong> Protocol </strong> sequence of experiment execution with the respective selection and configuration of the experimental setup.
+                    </li>
+
+			</ul>
+			
+			You can see the Sponsors in the lower left corner  who made this project possible.
+                                              
+            
+			<!--Each control room also has a chat room where everyone can make comments and exchange information about the experience and data analysis.-->
+		
+		   
+		    
+		   
+		   
+				
+				
+				
+				
+	
+	
+				<!--
+                <div class="ui divider"></div>
+                <div class="ui grid">
+                    <div class="center aligned row">
+                        <div class="eight wide mobile four wide tablet four wide computer column">
+                            <img class="ui centered small circular image"
+                            src="/static/free/images/profile.jpg"/>
+                            <div class="ui large basic label">Go!</div>
+                            <p>Pendulum Experiment</p>
+                        </div>
+                     
+                        <div class="eight wide mobile four wide tablet four wide computer column">
+                            <img class="ui centered small circular image"
+                            src="static/images/Langmuir_with_plasma.jpg"/>
+                            <div class="ui large basic label">Go!</div>
+                            <p>Langmuir Experiment</p>
+                            </div>
+                            <div class="eight wide mobile four wide tablet four wide computer column">
+                            <img class="ui centered small circular image"
+                            src="static/images/limo.jpg"/>
+                            <div class="ui large basic label">Go!</div>
+                            <p>Photovoltaics</p>
+                            </div>
+                            <div class="eight wide mobile four wide tablet four wide computer column">
+                            <img class="ui centered small circular image"
+                            src="static/images/limo.jpg"/>
+                            <div class="ui large basic button">Go!</div>
+                            <p>Waves</p>
+                            </div>
+                    </div>
+                </div>-->
+          </div>
+            
+        </div>
+    </div> 
+	
+	
+    
+
+
+
             {% comment %} <div class="ui container grid">
                 <div class="row">
                     <div class="fifteen wide computer sixteen wide phone centered column">
@@ -56,12 +155,13 @@
 
 
 
-        <img class="imgrad" src="{% static 'free/images/WPA.jpeg' %}" alt="">
+        <!--<img class="imgrad" src="{% static 'free/images/WPA.jpeg' %}" alt="">-->
+        <img class="center_img_incial" src="/static/free/images/elab_logo.png">
 
 
         {# button to login page #}
-        <a href="{% url 'free:login' %}">
-        <div class="ui teal labeled icon button">
+        <a class="center_buttom" href="{% url 'free:login' %}">
+        <div class="ui teal labeled icon button center">
         LOG IN
         <i class="signup icon"></i>
         </div>

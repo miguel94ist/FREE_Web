@@ -32,6 +32,7 @@ class Apparatus(models.Model):
     config = models.JSONField(_('Configuration'), default=dict, blank=True)
     video_config = models.JSONField(_('Video configuration'), null=True, blank=True)
     last_online = models.DateTimeField(_('Last ping'), auto_now=True)
+    image = models.ImageField(upload_to='apparatus/', default='apparatus/missing_image.jpg')
 
     def __str__(self):
         return _('%(apparatus_type)s in %(location)s') % {'apparatus_type': self.apparatus_type.name, 'location': self.location}
@@ -86,6 +87,7 @@ class Execution(models.Model):
     protocol = models.ForeignKey(Protocol, on_delete=models.PROTECT)
     config = models.JSONField(_('Configuration'), default=dict, blank=True)
     status = models.CharField(_('Status'), max_length=1, choices=EXECUTION_STATUS_CHOICES)
+    created_at = models.DateField(auto_now_add=True)
     queue_time = models.DateTimeField(null=True, blank=True)
     start = models.DateTimeField(null=True, blank=True)
     end = models.DateTimeField(null=True, blank=True)

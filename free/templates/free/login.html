@@ -106,17 +106,20 @@
 <div class="ui horizontal divider">
   Or
 </div>
+<div id="center_buttom_login_ext_out">
   {% for b in back_ends %}
-    <a href="{% url 'social:begin' b.classname %}">
+      <a class="center_buttom_login_ext_inner" href="{% url 'social:begin' b.classname %}">
       <div class="ui teal labeled icon button">
         {{ b.name }}
         <i class="signup icon"></i>
       </div>
     </a>
   {% endfor %}
+</div>
 {% endif %}
 {% endblock %}
 </body>
 {% block script %}
 {% endblock %}
 </html>
+
