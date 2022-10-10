@@ -64,7 +64,7 @@
 			
             <div class="column">
                 <div class="ui segment">
-                    {% if protocol.id  == 5 %}
+                    {% if protocol.id == 6%}
                     	<legend> <h3>{% trans 'Load Resistor(%)'%}</h3></legend>
                     	<div style="padding-top: 5%;"  class="ui blue small bottom aligned labeled slider"  id="slider-buck" ></div>
                         
@@ -72,7 +72,7 @@
                             		<input class="free-input" type="number" id="buck">
                         	</div>
 		    {% else %}
-			<legend> <h3>{% trans 'Angle(º)'%}</h3></legend>
+			<legend> <h3>{% trans 'Angle(º)' %}</h3></legend>
                         <div style="padding-top: 5%;"  class="ui blue small bottom aligned labeled slider"  id="slider-angle" ></div>
 
                                 <div class="ui input" >
@@ -187,6 +187,7 @@
     //var plot_period_histogram
    //var period_data = []
 
+console.log(protocol_id)
 
 function process_final_data(data_line){
 
@@ -245,7 +246,9 @@ function on_ready_experiment_UI(){
     configure_slider("red_comp")
     configure_slider("green_comp")
     configure_slider("blue_comp")
-    if (protocol_id === 5){
+    console.log(protocol_id)
+    console.log(typeof protocol_id)
+    if (protocol_id === 6){
       configure_slider("buck")
     }
     else{
