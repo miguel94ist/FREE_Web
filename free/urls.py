@@ -59,6 +59,7 @@ urlpatterns = [
     path('api/v1/apparatus/<int:id>', views.ApparatusView.as_view(), name='api-apparatus-view'),
     path('api/v1/apparatus/<int:id>/nextexecution', views.NextExecution.as_view(), name='api-execution-next'),
     path('api/v1/apparatus/<int:id>/queue', views.ExecutionQueue.as_view(), name='api-execution-queue'),
+    path('apparatus/<int:pk>/video', views.ApparatusVideoView.as_view(), name='apparatus-Video'),
 
     path('api/v1/result', views.AddResult.as_view(), name='api-result-add'),
 ]

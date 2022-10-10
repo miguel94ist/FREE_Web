@@ -32,10 +32,11 @@
         <link rel="shortcut icon" href="{% static  'free/images/faviconElab.ico' %}">
         <script src="{% url 'javascript-catalog' %}"></script>
 
-        {% include 'free/layout/scripts.html' %}
         
         {% block headscript %}
         {% endblock %}
+
+        {% include 'free/layout/scripts.html' %}
 
         {% block head %}
         {% endblock %}
