@@ -33,23 +33,33 @@
         <script src="{% url 'javascript-catalog' %}"></script>
 
         
+        
         {% block headscript %}
         {% endblock %}
-
         {% include 'free/layout/scripts.html' %}
-
         {% block head %}
         {% endblock %}
     </head>
     <body>  
 
+        {% block layout %}
+        
         {% if user.is_authenticated %}
-            {% include 'free/layout/layout.html' %}
-        {% else %}
 
+          <div class="ui grid">
+            <div class="ui row">
+        
+                {% include 'free/layout/topbar.html' %}
+        
+                {% include 'free/layout/sidebar.html' %}
+        
+            </div>
+        
+        </div>
+        {% endif %}
 
-
-        {% endif %} 
+      
+        {% endblock %}
 
         {% block content %}
         {% endblock %}
@@ -58,5 +68,6 @@
 
 
     {% block script %}
+    
     {% endblock %}
 </html>
