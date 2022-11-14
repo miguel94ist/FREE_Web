@@ -98,12 +98,34 @@ WSGI_APPLICATION = 'freeweb.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+DBMS = env.str('FREE_DBMS', 'sqlite').lower()
+
+if 'mysql' in DBMS or 'mariadb' in DBMS:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.mysql',
+            'OPTIONS': {
+                'read_default_file': BASE_DIR.as_posix() + '/my.cnf',
+            }
+        }
     }
-}
+elif 'postgres' in DBMS:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql_psycopg2',
+            'OPTIONS': {
+                'service': 'dbservice',
+                'passfile': '.dbpass',
+            },
+        }
+    }
+else: # defaults to sqlite
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR.as_posix() + '/db.sqlite3',
+        }
+    }
 
 # Support reverse proxy in https 
 if env.bool('FREE_REVERSE_PROXY'):
