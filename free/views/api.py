@@ -248,7 +248,7 @@ class AddResult(generics.CreateAPIView):
 
 class ResultList(generics.ListAPIView):
     """
-    Returns a list of all results for a given execution_id.
+    Returns the final result for a given execution_id.
 
     Unpaginated, may be long.
     """
@@ -268,6 +268,17 @@ class ResultListFiltered(generics.ListAPIView):
     def get_queryset(self):
         return Result.objects.filter(execution_id=self.kwargs['id'], pk__gte=self.kwargs['last_id'])
 
+class ResultListFilteredLimited(generics.ListAPIView):
+    """
+    Returns a list of all results for a given execution, with id greater or equal to last_id but at most limit items.
+
+    This allows you to limit the size of the result list to only view most recent results while limitng the size of the output.
+    """
+    
+    serializer_class = ResultSerializer
+    
+    def get_queryset(self):
+        return Result.objects.filter(execution_id=self.kwargs['id'], pk__gte=self.kwargs['last_id']).order_by('time')[:self.kwargs['limit']]
 
 class ExecutionStatusSerializer(serializers.ModelSerializer):
     def validate(self, data):

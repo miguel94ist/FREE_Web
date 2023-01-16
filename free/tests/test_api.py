@@ -231,7 +231,39 @@ class ExecutionAPI(TestCase):
         self.assertEqual(response.status_code, 200)
         response = json.loads(response.content)
         self.assertEqual(len(response), 0)
-
+        
+        response = self.client.get('/api/v1/execution/' + str(execution_id) + '/result/0')
+        self.assertEqual(response.status_code, 200)
+        response = json.loads(response.content)
+        self.assertEqual(len(response), 2)
+        
+        # Add one marker result
+        response = self.client.post('/api/v1/result', {
+            'execution': execution_id,
+            'value': json.dumps({'g': 9.815}),
+            'result_type': 'p',
+        },HTTP_AUTHENTICATION = 'secret_code')
+        self.assertEqual(response.status_code, 201)
+        response = json.loads(response.content)
+        partial_result_id = response['id']
+        
+        for i in range(9):
+            self.client.post('/api/v1/result', {
+                'execution': execution_id,
+                'value': json.dumps({'g': 9.815}),
+                'result_type': 'p',
+                },HTTP_AUTHENTICATION = 'secret_code')  
+            
+        response = self.client.get('/api/v1/execution/' + str(execution_id) + '/result/' + str(partial_result_id))
+        self.assertEqual(response.status_code, 200)
+        response = json.loads(response.content)
+        self.assertEqual(len(response), 10)
+        
+        response = self.client.get('/api/v1/execution/' + str(execution_id) + '/result/' + str(partial_result_id) + '/5')
+        self.assertEqual(response.status_code, 200)
+        response = json.loads(response.content)
+        self.assertEqual(len(response), 5)
+        
         request_time = timezone.now()
         response = self.client.post('/api/v1/result', { 
             'execution': execution_id,
