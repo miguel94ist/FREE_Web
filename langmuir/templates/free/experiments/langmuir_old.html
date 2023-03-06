@@ -186,8 +186,8 @@
             <tr>
                 <th id="time">{% trans "Time" %}</th>
                 <th id="adc_value1">{% trans "Voltage [V]" %}</th>
-                <th id="adc_value2">{% trans "Current [uA]" %}</th>
-                <th id="adc_value3">{% trans "Pressure [Pa]" %}</th>
+                <th id="adc_value2">{% trans "Current[uA]" %}</th>
+                <th id="adc_value3">{% trans "Pressure[mBar]" %}</th>
             </tr>
         </thead>
     </table>
@@ -247,7 +247,7 @@ function process_experiment_data(data){
 let count_draw = 0
 
 function table_insert_partial_data(data){
-    let value_data_table = "";
+    
     table_columns = jQuery( "#results_table > thead> tr> th" );
     col_id = []
     for ( ind = 0, len = table_columns.length; ind < len; ind++ ) {
@@ -259,13 +259,7 @@ function table_insert_partial_data(data){
     data.value.map(data => {
 	row_data = []
        col_id.forEach(c_id => {
-            if (c_id == "adc_value3"){
-                value_data_table=  String(parseFloat(data[c_id])*100);
-            }
-            else{
-                value_data_table= data[c_id]
-            }
-       		row_data.push(value_data_table)
+       		row_data.push(data[c_id])
 	});
        t.row.add(row_data)
        return row_data
@@ -298,7 +292,7 @@ function process_partial_data(time,voltage,current ,pressure){
 	plot_current_voltage.data.labels = plot_current_voltage.data.labels.concat(voltage);  
 	plot_current_voltage.data.datasets[0].data = plot_current_voltage.data.datasets[0].data.concat(current);
 
-    plot_current_voltage.update();
+        plot_current_voltage.update();
 
     plot_voltage_time.data.labels = plot_voltage_time.data.labels.concat(time);  
 	plot_voltage_time.data.datasets[0].data = plot_voltage_time.data.datasets[0].data.concat(voltage);
