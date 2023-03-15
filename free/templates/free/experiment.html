@@ -676,6 +676,7 @@ function save_experiment() {
         current_execution.config = response.data.config;
         update_button_input_status(execution_status)
         popup_message("experiment sucessfully saved")
+        on_save_experiment_UI()
     }).catch(console);  
   
   }
