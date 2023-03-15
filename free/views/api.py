@@ -207,7 +207,7 @@ class NextExecution(generics.RetrieveAPIView):
     def get_object(self):
         apparatus = get_object_or_404(Apparatus, pk=self.kwargs['id'])
         self.check_object_permissions(self.request, apparatus)        
-        obj = Execution.objects.filter(status='Q', apparatus=apparatus).order_by('start').first()
+        obj = Execution.objects.filter(status='Q', apparatus=apparatus).order_by('id').first()
         if obj:
             self.check_object_permissions(self.request, obj)
             obj.save()
