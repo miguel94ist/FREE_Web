@@ -2,6 +2,11 @@ from rest_framework import permissions
 from free.models import Execution, Result, Apparatus
 from django.utils import timezone
 
+import environ
+env = environ.Env()
+environ.Env.read_env()
+from django.core.cache import cache
+
 class ApparatusOnlyAccess(permissions.BasePermission):
     message = 'Please provide a valid secret in the Authentication HTTP header.'
 
@@ -9,18 +14,28 @@ class ApparatusOnlyAccess(permissions.BasePermission):
         if 'Authentication' in request.headers:
             if isinstance(obj, Execution):
                 if request.headers['Authentication'] == obj.apparatus.secret:
-                    obj.apparatus.last_online = timezone.now()
-                    obj.apparatus.save()
+                    if env.str('CACHE_TYPE') == 'memcached':
+                        cache.set('cache_hb_'+str(obj.apparatus.id), 'hello, world!', obj.apparatus.timeout)
+                    else:
+                        obj.apparatus.last_online = timezone.now()
+                        obj.apparatus.save()
                     return True
             if isinstance(obj, Result):
                 if request.headers['Authentication'] == obj.execution.apparatus.secret:
-                    obj.execution.apparatus.last_online = timezone.now()
-                    obj.execution.apparatus.save()
+                    if env.str('CACHE_TYPE') == 'memcached':
+                        cache.set('cache_hb_'+str(obj.execution.apparatus.id), 'hello, world!', obj.execution.apparatus.timeout)
+                    else:
+                        obj.execution.apparatus.last_online = timezone.now()
+                        obj.execution.apparatus.save()
                     return True
             if isinstance(obj, Apparatus):
                 if request.headers['Authentication'] == obj.secret:
-                    obj.last_online = timezone.now()
-                    obj.save()
+                    if env.str('CACHE_TYPE') == 'memcached':
+                        print('cache_hb_'+str(obj.id)+str(obj.timeout))
+                        cache.set('cache_hb_'+str(obj.id), 'hello, world!', obj.timeout)
+                    else:
+                        obj.last_online = timezone.now()
+                        obj.save()
                     return True
                     
         return False

@@ -6,6 +6,12 @@ from django.dispatch import receiver
 from django.utils import timezone
 from datetime import timedelta
 
+
+import environ
+env = environ.Env()
+environ.Env.read_env()
+from django.core.cache import cache
+
 class ApparatusType(models.Model):
     name = models.CharField(_('Name'), max_length=64)
     slug = models.SlugField(_('Slug name'), max_length=64)
@@ -39,10 +45,17 @@ class Apparatus(models.Model):
 
     @property
     def current_status(self):
-        if (timezone.now() - self.last_online).total_seconds() < self.timeout:
-            return 'Online'
+        if env.str('CACHE_TYPE') == 'memcached':
+            print('cache_hb_'+str(self.id))
+            if cache.get('cache_hb_'+str(self.id)) == None:
+                return 'Offline'
+            else:
+                return 'Online'
         else:
-            return 'Offline'
+            if (timezone.now() - self.last_online).total_seconds() < self.timeout:
+                return 'Online'
+            else:
+                return 'Offline'
 
     class Meta:
         verbose_name = _('Apparatus')
