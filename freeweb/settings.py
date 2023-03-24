@@ -124,6 +124,7 @@ if env.str('DB_TYPE') == 'postgres':
             'PASSWORD' : env.str('POSTGRES_DB_PASSWORD'),
             'HOST' : env.str('POSTGRES_DB_HOST'),
             'PORT' : env.str('POSTGRES_DB_PORT'),
+            'CONN_MAX_AGE' : None
         }
     }
 
