@@ -18,7 +18,7 @@
 
     <script src="https://unpkg.com/chartjs-chart-error-bars@3.7.2/build/index.umd.min.js"></script>
     <script src="https://d3js.org/d3-array.v3.min.js"></script>
-
+    
 
 {% endblock %}  
 
@@ -120,6 +120,8 @@
     //var receive_error_period
 
     var plot_time_distance
+	let data_value_p 
+	let data_value_t 
     //var plot_sample_period
     //var plot_period_histogram
     //var period_data = []
@@ -131,19 +133,64 @@ function process_final_data(data_line){
 }
 
 function process_experiment_data(data){
-    process_experiment_data_default(data)
-}
+    console.log(Array.isArray(data[0].value))
+    if (Array.isArray(data[0].value)){
+        for (line in data){
+        	//console.log(data[line])
+            if(data[line].result_type == 'p'){
+                data_value_t = data[line].value.map(data => data.time).filter(function (element) { 
+                            return element !== undefined;
+                    });
+                data_value_p = data[line].value.map(data => parseFloat(data.position)).filter(function (element) { 
+                            return element !== undefined;
+                    });
+                process_partial_data_newversion(data_value_t,data_value_p);
+                table_insert_partial_data_newversion(data[line]);	
+		    }
+        }	
+    }
+    else{
+        process_experiment_data_default(data)
+    }
     
+}
+
 function table_insert_partial_data(data){
     table_insert_partial_data_default(data)
 }
 
+let count_draw = 0 
+
+function table_insert_partial_data_newversion(data){
+    let value_data_table = "";
+    table_columns = jQuery( "#results_table > thead> tr> th" );
+    col_id = []
+    for ( ind = 0, len = table_columns.length; ind < len; ind++ ) {
+        col_id.push($(table_columns[ind]).attr("id"))
+    }
+    var t = $('#results_table').DataTable();
+    data.value.map(data => {
+	row_data = []
+       col_id.forEach(c_id => {
+            value_data_table= data[c_id]
+       		row_data.push(value_data_table)
+	});
+       t.row.add(row_data)
+       return row_data
+	} );
+    count_draw = count_draw +1;
+
+    if (count_draw >= data.value.length){
+	   t.draw()
+       count_draw = 0
+    }
+    
+    //console.log(row_data)
+}
 
 function process_partial_data(data_line){
     time = parseFloat(data_line.value.time) 
     position = parseFloat(data_line.value.position)
-    
-   
     plot_time_distance.data.datasets[0].data.push({
         x: time, 
         y: position
@@ -151,6 +198,24 @@ function process_partial_data(data_line){
        // yMax: val3 + receive_error_velocity,
     });
     plot_time_distance.update();
+}
+
+function process_partial_data_newversion(time,position){
+    // time = parseFloat(data_line.value.time) 
+    // position = parseFloat(data_line.value.position)
+    
+    console.log(time)
+    plot_time_distance.data.labels = plot_time_distance.data.labels.concat(time);  
+	plot_time_distance.data.datasets[0].data = plot_time_distance.data.datasets[0].data.concat(position);
+
+    plot_time_distance.update();
+    // plot_time_distance.data.datasets[0].data.push({
+    //     x: time, 
+    //     y: position
+    //    // yMin: val3 - receive_error_velocity,
+    //    // yMax: val3 + receive_error_velocity,
+    // });
+    // plot_time_distance.update();
 
 
 
@@ -192,7 +257,8 @@ function on_ready_experiment_UI(){
 
     ctx = $("#plot_time_distance")[0].getContext('2d');
     plot_time_distance = new Chart(ctx, {
-        type: 'scatterWithErrorBars',
+        type: 'scatter',
+        labels: [],
         data: {
             datasets: [{
                 borderColor: "blue",
@@ -200,6 +266,7 @@ function on_ready_experiment_UI(){
                 data: [ ],
             },],
         },
+        responsive:true,
         options: {
             plugins: {
                 legend: {
@@ -308,7 +375,92 @@ function on_ready_experiment_UI(){
     });*/
 
 }
+
+function message_w(){
+$.uiAlert({
+textHead: 'You must register before you can do that!', // header
+text: 'Visit our registration page, then try again', // Text
+bgcolor: '#F2711C', // background-color
+textcolor: '#fff', // color
+position: 'top-center',// position . top And bottom ||  left / center / right
+icon: 'warning sign', // icon in semantic-UI
+time: 3, // time
+  })
+}
+
+
+
+function test_configuration(protocol_input_arguments,name,value){
+    if ("relation" in protocol_input_arguments[name]){
+        if(protocol_input_arguments[name].relation.type === "*"){
+            if(parseInt($('#'+name).val()) * parseInt($('#'+protocol_input_arguments[name].relation.name).val()) > parseInt(protocol_input_arguments[name].relation.maxtimes) ){
+                console.log(value)
+                console.log("*******")
+                let new_valeu = parseInt(parseInt(protocol_input_arguments[name].relation.maxtimes)/parseInt($('#'+name).val()))
+                $('#'+protocol_input_arguments[name].relation.name).val(new_valeu)
+                $('#slider-'+protocol_input_arguments[name].relation.name).slider('set value', new_valeu);
+            }
+            else{
+                $('#'+name).val(value)
+            }
+        }
+    }
+}
+
 function configure_slider(name){
+    help_spac = 0;
+    ticker =  Number.parseFloat(protocol_input_arguments[name].subPart);
+    console.log(Object.keys(protocol_input_arguments[name]))
+    $('#slider-'+name).slider({
+        min:  protocol_input_arguments[name].minimum,
+        max: protocol_input_arguments[name].maximum, 
+        step: protocol_input_arguments[name].multipleOf,
+        start: protocol_input_arguments[name].default,
+        input: '#'+name,
+        autoAdjustLabels: false,
+        interpretLabel: function (value) { 
+            if (value === 0) { 
+                if (ticker>Number.parseFloat(protocol_input_arguments[name].minimum)){	
+                    help_spac += (ticker); 	
+                }
+                else{
+                    help_spac += (ticker+Number.parseFloat(protocol_input_arguments[name].minimum));
+                }
+                return Number.parseFloat(protocol_input_arguments[name].minimum);
+            }
+            else if (value + Number.parseFloat(protocol_input_arguments[name].minimum) === help_spac) { 
+                help_spac += ticker; 
+                return value+Number.parseFloat(protocol_input_arguments[name].minimum)
+            }
+            else if (value + Number.parseFloat( protocol_input_arguments[name].minimum) === Number.parseFloat( protocol_input_arguments[name].maximum)){
+                return Number.parseFloat( protocol_input_arguments[name].maximum)
+            }
+            else 
+            { 
+                return ""
+            }
+        },
+        onChange: function(value) {
+            test_configuration(protocol_input_arguments,name,value)
+            onInputChanged()
+        },
+        onMove: function(value)
+        {
+            // var helper = NumberparseFloat(value).toFixed(2);
+            $('#'+name).val(value);
+            test_configuration(protocol_input_arguments,name,value)
+        }
+    })
+    $('#'+name).change(function() {
+            if($(this).val() > protocol_input_arguments[name].maximum)
+                $(this).prop("value", protocol_input_arguments[name].maximum)
+            if($(this).val() < protocol_input_arguments[name].minimum)
+                $(this).prop("value", protocol_input_arguments[name].minimum)
+            $("#slider-"+name).slider('set value', $(this).val())
+    });
+}
+
+function configure_slider_old(name){
         $('#slider-'+name).slider({
             min:  protocol_input_arguments[name].minimum,
             max: protocol_input_arguments[name].maximum, 
