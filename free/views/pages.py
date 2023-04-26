@@ -23,6 +23,7 @@ class ExecutionView(LoginRequiredMixin, TemplateView):
         context['execution_json'] = ExecutionSerializer(self.execution).data
         context['apparatus'] = self.execution.apparatus
         context['protocol'] = self.execution.protocol
+        context['base'] = "free/base.html"
         try:
             context['final_result'] = ResultSerializer(Result.objects.get(result_type='f', execution=self.execution)).data
         except:
@@ -31,6 +32,15 @@ class ExecutionView(LoginRequiredMixin, TemplateView):
 
     def get_template_names(self):
         return ['free/experiments/' + self.execution.apparatus.apparatus_type.slug + '.html']
+
+
+class ExecutionStrippedView(ExecutionView):
+    def get_context_data(self, **kwargs):
+        context = ExecutionView.get_context_data(self, **kwargs)
+        context['base'] = "free/base_stripped.html"
+        context['STRIPPED'] = True
+        return context
+
 
 class ApparatusVideoView(LoginRequiredMixin, DetailView):
     template_name = 'free/apparatus_video.html'
@@ -47,6 +57,13 @@ class CreateExecutionView(LoginRequiredMixin, TemplateView):
         context = super().get_context_data(**kwargs)
         apparatus_id = kwargs['apparatus_id']
         protocol_id = kwargs['protocol_id']
+        # verify the LTI thing
+        if self.request.session.get('lti_login') is not None:
+            context['base'] = "free/base_stripped.html"
+            context['STRIPPED'] = True
+        else:
+            context['base'] = "free/base.html"
+        
 
         self.apparatus = get_object_or_404(Apparatus, pk=apparatus_id)
 

@@ -1,0 +1,228 @@
+{% extends "free/base.html" %}
+{% load i18n%}
+{% load static %}
+
+{% load quiz_tags %}
+
+
+{% block headscript%}
+	<script id="csrf_token" type="application/json">{{csrf_token}}</script>
+	{{apparatus.config|json_script:"apparatus-config"}}
+	{{apparatus.id|json_script:"apparatus-id"}}
+	{{protocol.config|json_script:"protocol-config"}}
+	{{protocol.id|json_script:"protocol-id"}}
+	{{execution_json|json_script:"execution-config"}}
+	{{final_result|json_script:"final-result"}}
+	{{quiz.id|json_script:"quiz-id"}}
+
+	<script>
+		X_CSRFToken = document.getElementById('csrf_token').textContent
+
+		var apparatus_id = JSON.parse(document.getElementById('apparatus-id').textContent);
+		var protocol_id = JSON.parse(document.getElementById('protocol-id').textContent);
+		var current_execution = JSON.parse(document.getElementById('execution-config').textContent);
+		var quiz_id = JSON.parse(document.getElementById('quiz-id').textContent);
+
+	</script>
+
+{% endblock %}
+
+{% block head %}
+
+    <!-- datatables -->
+    <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.11.5/js/dataTables.semanticui.min.js"></script>
+
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/dataTables.semanticui.min.css">
+
+
+    <!-- datatables  buutons (copy , csv excel)-->
+    <script src="https://cdn.datatables.net/buttons/2.2.2/js/dataTables.buttons.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.semanticui.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.html5.min.js"></script>
+
+    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.2.2/css/buttons.semanticui.min.css">
+
+
+    <!-- Video -->
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/webrtc-adapter/8.0.0/adapter.min.js" ></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/spin.js/2.3.2/spin.min.js"></script>
+
+
+    {% block experiment_head %}
+    {% endblock %} 
+
+
+{% endblock %}  
+
+
+
+
+{% block title %} {{ quiz.title }} {% endblock %}
+{% block description %} {{ quiz.title }} - {{ quiz.description }} {% endblock %}
+
+
+{% block content %}
+
+<div class="right floated thirteen wide computer sixteen wide phone column"  id="content">
+
+	<div class="ui container">
+
+		<h1>Quiz: {{quiz.title}}</h1>
+		{% if progress %}
+		<H2>
+		{% trans "Question" %} {{ progress.0|add:1 }} {% trans "of" %} {{ progress.1 }}
+		</h2>
+		{% endif %}
+
+	</div> 
+	<div class="ui  container ">
+		<div id="quiz_tab" class="ui top attached tabular menu">
+			<a class="active item" id="description-tab-slip" data-tab="description-tab">{% trans 'Description' %}</a>
+			<a class="item" id="result-tab-slip" data-tab="result-tab">{% trans 'Questions'%}</a>
+		</div>
+
+	
+		<div class="ui bottom attached tab segment" data-tab="description-tab" >
+			<div class="ui grid" >
+				<div class="ten wide column ">
+					{{quiz.description}}
+				</div>
+	
+			</div>  
+		</div>
+
+
+		<div class="ui bottom attached tab segment" data-tab="result-tab" >
+			<div class="ui grid" >
+				<div class="ten wide column ">
+
+          1
+
+          {% if max_score %}
+        
+          <div>
+            <h2>{% trans "Exam results" %}</h2>
+            <p>
+              <small class="muted">{% trans "Exam title" %}: </small>  <strong>{{ quiz.title }}</strong>
+            </p>
+          
+            <p class="lead">
+              {% trans "You answered" %} {{ score }} {% trans "questions correctly out of" %} {{ max_score }}, {% trans "giving you" %} {{ percent }} {% trans "percent correct" %}
+            </p>
+          
+            {% if quiz.pass_mark %}
+            <p class="lead">{{ sitting.result_message }}</p>
+            
+            {% endif %}
+          
+            <p>{% trans "Review the questions below and try the exam again in the future"%}.</p>
+          
+            {% if user.is_authenticated %}
+          
+                <p>{% trans "The result of this exam will be stored in your progress section so you can review and monitor your progression" %}.</p>
+          
+            {% endif %}
+          </div>
+        {% endif %}
+      
+2
+
+          {% if previous.answers %}
+
+              <p class="muted"><small>{% trans "The previous question" %}:</small></p>
+              <p>{{ previous.previous_question }}</p>
+              <p>Your answer was <strong> {{ previous.previous_outcome|yesno:"correct,incorrect" }}  </strong>  </p>
+              {% include 'FREE_quizes/correct_answer.html' %}
+              <p><strong>{% trans "Explanation" %}:</strong></p>
+              <div class="well " style="background-color: #fcf8e3;">
+                <p>{{ previous.previous_question.explanation }}</p>
+              </div>
+        
+          {% endif %}
+        
+        3
+        
+          {% if possible %}
+            <p class="lead"> {% trans "Your session score is" %} {{ session }} {% trans "out of a possible" %} {{ possible }} </p>
+          {% endif %}
+        
+          4
+
+          {% if questions %}
+        
+            {% for question in questions %}
+        5
+                <p class="lead">
+              {{ question.content }}
+              </p>
+        
+              {% correct_answer_for_all question %}
+        
+                {% if question.user_answer %}
+                  <p>{% trans "Your answer" %}: {{ question|answer_choice_to_string:question.user_answer }}</p>
+                {% endif %}
+        
+              {% if question.explanation %}
+                <p><strong>{% trans "Explanation" %}:</strong></p>
+                  {% if question.pk in incorrect_questions %}
+                    <div class="well " style="background-color: #bc544b;">
+                  {% else %}
+                    <div class="well " style="background-color: #99edc3;">
+                  {% endif %}
+                <p>{{ question.explanation|safe }}</p>
+                </div>
+              {% endif %}
+        
+              <hr>
+          {% endfor %}
+        
+        {% endif %}
+        
+
+        </div>
+			</div>
+		</div>  
+	</div>
+</div>
+
+
+{% endblock %}
+
+{% block script %}
+<script type='text/javascript'>
+  document.addEventListener("DOMContentLoaded", () => {
+    $('.tabular.menu .item').tab();                  
+  });
+</script>
+
+{% endblock%}
+
+
+
+
+
+
+
+
+
+
+
+{% block contentxxxxx %}
+
+
+  {% if lti == True %}
+    <form action="{% url 'lti_provider:lti-post-grade'%}"  method="post">{% csrf_token %}
+      <label for="Return to Moodle"></label>
+      <input type=hidden name="score" value="{{score_send}}">
+      <input type=hidden name="launch_url" value="http://172.20.0.1/">
+      <input type=hidden name="next" value="/FREE_quizes/">
+      <input type=hidden name="sitting_pk" value="{{sitting.pk}}">
+      <input type=hidden name="app_name" value="{{app_name}}">
+      <input type="submit" value="Return to Moodle">
+    </form>
+  {% else %}
+    <a href="{% url 'FREE_quizes:quiz_index'%}"><button class='ui button'>{% trans 'Return to Quiz list'%}</button></a> 
+  {% endif %}
+
+{% endblock %}

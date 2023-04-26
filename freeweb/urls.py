@@ -19,6 +19,7 @@ from django.conf.urls.static import static
 from django.conf import settings
 from django.views.i18n import JavaScriptCatalog
 
+from FREE_quizes.admin import FREE_quizes_admin_site
 urlpatterns = [
     path('', include('free.urls')),
     path('admin/', admin.site.urls, name='administration'),
@@ -28,6 +29,10 @@ urlpatterns = [
     path('', include('social_django.urls', namespace='social')),
     path('', include('free.videoConfig.urls')),
     path('', include('free.userAdmin.urls')),
+    path('lti/', include('lti_provider.urls')),
+    path('FREE_quizes_admin/', FREE_quizes_admin_site.urls, name='FREE_quizes_admin'),
+    path('FREE_quizes/',include('FREE_quizes.urls'),name='FREE_quizes'),
+
 ]
 
 if settings.DEBUG:

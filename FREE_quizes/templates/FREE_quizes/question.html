@@ -1,0 +1,283 @@
+{% extends base %}
+{% load i18n%}
+{% load static %}
+
+{% load quiz_tags %}
+
+
+{% block headscript%}
+	<script id="csrf_token" type="application/json">{{csrf_token}}</script>
+	{{apparatus.config|json_script:"apparatus-config"}}
+	{{apparatus.id|json_script:"apparatus-id"}}
+	{{protocol.config|json_script:"protocol-config"}}
+	{{protocol.id|json_script:"protocol-id"}}
+	{{execution_json|json_script:"execution-config"}}
+	{{final_result|json_script:"final-result"}}
+	{{quiz.id|json_script:"quiz-id"}}
+
+	<script>
+		X_CSRFToken = document.getElementById('csrf_token').textContent
+
+		var apparatus_id = JSON.parse(document.getElementById('apparatus-id').textContent);
+		var protocol_id = JSON.parse(document.getElementById('protocol-id').textContent);
+		var current_execution = JSON.parse(document.getElementById('execution-config').textContent);
+		var quiz_id = JSON.parse(document.getElementById('quiz-id').textContent);
+
+	</script>
+
+{% endblock %}
+
+{% block head %}
+
+    <!-- datatables -->
+    <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.11.5/js/dataTables.semanticui.min.js"></script>
+
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/dataTables.semanticui.min.css">
+
+
+    <!-- datatables  buutons (copy , csv excel)-->
+    <script src="https://cdn.datatables.net/buttons/2.2.2/js/dataTables.buttons.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.semanticui.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.html5.min.js"></script>
+
+    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.2.2/css/buttons.semanticui.min.css">
+
+
+    <!-- Video -->
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/webrtc-adapter/8.0.0/adapter.min.js" ></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/spin.js/2.3.2/spin.min.js"></script>
+
+
+    {% block experiment_head %}
+    {% endblock %} 
+
+
+{% endblock %}  
+
+
+
+
+{% block title %} {{ quiz.title }} {% endblock %}
+{% block description %} {{ quiz.title }} - {{ quiz.description }} {% endblock %}
+
+
+{% block content %}
+
+<div class="right floated thirteen wide computer sixteen wide phone column"  id="content">
+
+	<div class="ui container">
+
+		<h1>Quiz: {{quiz.title}}</h1>
+		{% if progress %}
+		<H2>
+		{% trans "Question" %} {{ progress.0|add:1 }} {% trans "of" %} {{ progress.1 }}
+		</h2>
+		{% endif %}
+
+	</div> 
+	<div class="ui  container ">
+		<div id="quiz_tab" class="ui top attached tabular menu">
+			<a class="active item" id="description-tab-slip" data-tab="description-tab">{% trans 'Description' %}</a>
+			<a class="item" id="questions-tab-slip" data-tab="questions-tab">{% trans 'Questions'%}</a>
+		</div>
+
+	
+		<div class="ui bottom attached tab segment" data-tab="description-tab" >
+			<div class="ui grid" >
+				<div class="ten wide column ">
+					{{quiz.description}}
+				</div>
+	
+			</div>  
+		</div>
+
+		{% if question_type == 'CREATE' %}
+		<div class="ui bottom attached tab segment" data-tab="questions-tab" >
+			<div class="ui grid" >
+				<div class="ten wide column ">
+					<p>{{ question.content }} </p>
+						<p> Please configure the experiment below. dont forget to save, submit and wait for its completion.</p>
+						{% if execution_id %}
+							<form action="" method="POST" id="form">{% csrf_token %}
+								<input type=hiddens name="question_id" value="{{ question.id }}">
+								<input type=hiddens name="execution_id" id="form_execution_id" value="{{ execution_id }}">
+								<input type=hiddens name="question_type" value="{{ question_type }}">
+								
+								<input type="submit" value="{% trans "Continue to Quiz" %}" class="ui disabled blue button" id="continueButton" >
+							</form>
+						{% else %}
+							<form action="" method="POST" id="form">{% csrf_token %}
+								<input type=hidden name="question_id" value="{{ question.id }}">
+								<input type=hidden name="execution_id" id="form_execution_id" value="{{ execution_id }}">
+								<input type=hidden name="question_type" value="{{ question_type }}">
+							</form>
+		
+							<script type='text/javascript'>
+								document.addEventListener("DOMContentLoaded", () => {
+									create_experiment();
+								});
+							</script>
+					{% endif %}	
+				</div>
+			</div>
+		</div>  
+		{% endif %}
+		{% if question_type == 'FETCH' %}
+		<div class="ui bottom attached tab segment" data-tab="questions-tab" >
+			<div class="ui grid" >
+				<div class="ten wide column ">
+					<p>{{ question.content }} </p>
+						<form action="" method="POST" id="form">{% csrf_token %}
+						<input type=hidden name="question_id" value="{{ question.id }}">
+						<input type=hidden name="execution_id" id="form_execution_id" value="{{ execution_id }}">
+						<input type=hidden name="question_type" value="{{ question_type }}">
+						
+						<input type="submit" value="{% trans "Continue to Quiz" %}" class="ui disabled green button" id="continueButton" >
+						</form>
+				</div>
+			</div>
+		</div>  
+		{% endif %}
+
+		{% if question_type == 'OTHER' %}
+		<div class="ui bottom attached tab segment" data-tab="questions-tab" >
+			<div class="ui grid" >
+				<div class="ten wide column ">
+					<p>{{ question.content }} </p>
+					{% if question.rounding %}
+					<p>Answer with {{decimal_cases}} decimal cases</p>
+					{% endif %}		
+					<form action="" method="POST" id="form">{% csrf_token %}
+						<input type=hidden name="question_id" value="{{ question.id }}">
+						<ul class="list-group" id = "list-group">
+							{% for answer in form.answers %}
+							<li class="list-group-item">
+								{{ answer }}
+							</li>
+							{% endfor %}
+						</ul>
+							<p></p>
+						<input type="submit" value='{% trans "Check" %}' class="btn btn-large btn-block btn-warning" >
+						</form>
+				</div>
+			</div>
+		</div>  
+		{% endif %}
+
+
+
+	</div>
+	<div class="ui  container ">
+
+		{% if previous.answers %}
+
+			<p class="muted"><small>{% trans "The previous question" %}:</small></p>
+			<p>{{ previous.previous_question }}</p>
+
+			{% if previous.previous_outcome %}
+				<div class="alert alert-success">
+			{% else %}
+				<div class="alert alert-warning">
+			{% endif %}
+			<p><small>
+				{% trans "Your answer was" %} </small>
+				<strong>
+				{{ previous.previous_outcome|yesno:"correct,incorrect" }}
+				</strong>
+			</p>
+
+			</div>
+
+			{% include 'correct_answer.html' %}
+
+			<p><strong>{% trans "Explanation" %}:</strong></p>
+			<div class="well " style="background-color: #fcf8e3;">
+			<p>{{ previous.previous_question.explanation }}</p>
+			</div>
+
+			<hr>
+
+		{% endif %}
+
+		<br />
+
+
+		{% if question.figure %}
+			<img src="{{ question.figure.url }}" alt="{{ question.content }}" />
+		{% endif %}
+
+
+
+		{% if question_type == 'OTHER' %}
+
+
+		{% endif %}	
+
+	</div>
+	<div class="ui  container ">
+		{% if execution_id %}
+		<iframe src="{% url 'free:stripped-execution' execution_id %}" title="execution" width="100%" height="900" id="iframe_execution" >
+		</iframe>
+		
+		{% endif%}
+		
+	</div>
+</div>
+
+
+{% endblock %}
+
+{% block script %}
+	{% if question_type == 'CREATE' or  question_type == 'FETCH' %}
+		<script type='text/javascript'>
+			const iframe = document.getElementById("iframe_execution")
+			if(iframe != null){
+				iframe.addEventListener("load", function(){
+					setInterval(check_finished, 500);
+				});
+			}
+
+			function check_finished(){
+				aux = window.frames[0].window.execution_status
+				console.log(window.frames[0].window.execution_status, window.frames[0].window.executionID)
+				if (aux == 'F'){
+					$("#continueButton").removeClass("disabled");
+				}
+			}
+
+			function create_experiment(){
+				form_config = {{sample_config |safe}}
+				endpoint= "/api/v1/execution";
+				method_queue = 'post';
+				data_send = {"apparatus": apparatus_id, "protocol": protocol_id};
+				data_send["config"] = form_config;
+				data_send["name"] = "";
+				data_send["quiz"] = quiz_id;
+
+				HEADERS = {
+					"X-CSRFToken": X_CSRFToken,
+				}
+				
+				axios({
+					method: method_queue, //you can set what request you want to be
+					url: endpoint,
+					headers: HEADERS,
+					data: data_send,
+				}).then(response => {
+					console.log(response.data.id)
+					$("#form_execution_id").val(response.data.id)
+					$( "#form" ).submit();
+				}).catch(console); 
+				}
+		</script>
+
+	{% endif %}
+
+	<script type='text/javascript'>
+		document.addEventListener("DOMContentLoaded", () => {
+			$('.tabular.menu .item').tab();                  
+		});
+	</script>
+
+{% endblock%}
