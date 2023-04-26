@@ -46,9 +46,8 @@ class Apparatus(models.Model):
 
     @property
     def current_status(self):
-        if env.str('CACHE_TYPE') == 'memcached':
-            print('cache_hb_'+str(self.id))
-            if cache.get('cache_hb_'+str(self.id)) == None:
+        if env.bool('CACHE'):
+            if cache.get('apparatus_status_'+str(self.id)) == None:
                 return 'Offline'
             else:
                 return 'Online'

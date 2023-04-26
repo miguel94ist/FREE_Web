@@ -14,25 +14,24 @@ class ApparatusOnlyAccess(permissions.BasePermission):
         if 'Authentication' in request.headers:
             if isinstance(obj, Execution):
                 if request.headers['Authentication'] == obj.apparatus.secret:
-                    if env.str('CACHE_TYPE') == 'memcached':
-                        cache.set('cache_hb_'+str(obj.apparatus.id), 'hello, world!', obj.apparatus.timeout)
+                    if env.bool('CACHE'):
+                        cache.set('apparatus_status_'+str(obj.apparatus.id), 'hello, world!', obj.apparatus.timeout)
                     else:
                         obj.apparatus.last_online = timezone.now()
                         obj.apparatus.save()
                     return True
             if isinstance(obj, Result):
                 if request.headers['Authentication'] == obj.execution.apparatus.secret:
-                    if env.str('CACHE_TYPE') == 'memcached':
-                        cache.set('cache_hb_'+str(obj.execution.apparatus.id), 'hello, world!', obj.execution.apparatus.timeout)
+                    if env.bool('CACHE'):
+                        cache.set('apparatus_status_'+str(obj.execution.apparatus.id), 'hello, world!', obj.execution.apparatus.timeout)
                     else:
                         obj.execution.apparatus.last_online = timezone.now()
                         obj.execution.apparatus.save()
                     return True
             if isinstance(obj, Apparatus):
                 if request.headers['Authentication'] == obj.secret:
-                    if env.str('CACHE_TYPE') == 'memcached':
-                        print('cache_hb_'+str(obj.id)+str(obj.timeout))
-                        cache.set('cache_hb_'+str(obj.id), 'hello, world!', obj.timeout)
+                    if env.bool('CACHE'):
+                        cache.set('apparatus_status_'+str(obj.id), 'hello, world!', obj.timeout)
                     else:
                         obj.last_online = timezone.now()
                         obj.save()
