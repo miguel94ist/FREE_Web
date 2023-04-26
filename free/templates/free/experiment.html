@@ -1,4 +1,4 @@
-{% extends 'free/base.html' %}
+{% extends base %}
 {% load static %}
 {% load i18n %}
 
@@ -171,9 +171,11 @@
                 <div class="ui green button" onclick="submit_experiment()" id="startButton">{% trans 'Submit'%}</div>
                 <div class="ui orange button" id="reloadButton" onclick="reloadInputValues()">{% trans 'Reload Values'%}</div>
                 <div class="ui orange button" id="resetButton" onclick="resetInputValues()">{% trans 'Reset to default'%}</div>
+            {% if not STRIPPED %}
                 <div class="ui green button" id="createNewExpButton" onclick="gotoCreateExecution()">{% trans 'Create New Execution'%}</div>
                 <div class="ui red button" id="deleteButton" onclick="deleteExecution()">{% trans 'Delete'%} {% trans 'Execution'%}</div>
                 <div class="ui red button" id="deleteResultsButton" onclick="deleteExecution()">{% trans 'Delete'%} {% trans 'Results'%}</div>
+            {% endif %}
             </div>
             <div class="ui floating message hidden" id="buttonMessage">
                 <p>Way to go!</p>
