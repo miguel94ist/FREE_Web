@@ -341,18 +341,18 @@ JANUS_STREAM_ADMIN_KEY = env.str('JANUS_STREAM_ADMIN_KEY')
 PROJECT_NAME=env.str('PROJECT_NAME','World Pendulum Alliance')
 PROJECT_ACRONYMUM=env.str('PROJECT_ACRONYMUM', 'WPA')
 SITE_NAME=env.str('SITE_NAME','') 
-
-if env.str('CACHE_TYPE') == 'locmemc':
-    CACHES = {
-        'default': {
-            'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
-            'LOCATION': 'unique-snowflake',
+if env.bool('CACHE'):
+    if env.str('CACHE_TYPE') == 'locmemc':
+        CACHES = {
+            'default': {
+                'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+                'LOCATION': 'unique-snowflake',
+            }
         }
-    }
-if env.str('CACHE_TYPE') == 'memcached':
-    CACHES = {
-        'default': {
-            'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
-            'LOCATION': '127.0.0.1:11211',
+    if env.str('CACHE_TYPE') == 'memcached':
+        CACHES = {
+            'default': {
+                'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
+                'LOCATION': '127.0.0.1:11211',
+            }
         }
-    }
