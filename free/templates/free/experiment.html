@@ -336,11 +336,12 @@ function getData(){
     
 }
 
+
 function process_experiment_data_default(data){
     for (line in data){
         console.log(data[line])
         if(data[line].result_type == 'p'){
-            table_insert_partial_data(data[line])
+            table_insert_partial_data_default(data[line])
             process_partial_data(data[line])
         }
         if(data[line].result_type == 'f'){
