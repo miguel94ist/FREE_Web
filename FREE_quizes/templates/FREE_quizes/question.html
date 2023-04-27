@@ -28,10 +28,18 @@
 {% endblock %}
 
 {% block head %}
-
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
     <!-- datatables -->
     <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/1.11.5/js/dataTables.semanticui.min.js"></script>
+
+
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.5.0/components/dropdown.min.js"></script>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.5.0/components/dropdown.min.css">
+
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.5.0/components/tab.min.js"></script>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.5.0/components/tab.min.css">
+
 
     <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/dataTables.semanticui.min.css">
 
@@ -77,96 +85,96 @@
 
 	</div> 
 	<div class="ui  container ">
-		<div id="quiz_tab" class="ui top attached tabular menu">
-			<a class="active item" id="description-tab-slip" data-tab="description-tab">{% trans 'Description' %}</a>
-			<a class="item" id="questions-tab-slip" data-tab="questions-tab">{% trans 'Questions'%}</a>
-		</div>
+			<div id="quiz_tab" class="ui top attached tabular menu">
+				<a class="item " id="description-tab-slip" data-tab="description-tab">{% trans 'Description' %}</a>
+				<a class="item active" id="questions-tab-slip" data-tab="questions-tab">{% trans 'Questions'%}</a>
+			</div>
 
 	
-		<div class="ui bottom attached tab segment" data-tab="description-tab" >
-			<div class="ui grid" >
-				<div class="ten wide column ">
-					{{quiz.description}}
-				</div>
-	
-			</div>  
-		</div>
-
-		{% if question_type == 'CREATE' %}
-		<div class="ui bottom attached tab segment" data-tab="questions-tab" >
-			<div class="ui grid" >
-				<div class="ten wide column ">
-					<p>{{ question.content }} </p>
-						<p> Please configure the experiment below. dont forget to save, submit and wait for its completion.</p>
-						{% if execution_id %}
-							<form action="" method="POST" id="form">{% csrf_token %}
-								<input type=hiddens name="question_id" value="{{ question.id }}">
-								<input type=hiddens name="execution_id" id="form_execution_id" value="{{ execution_id }}">
-								<input type=hiddens name="question_type" value="{{ question_type }}">
-								
-								<input type="submit" value="{% trans "Continue to Quiz" %}" class="ui disabled blue button" id="continueButton" >
-							</form>
-						{% else %}
-							<form action="" method="POST" id="form">{% csrf_token %}
-								<input type=hidden name="question_id" value="{{ question.id }}">
-								<input type=hidden name="execution_id" id="form_execution_id" value="{{ execution_id }}">
-								<input type=hidden name="question_type" value="{{ question_type }}">
-							</form>
+			<div class="ui bottom attached tab segment" data-tab="description-tab" >
+				<div class="ui grid" >
+					<div class="ten wide column ">
+						{{quiz.description}}
+					</div>
 		
-							<script type='text/javascript'>
-								document.addEventListener("DOMContentLoaded", () => {
-									create_experiment();
-								});
-							</script>
-					{% endif %}	
-				</div>
+				</div>  
 			</div>
-		</div>  
-		{% endif %}
-		{% if question_type == 'FETCH' %}
-		<div class="ui bottom attached tab segment" data-tab="questions-tab" >
-			<div class="ui grid" >
-				<div class="ten wide column ">
-					<p>{{ question.content }} </p>
+
+			{% if question_type == 'CREATE' %}
+			<div class="ui bottom attached tab segment active" data-tab="questions-tab" >
+				<div class="ui grid" >
+					<div class="ten wide column ">
+						<p>{{ question.content }} </p>
+							<p> Please configure the experiment below. dont forget to save, submit and wait for its completion.</p>
+							{% if execution_id %}
+								<form action="" method="POST" id="form">{% csrf_token %}
+									<input type=hiddens name="question_id" value="{{ question.id }}">
+									<input type=hiddens name="execution_id" id="form_execution_id" value="{{ execution_id }}">
+									<input type=hiddens name="question_type" value="{{ question_type }}">
+									
+									<input type="submit" value="{% trans "Continue to Quiz" %}" class="ui disabled blue button" id="continueButton" >
+								</form>
+							{% else %}
+								<form action="" method="POST" id="form">{% csrf_token %}
+									<input type=hidden name="question_id" value="{{ question.id }}">
+									<input type=hidden name="execution_id" id="form_execution_id" value="{{ execution_id }}">
+									<input type=hidden name="question_type" value="{{ question_type }}">
+								</form>
+			
+								<script type='text/javascript'>
+									document.addEventListener("DOMContentLoaded", () => {
+										create_experiment();
+									});
+								</script>
+						{% endif %}	
+					</div>
+				</div>
+			</div>  
+			{% endif %}
+			{% if question_type == 'FETCH' %}
+			<div class="ui bottom attached tab segment active" data-tab="questions-tab" >
+				<div class="ui grid" >
+					<div class="ten wide column ">
+						<p>{{ question.content }} </p>
+							<form action="" method="POST" id="form">{% csrf_token %}
+							<input type=hidden name="question_id" value="{{ question.id }}">
+							<input type=hidden name="execution_id" id="form_execution_id" value="{{ execution_id }}">
+							<input type=hidden name="question_type" value="{{ question_type }}">
+							
+							<input type="submit" value="{% trans "Continue to Quiz" %}" class="ui disabled green button" id="continueButton" >
+							</form>
+					</div>
+				</div>
+			</div>  
+			{% endif %}
+
+			{% if question_type == 'OTHER' %}
+			<div class="ui bottom attached tab segment active" data-tab="questions-tab" >
+				<div class="ui grid" >
+					<div class="ten wide column ">
+						<p>{{ question.content }} </p>
+						{% if question.rounding %}
+						<p>Answer with {{decimal_cases}} decimal cases</p>
+						{% endif %}		
 						<form action="" method="POST" id="form">{% csrf_token %}
-						<input type=hidden name="question_id" value="{{ question.id }}">
-						<input type=hidden name="execution_id" id="form_execution_id" value="{{ execution_id }}">
-						<input type=hidden name="question_type" value="{{ question_type }}">
-						
-						<input type="submit" value="{% trans "Continue to Quiz" %}" class="ui disabled green button" id="continueButton" >
+							<input type=hidden name="question_id" value="{{ question.id }}">
+							<ul class="list-group" id = "list-group">
+								{% for answer in form.answers %}
+								<li class="list-group-item">
+									{{ answer }}
+								</li>
+								{% endfor %}
+							</ul>
+								<p></p>
+							<input type="submit" value='{% trans "Check" %}' class="btn btn-large btn-block btn-warning" >
 						</form>
+					</div>
 				</div>
-			</div>
-		</div>  
-		{% endif %}
-
-		{% if question_type == 'OTHER' %}
-		<div class="ui bottom attached tab segment" data-tab="questions-tab" >
-			<div class="ui grid" >
-				<div class="ten wide column ">
-					<p>{{ question.content }} </p>
-					{% if question.rounding %}
-					<p>Answer with {{decimal_cases}} decimal cases</p>
-					{% endif %}		
-					<form action="" method="POST" id="form">{% csrf_token %}
-						<input type=hidden name="question_id" value="{{ question.id }}">
-						<ul class="list-group" id = "list-group">
-							{% for answer in form.answers %}
-							<li class="list-group-item">
-								{{ answer }}
-							</li>
-							{% endfor %}
-						</ul>
-							<p></p>
-						<input type="submit" value='{% trans "Check" %}' class="btn btn-large btn-block btn-warning" >
-						</form>
-				</div>
-			</div>
-		</div>  
-		{% endif %}
+			</div>  
+			{% endif %}
 
 
-
+			
 	</div>
 	<div class="ui  container ">
 
@@ -180,12 +188,12 @@
 			{% else %}
 				<div class="alert alert-warning">
 			{% endif %}
-			<p><small>
-				{% trans "Your answer was" %} </small>
-				<strong>
-				{{ previous.previous_outcome|yesno:"correct,incorrect" }}
-				</strong>
-			</p>
+				<p><small>
+					{% trans "Your answer was" %} </small>
+					<strong>
+					{{ previous.previous_outcome|yesno:"correct,incorrect" }}
+					</strong>
+				</p>
 
 			</div>
 
@@ -229,9 +237,16 @@
 {% endblock %}
 
 {% block script %}
+<script type='text/javascript'>
+
+	$(document).ready(function(){
+		$('.tabular.menu .item').tab(); 
+	});
+
+
+
 	{% if question_type == 'CREATE' or  question_type == 'FETCH' %}
-		<script type='text/javascript'>
-			const iframe = document.getElementById("iframe_execution")
+			const iframe = document.getElementById("iframe_execution");
 			if(iframe != null){
 				iframe.addEventListener("load", function(){
 					setInterval(check_finished, 500);
@@ -269,15 +284,12 @@
 					$("#form_execution_id").val(response.data.id)
 					$( "#form" ).submit();
 				}).catch(console); 
-				}
-		</script>
+			}
 
 	{% endif %}
 
-	<script type='text/javascript'>
-		document.addEventListener("DOMContentLoaded", () => {
-			$('.tabular.menu .item').tab();                  
-		});
+
+	
 	</script>
 
 {% endblock%}
