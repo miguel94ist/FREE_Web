@@ -424,7 +424,6 @@ class QuizTake(FormView):
         print("pks:",pks)
         random_pk = random.choice(pks)
         print("rabnd pks:",random_pk)
-        return exe_query.get(pk=616)
         return exe_query.get(pk=random_pk)
 
     def anon_load_sitting(self):
