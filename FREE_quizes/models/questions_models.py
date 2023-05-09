@@ -47,10 +47,16 @@ def verify_mc():
 @python_2_unicode_compatible
 class Essay_Question(Question):
 
-    rounding = models.BooleanField(
-        blank=False, default=False,
-        verbose_name=_("Rounding"),
-        help_text=_("Will this question be rounded to a decimal case"))
+#    rounding = models.BooleanField(
+#        blank=False, default=False,
+#        verbose_name=_("Rounding"),
+#        help_text=_("Will this question be rounded to a decimal case"))
+
+#    def randomize_decimal_precision():
+#        return random.randint(3,7)
+    
+    decimal_precision = models.PositiveIntegerField(default=2,
+                                            verbose_name=_("Decimal Precision"))
 
 
     verif_function = models.CharField(max_length=100,

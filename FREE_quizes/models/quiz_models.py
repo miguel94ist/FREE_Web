@@ -450,11 +450,6 @@ class Sitting(models.Model):
 
     objects = SittingManager()
 
-    def randomize_decimal_precision():
-        return random.randint(3,7)
-    
-    decimal_precision = models.PositiveIntegerField(default=randomize_decimal_precision,
-                                            verbose_name=_("Decimal Precision"))
 
     class Meta:
         permissions = (("view_sittings", _("Can see completed exams.")),)

@@ -91,7 +91,7 @@ class TFQuestionAdmin(SummernoteModelAdmin, TabbedTranslationAdmin):
 class EssayQuestionAdmin(SummernoteModelAdmin, TabbedTranslationAdmin):
     list_display = ('content', 'category', )
     list_filter = ('category',)
-    fields = ('content',  'evaluated',   'explanation', 'verif_function','priority','rounding')
+    fields = ('content',  'evaluated',   'explanation', 'verif_function','priority','decimal_precision')
     search_fields = ('content', 'explanation')
 
 
