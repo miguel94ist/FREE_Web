@@ -94,7 +94,7 @@
 			<div class="ui bottom attached tab segment" data-tab="description-tab" >
 				<div class="ui grid" >
 					<div class="ten wide column ">
-						{{quiz.description}}
+						{% autoescape off %}{{quiz.description}}{% endautoescape %}
 					</div>
 		
 				</div>  
@@ -104,7 +104,9 @@
 			<div class="ui bottom attached tab segment active" data-tab="questions-tab" >
 				<div class="ui grid" >
 					<div class="ten wide column ">
-						<p>{{ question.content }} </p>
+							{% autoescape off %}
+								<p>{{ question.content }} </p>
+							{% endautoescape %}
 							<p> Please configure the experiment below. dont forget to save, submit and wait for its completion.</p>
 							{% if execution_id %}
 								<form action="" method="POST" id="form">{% csrf_token %}

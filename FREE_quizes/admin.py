@@ -2,8 +2,11 @@ from django import forms
 from django.contrib import admin
 from django.contrib.admin.widgets import FilteredSelectMultiple
 from django.utils.translation import gettext_lazy as _
-
+from django_summernote.admin import SummernoteModelAdmin
+from modeltranslation.admin import TabbedTranslationAdmin
 from FREE_quizes.models.questions_models import Experiment_Execution
+from FREE_quizes.models.quiz_models import Quiz
+from django.conf import settings
 
 from .models import *
 
@@ -45,32 +48,25 @@ class QuizAdminForm(forms.ModelForm):
         return quiz
 
 
-class QuizAdmin(admin.ModelAdmin):
+class QuizAdmin(SummernoteModelAdmin, TabbedTranslationAdmin):
     form = QuizAdminForm
 
     list_display = ('title',  )
     list_filter = ()
     search_fields = ('description', 'category', )
 
-
 class CategoryAdmin(admin.ModelAdmin):
     search_fields = ('category', 'apparatus_type')
 
 
-# class SubCategoryAdmin(admin.ModelAdmin):
-#     # search_fields = ('sub_category', )
-#     # list_display = ('sub_category', 'category',)
-#     # # list_filter = ('category',)
 
-
-class MCQuestionAdmin(admin.ModelAdmin):
+class MCQuestionAdmin(SummernoteModelAdmin, TabbedTranslationAdmin):
     list_display = ('content', 'category', )
     list_filter = ('category',)
     fields = ('content', 'evaluated', 
               'figure',  'explanation', 'priority', 'answer_order')
 
     search_fields = ('content', 'explanation')
-#    filter_horizontal = ('quiz',)
 
     inlines = [AnswerInline]
 
@@ -83,30 +79,27 @@ class ProgressAdmin(admin.ModelAdmin):
     search_fields = ('user', 'score', )
 
 
-class TFQuestionAdmin(admin.ModelAdmin):
+class TFQuestionAdmin(SummernoteModelAdmin, TabbedTranslationAdmin):
     list_display = ('content', 'category', )
     list_filter = ('category',)
     fields = ('content',  'evaluated', 
               'figure',  'explanation','priority', 'correct',)
 
     search_fields = ('content', 'explanation')
-#    filter_horizontal = ('quiz',)
 
 
-class EssayQuestionAdmin(admin.ModelAdmin):
+class EssayQuestionAdmin(SummernoteModelAdmin, TabbedTranslationAdmin):
     list_display = ('content', 'category', )
     list_filter = ('category',)
     fields = ('content',  'evaluated',   'explanation', 'verif_function','priority','rounding')
     search_fields = ('content', 'explanation')
-#    filter_horizontal = ('quiz',)
 
 
-class  Experiment_ExecutionAdmin(admin.ModelAdmin):
+class  Experiment_ExecutionAdmin(SummernoteModelAdmin, TabbedTranslationAdmin):
     list_display = ('content', 'category', )
     list_filter = ('category',)
     fields = ('content', 'category', 'sub_category',  'evaluated', 'explanation', 'priority')
     search_fields = ('content', 'explanation')
-#    filter_horizontal = ('quiz',)  
 
 class SittingAdmin(admin.ModelAdmin):
     list_display =('user','complete')
@@ -119,7 +112,6 @@ FREE_quizes_admin_site = FREE_quizes_AdminSite(name='FREE_quizes_admin')
 
 FREE_quizes_admin_site.register(Quiz, QuizAdmin)
 FREE_quizes_admin_site.register(Category, CategoryAdmin)
-# FREE_quizes_admin_site.register(SubCategory, SubCategoryAdmin)
 FREE_quizes_admin_site.register(MCQuestion, MCQuestionAdmin)
 FREE_quizes_admin_site.register(Progress, ProgressAdmin)
 FREE_quizes_admin_site.register(TF_Question, TFQuestionAdmin)
