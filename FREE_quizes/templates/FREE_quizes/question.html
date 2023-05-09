@@ -76,13 +76,11 @@
 
 	<div class="ui container">
 
-		<h1>Quiz: {{quiz.title}}</h1>
+		<h1>Quiz {{quiz.title}}
 		{% if progress %}
-		<H2>
-		{% trans "Question" %} {{ progress.0|add:1 }} {% trans "of" %} {{ progress.1 }}
-		</h2>
+		({% trans "Step" %} {{ progress.0|add:1 }} {% trans "of" %} {{ progress.1 }})
 		{% endif %}
-
+			</h1>
 	</div> 
 	<div class="ui  container ">
 			<div id="quiz_tab" class="ui top attached tabular menu">
