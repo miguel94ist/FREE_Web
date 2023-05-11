@@ -28,17 +28,9 @@
 {% endblock %}
 
 {% block head %}
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
     <!-- datatables -->
     <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/1.11.5/js/dataTables.semanticui.min.js"></script>
-
-
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.5.0/components/dropdown.min.js"></script>
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.5.0/components/dropdown.min.css">
-
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.5.0/components/tab.min.js"></script>
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.5.0/components/tab.min.css">
 
 
     <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/dataTables.semanticui.min.css">
@@ -184,20 +176,20 @@
 			{% else %}
 				<div class="alert alert-warning">
 			{% endif %}
-				<p><small>
-					{% trans "Your answer was" %} </small>
-					<strong>
-					{{ previous.previous_outcome|yesno:"correct,incorrect" }}
-					</strong>
-				</p>
+					<p><small>
+						{% trans "Your answer was" %} </small>
+						<strong>
+						{{ previous.previous_outcome|yesno:"correct,incorrect" }}
+						</strong>
+					</p>
 
-			</div>
+				</div>
 
 			{% include 'correct_answer.html' %}
 
 			<p><strong>{% trans "Explanation" %}:</strong></p>
 			<div class="well " style="background-color: #fcf8e3;">
-			<p>{{ previous.previous_question.explanation }}</p>
+				<p>{{ previous.previous_question.explanation }}</p>
 			</div>
 
 			<hr>
