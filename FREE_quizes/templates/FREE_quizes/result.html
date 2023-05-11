@@ -79,7 +79,7 @@
 	<div class="ui  container ">
 		<div id="quiz_tab" class="ui top attached tabular menu">
 			<a class=" item" id="description-tab-slip" data-tab="description-tab">{% trans 'Description' %}</a>
-			<a class="item active" id="result-tab-slip" data-tab="result-tab">{% trans 'Questions'%}</a>
+			<a class="item active" id="result-tab-slip" data-tab="result-tab">{% trans 'Results'%}</a>
 		</div>
 
 	
@@ -97,37 +97,34 @@
 			<div class="ui grid" >
 				<div class="ten wide column ">
 
-          1
-
-          {% if max_score %}
+           {% if max_score %}
         
           <div>
-            <h2>{% trans "Exam results" %}</h2>
+
+            <h2>
+              Exercises outcome
+            </h2>
             <p>
-              <small class="muted">{% trans "Exam title" %}: </small>  <strong>{{ quiz.title }}</strong>
-            </p>
-          
-            <p class="lead">
               {% trans "You answered" %} {{ score }} {% trans "questions correctly out of" %} {{ max_score }}, {% trans "giving you" %} {{ percent }} {% trans "percent correct" %}
             </p>
-          
+            <h2>
+              Exercises score
+            </h2>
+            <p>
+              {{ percent }} {% trans "percent correct" %}
+            </p>
             {% if quiz.pass_mark %}
-            <p class="lead">{{ sitting.result_message }}</p>
-            
+            <p class="lead">{% autoescape off %}{{ sitting.result_message }}{% endautoescape %}</p>
             {% endif %}
           
-            <p>{% trans "Review the questions below and try the exam again in the future"%}.</p>
           
-            {% if user.is_authenticated %}
-          
+         
+            {% if user.is_authenticateds %}
                 <p>{% trans "The result of this exam will be stored in your progress section so you can review and monitor your progression" %}.</p>
-          
             {% endif %}
           </div>
         {% endif %}
       
-2
-
           {% if previous.answers %}
 
               <p class="muted"><small>{% trans "The previous question" %}:</small></p>
@@ -141,42 +138,50 @@
         
           {% endif %}
         
-        3
-        
-          {% if possible %}
-            <p class="lead"> {% trans "Your session score is" %} {{ session }} {% trans "out of a possible" %} {{ possible }} </p>
-          {% endif %}
-        
-          4
-
           {% if questions %}
-        
-            {% for question in questions %}
-        5
-                <p class="lead">
-              {{ question.content }}
-              </p>
-        
-              {% correct_answer_for_all question %}
-        
-                {% if question.user_answer %}
-                  <p>{% trans "Your answer" %}: {{ question|answer_choice_to_string:question.user_answer }}</p>
+          <h2>
+            Answers
+          </h2>
+          <p>{% trans "Review the questions below and try the exam again in the future"%}.</p>
+
+          <table class="ui celled table">
+            <thead>
+              <tr>
+                <th>Question</th>
+                <th>Answer</th>
+                <th>Correct</th>
+                <th>Explanation</th>
+              </tr>
+          </thead>
+          <tbody>
+            {% for question in details %}
+            <tr>
+              <td>
+                {{ question.content }}
+              </td>
+              <td>
+                {% autoescape off %}{{ question.ans }}{% endautoescape %}
+              </td>
+              <td>
+                {% if question.correct %}
+                <div class="well " style="background-color: #99edc3;">
+              {% else %}
+              <div class="well " style="background-color: #bc544b;">
                 {% endif %}
-        
-              {% if question.explanation %}
-                <p><strong>{% trans "Explanation" %}:</strong></p>
-                  {% if question.pk in incorrect_questions %}
-                    <div class="well " style="background-color: #bc544b;">
-                  {% else %}
-                    <div class="well " style="background-color: #99edc3;">
-                  {% endif %}
-                <p>{{ question.explanation|safe }}</p>
+
+                {{ question.correct }}
                 </div>
-              {% endif %}
+              </td>
+              <td>
+                {% autoescape off %} {{ question.expl }}{% endautoescape %}
+              </td>
         
               <hr>
+            </tr>
+
           {% endfor %}
-        
+        </tbody>
+        </table>
         {% endif %}
         
 

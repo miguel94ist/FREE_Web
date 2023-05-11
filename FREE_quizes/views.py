@@ -20,6 +20,7 @@ from model_utils.managers import InheritanceManager
 
 from free.models import *
 from jsf import JSF
+import json
 
 class QuizMarkerMixin(object):
     @method_decorator(login_required)
@@ -229,7 +230,7 @@ class QuizTake(FormView):
                     results['lti'] = False
                 print("results:",results)
                 print("app name:",__package__.rsplit('.', 1)[-1])
-                return render(request,self.not_submited_template_name,results)
+                return render(request, self.not_submited_template_name, results)
         else:
             self.sitting = self.anon_load_sitting()
 
@@ -295,11 +296,14 @@ class QuizTake(FormView):
                     context['question_type'] = "FETCH"
                     context['execution_id'] = self.sitting.execution
         else:
-            context['question_type'] = "OTHER"
+            context['question_type'] = self.question.question_type()
+            pass
+
 
         context['quiz'] = self.quiz
         context['execution'] = self.sitting.execution
-        context['decimal_cases'] = self.sitting.decimal_precision
+        if self.question.__class__ is Essay_Question:       
+            context['decimal_cases'] = self.question.decimal_precision
 
         context['base'] = "free/base.html"
 
@@ -316,7 +320,7 @@ class QuizTake(FormView):
             context['execution_id'] = self.sitting.execution.id
         context['execution_json'] = {}
         context['final_result'] = {}
-        self.sitting.decimal_precision = random.randint(3,7)
+        #self.sitting.decimal_precision = random.randint(3,7)
         self.sitting.save()
         return context
 
@@ -346,7 +350,7 @@ class QuizTake(FormView):
                     execution_id = self.request.POST.get('execution_id')
                     self.sitting.add_execution(execution_id)     
         else:
-            guess = form.cleaned_data['answers']
+            guess = form.cleaned_data['answer']
             if self.request.POST.get('protocol_id') != None:
                 id = self.request.POST.get(protocol_id)
                 random_exec = self.get_random_execution(int(id))
@@ -364,7 +368,7 @@ class QuizTake(FormView):
             if self.question.__class__ is Essay_Question:
                 is_correct = (
                     self.question.check_if_correct(guess,self.quiz, self.sitting.execution
-                                                ,self.sitting.decimal_precision))
+                                                ,self.question.decimal_precision))
             else:
                 is_correct = self.question.check_if_correct(guess)
 
@@ -382,7 +386,7 @@ class QuizTake(FormView):
             self.previous = {'previous_answer': guess,
                             'previous_outcome': is_correct,
                             'previous_question': self.question,
-                            'answers': self.question.get_answers(),
+                            'answer': self.question.get_answers(),
                             'question_type': {self.question
                                             .__class__.__name__: True}}
         else:
@@ -391,9 +395,28 @@ class QuizTake(FormView):
 
     def final_result_user(self):
         score_send = self.sitting.get_percent_correct/100
+        answer = json.loads(self.sitting.user_answers)
+        answered_questions = self.sitting._question_ids()
+        incorrect_questions = self.sitting.get_incorrect_questions
+        details = []
+        for q_id in answered_questions :
+            
+            q_answ = answer[str(q_id)]
+            q = Question.objects.get(pk=q_id)
+            if q_id not in incorrect_questions:
+                q_correct = True
+            else:
+                q_correct = False
+            q_details = {'id': q_id, 
+                         'ans': q_answ,
+                         'content': q.content,
+                         'correct': q_correct, 
+                         'expl': q.explanation}
+            details.append(q_details)
         results = {
+            'details': details,
             'quiz': self.quiz,
-            'score': self.sitting.get_current_score,
+            'score': self.sitting.get_current_score, 
             'max_score': self.sitting.right_max_score,
             'percent': self.sitting.get_percent_correct,
             'sitting': self.sitting,
@@ -415,6 +438,7 @@ class QuizTake(FormView):
 
         if self.quiz.exam_paper is False:
             self.sitting.delete()
+
 
         return render(self.request, self.result_template_name, context = results)
 
@@ -475,7 +499,7 @@ class QuizTake(FormView):
         return (answered, total)
 
     def form_valid_anon(self, form):
-        guess = form.cleaned_data['answers']
+        guess = form.cleaned_data['answer']
         is_correct = (
             self.question.check_if_correct(guess,self.sitting.execution))
 
@@ -493,7 +517,7 @@ class QuizTake(FormView):
             self.previous = {'previous_answer': guess,
                              'previous_outcome': is_correct,
                              'previous_question': self.question,
-                             'answers': self.question.get_answers(),
+                             'answer': self.question.get_answers(),
                              'question_type': {self.question
                                                .__class__.__name__: True}}
 

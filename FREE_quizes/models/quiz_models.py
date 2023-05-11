@@ -638,7 +638,7 @@ class Question(models.Model):
                                blank=False,
                                help_text=_("Enter the question text that "
                                            "you want displayed"),
-                               verbose_name=_('Question'))
+                               verbose_name=_('Question Content'))
 
     explanation = models.TextField(max_length=2000,
                                    blank=True,
@@ -664,3 +664,5 @@ class Question(models.Model):
 
     def __str__(self):
         return self.content
+    def question_type(self):
+        pass

@@ -26,3 +26,4 @@ PyLTI==0.7.0
 nameparser==1.1.2
 jsf==0.7.1
 serial==0.0.97
+django-semanticui-forms==1.6.5

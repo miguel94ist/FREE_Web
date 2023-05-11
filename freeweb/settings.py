@@ -77,6 +77,7 @@ if env.bool('FREE_LTI_PROVIDER'):
     INSTALLED_APPS +=     [
     'FREE_quizes',
     'lti_provider',
+    'semanticuiforms',
     ]
 
 MIDDLEWARE = [

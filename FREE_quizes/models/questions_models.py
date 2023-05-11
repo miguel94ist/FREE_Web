@@ -67,6 +67,9 @@ class Essay_Question(Question):
 
     outer_locals = locals()
 
+    def question_type(self):
+        return "ESSAY"
+
 
     def check_if_correct(self, user_answer,  current_quiz, execution, decimal_places):
 
@@ -111,6 +114,9 @@ class TF_Question(Question):
                                               " false."),
                                   verbose_name=_("Correct"))
 
+    def question_type(self):
+        return "TF"
+
     def check_if_correct(self, guess):
         if guess == "True":
             guess_bool = True
@@ -150,6 +156,9 @@ class MCQuestion(Question):
                     "answer options are displayed "
                     "to the user"),
         verbose_name=_("Answer Order"))
+
+    def question_type(self):
+        return "MC"
 
     def check_if_correct(self, guess):
         answer = Answer.objects.get(id=guess)

@@ -54,6 +54,7 @@ class QuizAdmin(SummernoteModelAdmin, TabbedTranslationAdmin):
     list_display = ('title',  )
     list_filter = ()
     search_fields = ('description', 'category', )
+    summernote_fields = ('description')
 
 class CategoryAdmin(admin.ModelAdmin):
     search_fields = ('category', 'apparatus_type')
@@ -69,6 +70,7 @@ class MCQuestionAdmin(SummernoteModelAdmin, TabbedTranslationAdmin):
     search_fields = ('content', 'explanation')
 
     inlines = [AnswerInline]
+    summernote_fields = ('content', 'explanation')
 
 
 class ProgressAdmin(admin.ModelAdmin):
@@ -86,14 +88,14 @@ class TFQuestionAdmin(SummernoteModelAdmin, TabbedTranslationAdmin):
               'figure',  'explanation','priority', 'correct',)
 
     search_fields = ('content', 'explanation')
-
+    summernote_fields = ('content')
 
 class EssayQuestionAdmin(SummernoteModelAdmin, TabbedTranslationAdmin):
     list_display = ('content', 'category', )
     list_filter = ('category',)
     fields = ('content',  'evaluated',   'explanation', 'verif_function','priority','decimal_precision')
     search_fields = ('content', 'explanation')
-
+    summernote_fields = ('content',   'explanation')
 
 class  Experiment_ExecutionAdmin(SummernoteModelAdmin, TabbedTranslationAdmin):
     list_display = ('content', 'category', )

@@ -1,7 +1,7 @@
 {% extends base %}
 {% load i18n%}
 {% load static %}
-
+{% load semanticui %}
 {% load quiz_tags %}
 
 
@@ -102,9 +102,7 @@
 			<div class="ui bottom attached tab segment active" data-tab="questions-tab" >
 				<div class="ui grid" >
 					<div class="ten wide column ">
-							{% autoescape off %}
-								<p>{{ question.content }} </p>
-							{% endautoescape %}
+							{% autoescape off %}<p>{{ question.content }} </p> {% endautoescape %}
 							<p> Please configure the experiment below. dont forget to save, submit and wait for its completion.</p>
 							{% if execution_id %}
 								<form action="" method="POST" id="form">{% csrf_token %}
@@ -130,12 +128,13 @@
 					</div>
 				</div>
 			</div>  
-			{% endif %}
-			{% if question_type == 'FETCH' %}
+			{% elif question_type == 'FETCH' %}
 			<div class="ui bottom attached tab segment active" data-tab="questions-tab" >
 				<div class="ui grid" >
 					<div class="ten wide column ">
-						<p>{{ question.content }} </p>
+							{% autoescape off %}
+								<p>{{ question.content }} </p>
+							{% endautoescape %}
 							<form action="" method="POST" id="form">{% csrf_token %}
 							<input type=hidden name="question_id" value="{{ question.id }}">
 							<input type=hidden name="execution_id" id="form_execution_id" value="{{ execution_id }}">
@@ -146,27 +145,24 @@
 					</div>
 				</div>
 			</div>  
-			{% endif %}
-
-			{% if question_type == 'OTHER' %}
+			{% else %}
 			<div class="ui bottom attached tab segment active" data-tab="questions-tab" >
 				<div class="ui grid" >
 					<div class="ten wide column ">
-						<p>{{ question.content }} </p>
-						{% if question.rounding %}
-						<p>Answer with {{decimal_cases}} decimal cases</p>
-						{% endif %}		
+						{% autoescape off %}
+							<p>{{ question.content }} </p>
+						{% endautoescape %}
+
 						<form action="" method="POST" id="form">{% csrf_token %}
 							<input type=hidden name="question_id" value="{{ question.id }}">
-							<ul class="list-group" id = "list-group">
-								{% for answer in form.answers %}
-								<li class="list-group-item">
-									{{ answer }}
-								</li>
-								{% endfor %}
-							</ul>
-								<p></p>
-							<input type="submit" value='{% trans "Check" %}' class="btn btn-large btn-block btn-warning" >
+							{% render_form form %}
+
+							{% if question_type == 'ESSAY' %}
+								<p>Answer with {{decimal_cases}} decimal cases</p>
+							{% endif %}
+
+
+							<input type="submit" value='{% trans "Submit answer" %}' class="ui green button" >
 						</form>
 					</div>
 				</div>

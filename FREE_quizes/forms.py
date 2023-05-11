@@ -7,7 +7,7 @@ class QuestionForm(forms.Form):
         super(QuestionForm, self).__init__(*args, **kwargs)
         if question is not False:
             choice_list = [x for x in question.get_answers_list()]
-            self.fields["answers"] = forms.ChoiceField(choices=choice_list,
+            self.fields["answer"] = forms.ChoiceField(choices=choice_list,
                                                         widget=RadioSelect)
 
 
@@ -17,7 +17,7 @@ class EssayForm(forms.Form):
         #if question.sub_category != None:
         #    self.fields["answers"] = forms.FloatField(required=False)
         #else:
-        self.fields["answers"] = forms.FloatField()
+        self.fields["answer"] = forms.FloatField()
         
 class Experiment_ExectionForm(forms.Form):
     def __init__(self, question, *args, **kwargs):
