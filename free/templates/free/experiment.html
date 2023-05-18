@@ -769,7 +769,11 @@ function create_experiment() {
     }).then(response => {
         // we should do a redirect to the new page.....
         // Original:
+{% if not STRIPPED %}
         window.location.href = '/execution/'+String(response.data.id)
+{% else %}
+window.location.href = '/execution/'+String(response.data.id)+'/bare'
+{% endif %}
         // Rossa Version: 
         //window.history.pushState({}, '', window.location.origin+'/execution/'+String(response.data.id));
         current_execution = response.data;

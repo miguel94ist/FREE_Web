@@ -109,7 +109,7 @@ class LTIRoutingView(LTIAuthMixin, View):
                 request.POST.get('custom_quiz_url'),))
             print("url", url)
         elif request.POST.get('custom_experiment',None) is not None:
-            app_url = "free:execution-create"
+            app_url = "free:stripped-execution-create"
             url = reverse(app_url,args=(
                 request.POST.get('custom_apparatus_id'),
                 request.POST.get('custom_protocol_id')))
