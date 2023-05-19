@@ -389,22 +389,35 @@ function popup_message(str){
 function resetInputValues(){
 
   	input_list = jQuery( ".free-input" );
-    let check_helper = 1;
+        console.log(input_list);
+        let name_radio = "";
+        let check_helper = 0;
+        let increse_helper = 1;
   	for ( ind = 0, len = input_list.length; ind < len; ind++ ) {
         	i = $(input_list[ind]);
-        	console.log(["checkbox"].includes(input_list[ind].type))
+        	//console.log(["checkbox"].includes(input_list[ind].type))
+                //check_helper = protocol_input_arguments[i.attr("id")].minimum
         	if(["radio"].includes(input_list[ind].type) )
         	{
+                        if (name_radio != input_list[ind].name ){
+                            check_helper = protocol_input_arguments[i.attr("id")].minimum
+                            increse_helper = protocol_input_arguments[i.attr("id")].multipleOf
+                            name_radio = input_list[ind].name
+                            console.log("ii")
+
+                        }
             		//console.log("ROSSA");
-            		//console.log(input_list[ind].checked);
-            		console.log("Here teste")
+            		//console.log(input_list[ind].name);
+            		//console.log("Here teste")
             		if (protocol_input_arguments[i.attr("id")].default === check_helper){
+                                console.log(i.attr("id"))
+                                console.log(check_helper)
                 		i.prop("checked", true).trigger('change');
             		}
             		else{
                 		i.prop("checked", false).trigger('change');
             		}
-            		check_helper = check_helper + 1;
+            		check_helper = check_helper + increse_helper;
         	}
  		else if (["checkbox"].includes(input_list[ind].type))
         	{
@@ -440,12 +453,22 @@ function resetInputValues(){
 function reloadInputValues(){
 
     input_list = jQuery( ".free-input" );
-    let check_helper=1;
+    let name_radio = "";
+    let check_helper = 0;
+    let increse_helper = 1;
     for ( ind = 0, len = input_list.length; ind < len; ind++ ) {
         //console.log(input_list[ind])
         i = $(input_list[ind]);
         if(["radio"].includes(input_list[ind].type) )
         {
+               if (name_radio != input_list[ind].name ){
+                            check_helper = protocol_input_arguments[i.attr("id")].minimum
+                            increse_helper = protocol_input_arguments[i.attr("id")].multipleOf
+                            name_radio = input_list[ind].name
+                            console.log("ii")
+
+                        }
+
                 //console.log("ROSSA");
                 //console.log(current_execution.config[i.attr("id")]);
                 if (current_execution.config[i.attr("id")] === check_helper)
