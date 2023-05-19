@@ -206,16 +206,23 @@ class QuizTake(FormView):
         except TypeError:
             self.logged_in_user = self.request.user.is_authenticated
 
+        context = {}
+        if self.request.session.get('lti_login') is not None:
+            context['base'] = "free/base_stripped.html"
+            context['lti'] = True
+        else:
+            context['lti'] = False
+
+
         if self.logged_in_user:
-            self.sitting = (
-                Sitting.objects.unsent_sitting(request.user,self.quiz))
+            self.sitting = Sitting.objects.unsent_sitting(request.user,self.quiz)
             if (self.sitting is False 
                 or self.request.session.get('lti_login') is None):
                 self.sitting = Sitting.objects.user_sitting(request.user,
                                                         self.quiz)
             else:
                 score_send = self.sitting.get_percent_correct/100
-                results = {
+                context += {
                     'quiz': self.quiz,
                     'score': self.sitting.get_current_score,
                     'max_score': self.sitting.right_max_score,
@@ -224,18 +231,15 @@ class QuizTake(FormView):
                     'score_send': score_send,
                     'app_name': __package__.rsplit('.', 1)[-1]
                 }
-                if self.request.session.get('lti_login') is not None:
-                    results['lti'] = True
-                else:
-                    results['lti'] = False
+
                 print("results:",results)
                 print("app name:",__package__.rsplit('.', 1)[-1])
-                return render(request, self.not_submited_template_name, results)
+                return render(request, self.not_submited_template_name, context)
         else:
             self.sitting = self.anon_load_sitting()
 
         if self.sitting is False:
-            return render(request, self.single_complete_template_name)
+            return render(request, self.single_complete_template_name, context)
 
         return super(QuizTake, self).dispatch(request, *args, **kwargs)
 
@@ -299,17 +303,18 @@ class QuizTake(FormView):
             context['question_type'] = self.question.question_type()
             pass
 
-
         context['quiz'] = self.quiz
         context['execution'] = self.sitting.execution
         if self.question.__class__ is Essay_Question:       
             context['decimal_cases'] = self.question.decimal_precision
 
-        context['base'] = "free/base.html"
+
 
         if self.request.session.get('lti_login') is not None:
+            context['base'] = "free/base_stripped.html"
             context['lti'] = True
         else:
+            context['base'] = "free/base.html"
             context['lti'] = False
 
         if hasattr(self, 'previous'):

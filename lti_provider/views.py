@@ -230,9 +230,12 @@ class LTIPostGrade(LTIAuthMixin, View):
         xml = self.lti.generate_request_xml(
             self.message_identifier(), 'replaceResult',
             self.lti.lis_result_sourcedid(request), score, launch_url)
+        consumers = self.lti.consumers()
+        consumer_key = self.lti.oauth_consumer_key(request)
+        outcome_service_url = self.lti.lis_outcome_service_url(request)
         if not post_message(
-            self.lti.consumers(), self.lti.oauth_consumer_key(request),
-                self.lti.lis_outcome_service_url(request), xml):
+            consumers, consumer_key,
+                outcome_service_url, xml):
 
             msg = ('An error occurred while saving your score. '
                    'Please try again.')
