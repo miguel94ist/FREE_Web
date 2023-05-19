@@ -53,6 +53,8 @@ class CreateExecutionView(LoginRequiredMixin, TemplateView):
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        context['base'] = "free/base.html"
+        
         apparatus_id = kwargs['apparatus_id']
         protocol_id = kwargs['protocol_id']
         
