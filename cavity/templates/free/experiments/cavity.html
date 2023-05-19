@@ -18,8 +18,12 @@
 
     <script src="https://unpkg.com/chartjs-chart-error-bars@3.7.2/build/index.umd.min.js"></script>
     <script src="https://d3js.org/d3-array.v3.min.js"></script>
-
-
+    <style> 
+      input[type=number]:disabled {
+       background: #00000000;
+       color: black;
+      }
+    </style>
 {% endblock %}  
 
 
@@ -31,10 +35,10 @@
             <div class="column">
                 <div class="ui segment">
                     <legend> <h3>{% trans 'Start Frequency [MHz]'%}</h3></legend>
-                    <div style="padding-top: 5%;"  class="ui blue small bottom aligned labeled  slider"  id="slider-f_strat" ></div>
+                    <div style="padding-top: 5%;"  class="ui blue small bottom aligned labeled  slider"  id="slider-f_start" ></div>
                         
                         <div class="ui input" >
-                            <input class="free-input" type="number" id="f_strat">
+                            <input class="free-input" type="number" id="f_start">
                         </div>
                 </div>
             </div>
@@ -76,8 +80,8 @@
         </div>
 	<!--3-->
 	<div class="ui two column grid container">
-            	<div class="column">
-                	<div class="ui segment">
+            	<div class="column" style="height: 171.66px">
+                	<div class="ui segment style="height: 143.66px"">
                     		<legend> <h3>{% trans 'Gas Injection Time [ms]'%}</h3></legend>
                     		<div style="padding-top: 5%;"  class="ui blue small bottom aligned labeled slider"  id="slider-pressure" ></div>
                         
@@ -87,51 +91,139 @@
                 	</div>
             	</div>
 			
-                <div class="column">
-                    <div class="ui segment">
-                        <legend> <h3>{% trans 'Gas Selection'%}</h3></legend>
+                <div class="column"style="height: 171.66px" >
+                    <div class="ui segment style="height: 143.66px"">
+                       <div class="ui two column very relaxed grid">
+                          <div class="column"style="height: 143.66px">
+                             <legend> <h3>{% trans 'Gas Selection'%}</h3></legend>
                         
-                        <div class="field" id="radio">
-                            <div class="ui  blue radio checkbox langmuir">
-                                 <input  class="free-input"  type="radio" id="gas_selector" name="gas_type" checked="checked"  value="1">
-                                     <label>Helium</label>
-                            </div>
+                             <div style="padding-top: 5%;" class="field" id="radio-gas_selector">
+                                <div class="ui  blue radio checkbox langmuir">
+                                   <input  class="free-input"  type="radio" id="gas_selector" name="gas_selector"  value="1">
+                                        <label>Helium</label>
+                                </div>
                             
-                            <div class="field">
-                                <div class="ui radio checkbox langmuir">
-                                    <input  class="free-input"  type="radio" id="gas_selector" name="gas_type"  value="2">
+                                <div class="field">
+                                  <div class="ui radio checkbox langmuir">
+                                    <input  class="free-input"  type="radio" id="gas_selector" name="gas_selector"  value="2">
                                         <label>Nitrogen</label>
-                                </div>
-                            </div>		
+                                  </div>
+                                </div>		
                             
-                            <div class="field">
-                                <div class="ui radio checkbox langmuir">
-                                    <input  class="free-input"  type="radio" id="gas_selector" name="gas_type"  value="3">
+                                <div class="field">
+                                  <div class="ui radio checkbox langmuir">
+                                    <input  class="free-input"  type="radio" id="gas_selector" name="gas_selector"  value="3">
                                         <label>Argon</label>
+                                  </div>
                                 </div>
-                            </div>
                                  
-                        </div>
-                    
-				        <div class="ui toggle checkbox" onclick="change_discharge()">
-                            		<input  class="free-input" type="checkbox" name="public"  id="discharge" value='0'>
-                            		<label>Discharge</label>
-                        </div>   
+                             </div>
+                          </div>
+                          <div class="column"style="height: 143.66px">
+                             <legend> <h3>{% trans 'Power of Discharge [W]'%}</h3></legend>
+                             <!-- Radio version -->
+                             <div style="padding-top: 5%;" class="field" id="radio-discharge">
+                                <div class="ui  blue radio checkbox langmuir">
+                                   <input  class="free-input"  type="radio" id="discharge" name="discharge" value="0">
+                                        <label>0</label>
+                                </div>
+                            
+                                <div class="field">
+                                  <div class="ui radio checkbox langmuir">
+                                    <input  class="free-input"  type="radio" id="discharge" name="discharge"  value="1">
+                                        <label>2.5</label>
+                                  </div>
+                                </div>		
+                            
+                                <div class="field">
+                                  <div class="ui radio checkbox langmuir">
+                                    <input  class="free-input"  type="radio" id="discharge" name="discharge"  value="2">
+                                        <label>3.5</label>
+                                  </div>
+                                </div>
+                                 
+                             </div>
+	                     <!-- Original -->
+
+	                     <!-- <div class="ui toggle checkbox" onclick="change_discharge()">
+                                 <input  class="free-input" type="checkbox" name="public"  id="discharge_old" value='0'>
+                                        <label>Discharge</label>
+                             </div>-->
+
+	                     <!-- Slider second version -->
+
+                             <!--<div style="padding-top: 5%;"  class="ui blue small bottom aligned labeled  slider"  id="slider-discharge" ></div>                        
+                        	<div  class="ui input" >
+                            		<input class="free-input" type="hidden" id="discharge" disabled="disabled">
+                                        <input class="" type="number" id="display-discharge" disabled="disabled">
+
+                        	</div>-->
+                             </div>
+
+                          
+                         
+                       </div>
+                       <div class="ui vertical divider">
+                       </div>
                     </div>
-                </div>
-            	
+      	        </div>
+
            
         </div>
 		<!--4-->
 	<div class="ui two column grid container">
-		<div class="column">
-               		<div class="ui segment">
-        	        	<legend> <h3>{% trans 'Magnetic Field [T]'%}</h3></legend>
-                    		<div style="padding-top: 5%;"  class="ui blue small bottom aligned labeled  slider"  id="slider-magnetic_field" ></div>
+		<div class="column" style="height: 171.66px">
+               		<div class="ui segment" style="height: 143.66px">
+        	        	<legend> <h3>{% trans 'Magnetic Field [mT]'%}</h3></legend>
+				<div class="ui form" style="padding-top: 5%;" id="radio-discharge">
+				  <div class="inline fields">
+                               <!--<div style="padding-top: 5%;" id="radio-discharge">-->
+                               <div class="field" >
+                                <div class="ui  blue radio checkbox langmuir" >
+                                   <input  class="free-input"  type="radio" id="magnetic_field" name="magnetic_field" value="0">
+                                        <label>0</label>
+                                </div>
+                               </div>
+                                <div class="field">
+                                  <div class="ui radio checkbox langmuir" >
+                                    <input  class="free-input"  type="radio" id="magnetic_field" name="magnetic_field"  value="1">
+                                        <label>12</label>
+                                  </div>
+                                </div>		
+                            
+                                <div class="field">
+                                  <div class="ui radio checkbox langmuir" >
+                                    <input  class="free-input"  type="radio" id="magnetic_field" name="magnetic_field"  value="2">
+                                        <label>14</label>
+                                  </div>
+                                </div>
+
+                                <div class="field">
+                                  <div class="ui radio checkbox langmuir" >
+                                    <input  class="free-input"  type="radio" id="magnetic_field" name="magnetic_field"  value="3">
+                                        <label>17</label>
+                                  </div>
+                                </div>
+
+                                <div class="field">
+                                  <div class="ui radio checkbox langmuir" >
+                                    <input  class="free-input"  type="radio" id="magnetic_field" name="magnetic_field"  value="4">
+                                        <label>22</label>
+                                  </div>
+                                </div>
+
+                               <!--</div>-->
+
+				  </div>
+				</div>
+                            
+                                <!-- Original version -->
+                    		<!--<div style="padding-top: 5%;"  class="ui blue small bottom aligned labeled  slider"  id="slider-magnetic_field" ></div>
 
                         	<div class="ui input" >
-                            		<input class="free-input" type="number" id="magnetic_field">
-                        	</div>
+                            		<input class="free-input" type="hidden" id="magnetic_field">
+                                        <input class="" type="number" style="color: black" id="display-magnetic_field" disabled="disabled">
+                        	</div>-->
                 	</div>
             	</div>
 
@@ -334,14 +426,26 @@ function on_save_experiment_UI(){
 
 function on_ready_experiment_UI(){
 
-    configure_slider("f_strat")
+        configure_slider("f_start")
 	configure_slider("f_end")
 	configure_slider("f_step")
 	configure_slider("n_iteration")
 	configure_slider("pressure")
-	configure_radio()
+        
+        //configure_slider_select_val("discharge", protocol_input_arguments["discharge"].enum_l)	
+        configure_radio("discharge")
+        
+	configure_radio("gas_selector")
+
 	configure_slider("back_pressure")
-	configure_slider("magnetic_field")
+
+	//configure_slider("magnetic_field")
+        //configure_slider_select_val("magnetic_field", protocol_input_arguments["magnetic_field"].enum_l)	
+        configure_radio("magnetic_field")
+
+        
+
+
     itera_num = 0
 	
 	
@@ -424,11 +528,204 @@ function on_ready_experiment_UI(){
 
 }
 
+function configure_slider_select_val(name,label){
+console.log(name)
+		console.log("meuemueu")
+		$('#slider-'+name).slider({
+           	 	min:  0,
+            		max: label.length-1,
+            		step: 1,
+            		start: protocol_input_arguments[name].default,
+            		input: '#'+name,
+            		autoAdjustLabels: false,
+			interpretLabel: function (value) {
+				return label[value]
+			},
+			onChange: function( event, ui ) {
+            			// Set the real value into the inputs
+                                console.log(ui); 
+            			console.log(label[ui]); 
+				$('#'+name).val(ui);
+                                $('#display-'+name).val(label[ui]);
+				onInputChanged()
+
+        		},
+    			onMove: function(value){ 
+				console.log(label[value]); 
+				$('#'+name).val( value);
+                                $('#display-'+name).val(label[value]);
+
+    			}
+		})
+        	$('#'+name).change(function() {
+			thisVal = $(this).val();
+   			// o user so pode digitar [0,20,25] isso tem de corresponder to [0,1,2]...
+			$("#slider-"+name).slider('set value', thisVal);
+                        $("#display-"+name).slider('set value', label[thisVal]);
+    		});
+}
+
+
+
+function add_relation(name,value)
+{
+   num_max = 1600 
+   min_diff = 100
+   //console.log("na funcao")
+   //console.log(name)
+   //console.log(value)
+   $('#'+name).val(Number.parseFloat(value).toFixed(protocol_input_arguments[name].multipleOf.countDecimals()))
+
+   if (name == "f_step"){
+      f_start_value = $("#f_start").val()
+      f_end_value = $("#f_end").val()
+      f_step_value = value
+
+      if (f_start_value !== "" && f_step_value !== "" && f_end_value !== ""){
+
+        f_start_value = Number.parseInt(f_start_value)
+        f_end_value = Number.parseInt(f_end_value)
+        f_step_value = Number.parseFloat(f_step_value).toFixed(protocol_input_arguments[name].multipleOf.countDecimals())
+
+        //console.log(f_start_value)
+        //console.log(f_end_value)
+        //console.log(f_step_value)
+      
+        num_pontos =  Number.parseInt((f_end_value-f_start_value)/f_step_value)
+      
+        //console.log("Valor de pontos: ")
+
+        //console.log(num_pontos)
+
+        if (num_pontos > num_max ){
+            
+            centr_freq = Number.parseInt((f_end_value+f_start_value)/2)
+            //console.log("centr_freq: "+centr_freq  )
+            half_points = Number.parseInt(num_max/2*f_step_value)
+
+            valuer_atc_start = Number.parseInt(centr_freq-half_points)
+ 
+            valuer_atc_end = Number.parseInt(centr_freq+half_points)
+ 
+            //console.log("Frequency step: ")
+            //console.log(valuer_atc_start)
+            //console.log(valuer_atc_end)
+
+            $('#slider-f_start').slider('set value',valuer_atc_start)
+            $('#f_start').val(valuer_atc_start)
+            $('#slider-f_end').slider('set value',valuer_atc_end )
+            $('#f_end').val(valuer_atc_end )
+            
+      	}
+      }
+   }
+
+   else if (name == "f_start"){
+      f_start_value = value
+      f_end_value = $("#f_end").val()
+      f_step_value = $("#f_step").val()
+
+      if (f_start_value !== "" && f_step_value !== "" && f_end_value !== ""){
+
+        f_start_value = Number.parseInt(f_start_value)
+        f_end_value = Number.parseInt(f_end_value)
+        f_step_value = Number.parseFloat(f_step_value).toFixed(protocol_input_arguments["f_step"].multipleOf.countDecimals())
+
+        //console.log(f_start_value)
+        //console.log(f_end_value)
+        //console.log(f_step_value)
+      
+        num_pontos =  Number.parseInt((f_end_value-f_start_value)/f_step_value)
+      
+        //console.log("Valor de pontos: ")
+
+        //console.log(num_pontos)
+
+        if (num_pontos > num_max ){
+
+            valuer_atc = Number.parseInt(Number.parseInt(num_max*f_step_value)+f_start_value).toFixed(0)
+ 
+            //console.log("Frequency End: ")
+            //console.log(valuer_atc)
+
+            $('#slider-f_end').slider('set value',valuer_atc)
+            $('#f_end').val(valuer_atc)
+            
+      	}
+        else if(f_end_value-f_start_value < min_diff){
+            new_value = Number.parseInt(f_end_value-min_diff).toFixed(0)
+            $('#slider-'+name).slider('set value',new_value)
+            $('#'+name).val(new_value)
+
+        }
+      }
+   }
+   else if (name == "f_end"){
+      f_start_value = $("#f_start").val()
+      f_end_value = value
+      f_step_value = $("#f_step").val()
+
+      if (f_start_value !== "" && f_step_value !== "" && f_end_value !== ""){
+
+        f_start_value = Number.parseInt(f_start_value)
+        f_end_value = Number.parseInt(f_end_value)
+        f_step_value = Number.parseFloat(f_step_value).toFixed(protocol_input_arguments["f_step"].multipleOf.countDecimals())
+
+        //console.log(f_start_value)
+        //console.log(f_end_value)
+        //console.log(f_step_value)
+      
+        num_pontos =  Number.parseInt((f_end_value-f_start_value)/f_step_value)
+      
+        //console.log("Valor de pontos: ")
+
+        //console.log(num_pontos)
+
+        if (num_pontos > num_max ){
+
+            valuer_atc = Number.parseInt(f_end_value-Number.parseInt(num_max*f_step_value)).toFixed(0)
+ 
+            //console.log("Frequency Start: ")
+            //console.log(valuer_atc)
+
+            $('#slider-f_start').slider('set value',valuer_atc)
+            $('#f_start').val(valuer_atc)
+          
+      	}
+        else if(f_end_value-f_start_value < min_diff){
+            new_value = Number.parseInt(f_start_value+min_diff).toFixed(0)
+            $('#slider-'+name).slider('set value',new_value)
+            $('#'+name).val(new_value)
+
+        }
+      }     
+   }
+
+}
+
+
+
+
+
+Number.prototype.countDecimals = function () {
+
+    if (Math.floor(this.valueOf()) === this.valueOf()) return 0;
+
+    var str = this.toString();
+    if (str.indexOf(".") !== -1 && str.indexOf("-") !== -1) {
+        return str.split("-")[1] || 0;
+    } else if (str.indexOf(".") !== -1) {
+        return str.split(".")[1].length || 0;
+    }
+    return str.split("-")[1] || 0;
+}
+
 
 function configure_slider(name){
-        help_spac = 0;
-        ticker =  Number.parseFloat(protocol_input_arguments[name].subPart);
-	console.log(Object.keys(protocol_input_arguments[name]))
+        //help_spac = Number.parseFloat(0);
+        //ticker =  Number.parseFloat(protocol_input_arguments[name].subPart);
+	console.log(Object.keys(protocol_input_arguments[name]))        
+
         if(Object.keys(protocol_input_arguments[name]).indexOf("enum") !== -1)
 	{
 		console.log(name)
@@ -448,6 +745,7 @@ function configure_slider(name){
             			// Set the real value into the inputs
             			console.log(label[ui]); 
 				$('#'+name).val( label[ ui]);
+                                onInputChanged()
 
 
         		},
@@ -457,30 +755,33 @@ function configure_slider(name){
     			}
 		})
         	$('#'+name).change(function() {
-			thisVal = $(this).val();
+			//thisVal = $(this).val();
    			// o user so pode digitar [0,20,25] isso tem de corresponder to [0,1,2]...
 
-     			if (thisVal >= 0 && thisVal <= label[0])
-			{ 
-				$("#slider-"+name).slider('set value', label[0]);
-   			}
-   			else if (thisVal > 6 && thisVal <= label[1]) 
-			{ 	
-				$("#slider-"+name).slider('set value', label[1]);
-  			}
-   			else if (thisVal > 20) 
-			{ 
-				$("#slider-"+name).slider('set value', label[2]);
-   			}
-   			else 
-			{ 
-				return false
-   			}
+     			//if (thisVal >= 0 && thisVal <= label[0])
+			//{ 
+			//	$("#slider-"+name).slider('set value', label[0]);
+   			//}
+   			//else if (thisVal > 6 && thisVal <= label[1]) 
+			//{ 	
+			//	$("#slider-"+name).slider('set value', label[1]);
+  			//}
+   			//else if (thisVal > 20) 
+			//{ 
+			//	$("#slider-"+name).slider('set value', label[2]);
+   			//}
+   			//else 
+			//{ 
+			//	return false
+   			//}
  		});
 
 
 	}
 	else{
+                 let help_spac = Number.parseFloat(protocol_input_arguments[name].minimum).toFixed(protocol_input_arguments[name].multipleOf.countDecimals());
+                 let ticker =  Number.parseFloat(protocol_input_arguments[name].subPart).toFixed(protocol_input_arguments[name].multipleOf.countDecimals());
+
        		$('#slider-'+name).slider({
             		min:  protocol_input_arguments[name].minimum,
             		max: protocol_input_arguments[name].maximum, 
@@ -488,43 +789,44 @@ function configure_slider(name){
             		start: protocol_input_arguments[name].default,
             		input: '#'+name,
             		autoAdjustLabels: false,
-	    		interpretLabel: function (value) { 
-            			if (value === 0) 
-       				{ 
-					if (ticker>Number.parseFloat(protocol_input_arguments[name].minimum))
-					{	
-						help_spac += (ticker); 	
-         	                      	}
-					else{
-					 	help_spac += (ticker+Number.parseFloat(protocol_input_arguments[name].minimum));
-					}
-					return Number.parseFloat(protocol_input_arguments[name].minimum);
-    				}
-   				else if (value + Number.parseFloat(protocol_input_arguments[name].minimum) === help_spac) 
-				{ 
-				
-					help_spac += ticker; 
-					return value+Number.parseFloat(protocol_input_arguments[name].minimum)
-   				}
-   				else if (value + Number.parseFloat( protocol_input_arguments[name].minimum) === Number.parseFloat( protocol_input_arguments[name].maximum)) 	
-				{
-     					return Number.parseFloat( protocol_input_arguments[name].maximum)
-   				}
-   				else 
-				{ 
-					return ""
-  				}
+	    		interpretLabel: function (value) {
+                                   check_me = Number.parseFloat(Number.parseFloat(value)*Number.parseFloat(protocol_input_arguments[name].multipleOf) + Number.parseFloat(protocol_input_arguments[name].minimum)).toFixed(protocol_input_arguments[name].multipleOf.countDecimals())
+            			   if (value === 0) 
+               			   { 
+                  			      if (ticker>Number.parseFloat(protocol_input_arguments[name].minimum).toFixed(protocol_input_arguments[name].multipleOf.countDecimals()))
+                			        {	
+                			             help_spac = Number.parseFloat(ticker).toFixed(protocol_input_arguments[name].multipleOf.countDecimals()); 	
+                 			       } 
+                 			       else{
+                 			            help_spac = Number.parseFloat(Number.parseFloat(ticker)+Number.parseFloat(protocol_input_arguments[name].minimum)).toFixed(protocol_input_arguments[name].multipleOf.countDecimals());
+                 			       }
+                			        return Number.parseFloat(protocol_input_arguments[name].minimum).toFixed(protocol_input_arguments[name].multipleOf.countDecimals());
+             			    }
+              			    else if (check_me === help_spac) 
+              			    { 
+            			   	help_spac = Number.parseFloat(Number.parseFloat(help_spac)+Number.parseFloat(ticker)).toFixed(protocol_input_arguments[name].multipleOf.countDecimals()); 
+            			   	return check_me
+              			    }
+              			    else if (check_me === Number.parseFloat( protocol_input_arguments[name].maximum).toFixed(protocol_input_arguments[name].multipleOf.countDecimals())) 	
+              			    {
+               			        return Number.parseFloat( protocol_input_arguments[name].maximum).toFixed(protocol_input_arguments[name].multipleOf.countDecimals())
+              			    }
+              			    else 
+               			    { 
+               			        return ""
+              			    }
   	    			},
             		onChange: function(value) {
-                		console.log("QQQQQQQQQQQQQQQQQQ "+value)
-                		$('#'+name).prop("value", value)
-                		onInputChanged()
+                		//console.log("QQQQQQQQQQQQQQQQQQ "+value)
+                		       add_relation(name,value);
+                		       onInputChanged()
            		},
 	   		onMove: function(value)
 			{
 				// var helper = NumberparseFloat(value).toFixed(2);
-				$('#'+name).val(value);
-			}
+				add_relation(name,value);
+			} 
+
         		})
         	$('#'+name).change(function() {
             		if($(this).val() > protocol_input_arguments[name].maximum)
@@ -536,15 +838,14 @@ function configure_slider(name){
 	}
     }
 	
-function configure_radio() {
-         $('.ui.radio.checkbox').checkbox();
-         gas_selector = $('#radio').find('[name="frequency"]:checked').val();
-         console.log(gas_selector)
-         if (gas_selector === undefined){
-                 console.log("error")
-                 gas_selector = 1
-            }
+function configure_radio(name_button) {
+         
+         
+         val = $('#'+name_button).find('[value='+protocol_input_arguments[name_button].default+']:checked').val();
 
+         console.log(name_button)
+         console.log(protocol_input_arguments[name_button].default)
+         console.log(val)
 }
 
 let discharge = 0; 
