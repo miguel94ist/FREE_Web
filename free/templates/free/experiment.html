@@ -171,8 +171,8 @@
                 <div class="ui green button" onclick="submit_experiment()" id="startButton">{% trans 'Submit'%}</div>
                 <div class="ui orange button" id="reloadButton" onclick="reloadInputValues()">{% trans 'Reload Values'%}</div>
                 <div class="ui orange button" id="resetButton" onclick="resetInputValues()">{% trans 'Reset to default'%}</div>
-            {% if not STRIPPED %}
                 <div class="ui green button" id="createNewExpButton" onclick="gotoCreateExecution()">{% trans 'Create New Execution'%}</div>
+            {% if not STRIPPED %}
                 <div class="ui red button" id="deleteButton" onclick="deleteExecution()">{% trans 'Delete'%} {% trans 'Execution'%}</div>
                 <div class="ui red button" id="deleteResultsButton" onclick="deleteExecution()">{% trans 'Delete'%} {% trans 'Results'%}</div>
             {% endif %}
@@ -223,7 +223,12 @@ $( window ).on( "unload",function() {
 
 
 function gotoCreateExecution(){
-    window.location.href = '/execution/create/'+current_execution.apparatus+'/'+current_execution.protocol.id
+    {% if not STRIPPED %}
+        window.location.href = '/execution/create/'+current_execution.apparatus+'/'+current_execution.protocol.id
+    {% else %}
+        window.location.href = '/execution/create/'+current_execution.apparatus+'/'+current_execution.protocol.id+'/bare'
+   {% endif %}
+
 }
 
 
@@ -792,7 +797,11 @@ function create_experiment() {
     }).then(response => {
         // we should do a redirect to the new page.....
         // Original:
+{% if not STRIPPED %}
         window.location.href = '/execution/'+String(response.data.id)
+{% else %}
+window.location.href = '/execution/'+String(response.data.id)+'/bare'
+{% endif %}
         // Rossa Version: 
         //window.history.pushState({}, '', window.location.origin+'/execution/'+String(response.data.id));
         current_execution = response.data;

@@ -15,7 +15,7 @@ from lti_provider.mixins import LTIAuthMixin, LTILoggedInMixin
 from lti_provider.models import LTICourseContext
 from pylti.common import LTIPostMessageException, post_message
 from django.apps import apps
-
+from free.models import Execution
 
 try:
     from django.urls import reverse
@@ -109,10 +109,18 @@ class LTIRoutingView(LTIAuthMixin, View):
                 request.POST.get('custom_quiz_url'),))
             print("url", url)
         elif request.POST.get('custom_experiment',None) is not None:
-            app_url = "free:execution-create"
-            url = reverse(app_url,args=(
-                request.POST.get('custom_apparatus_id'),
-                request.POST.get('custom_protocol_id')))
+            current_apparatus = request.POST.get('custom_apparatus_id')
+            current_protocol = request.POST.get('custom_protocol_id')
+            try:
+                last_experiment = Execution.objects.filter(user=request.user, protocol_id=current_protocol, apparatus_id=current_apparatus).order_by("-id")[0]
+                print(last_experiment.id)
+                app_url = "free:stripped-execution"
+                url = reverse(app_url,args=[last_experiment.id])
+            except:
+                app_url = "free:stripped-execution-create"
+                url = reverse(app_url,args=(
+                    current_apparatus,
+                    current_protocol))
             print("url", url)
         elif settings.LTI_TOOL_CONFIGURATION.get('new_tab'):
             url = reverse('lti_provider:lti-landing-page')
