@@ -26,9 +26,14 @@ class ExecutionsDeleteOlder(PermissionRequiredMixin,APIView):
     permission_required = 'user.is_supersuser'
     def delete(self, *args, **kwargs):
             days_old = kwargs['days']
+            opt = kwargs['opt']
             if(days_old< 30):
                 return Response({'error': 'You can only delete Executions older than 30 days.'}, status = 400)
-            Execution.objects.filter(created_at__lte= (date.today()- timedelta(days=days_old))).delete()
+            execution_list = Execution.objects.filter(created_at__lte= (date.today()- timedelta(days=days_old)))
+            if opt == 'incomplete':
+                execution_list = execution_list.exclude(status='F')
+            for e in execution_list:
+                e.delete()
             return Response(status = 200)
 
 
@@ -40,19 +45,34 @@ class ExperimentCleanUpView(LoginRequiredMixin, PermissionRequiredMixin,Template
     permission_required = 'user.is_supersuser'
     def get_context_data(self, **kwargs):          
         context = super().get_context_data(**kwargs)       
-        experiment_dates = Execution.objects.annotate(time_dif=F('created_at')-date.today()).order_by('time_dif').values('time_dif').annotate(total=Count('time_dif'))
-        exec_creation_dates = []
-        exec_creation_count = []
+        finished_experiment_dates = Execution.objects.filter(status='F').annotate(time_dif=F('created_at')-date.today()).order_by('time_dif').values('time_dif').annotate(total=Count('time_dif'))
+        finished_exec_creation_dates = []
+        finished_exec_creation_count = []
         
-        for r in experiment_dates :
+        for r in finished_experiment_dates :
             if r['time_dif'].days<=0:
-                exec_creation_dates.append(-r['time_dif'].days)
-                exec_creation_count.append(r['total'])
-        print(exec_creation_dates)
-        print(exec_creation_count)
+                finished_exec_creation_dates.append(-r['time_dif'].days)
+                finished_exec_creation_count.append(r['total'])
+        print(finished_exec_creation_dates)
+        print(finished_exec_creation_count)
 
-        context['executions_creation_dates'] =  exec_creation_dates
-        context['executions_creation_count'] =  exec_creation_count
+        context['finished_executions_creation_dates'] =  finished_exec_creation_dates
+        context['finished_executions_creation_count'] =  finished_exec_creation_count
+
+        non_finished_experiment_dates = Execution.objects.exclude(status='F').annotate(time_dif=F('created_at')-date.today()).order_by('time_dif').values('time_dif').annotate(total=Count('time_dif'))
+        non_finished_exec_creation_dates = []
+        non_finished_exec_creation_count = []
+        
+        for r in non_finished_experiment_dates :
+            if r['time_dif'].days<=0:
+                non_finished_exec_creation_dates.append(-r['time_dif'].days)
+                non_finished_exec_creation_count.append(r['total'])
+        print(non_finished_exec_creation_dates)
+        print(non_finished_exec_creation_count)
+
+        context['non_finished_executions_creation_dates'] =  non_finished_exec_creation_dates
+        context['non_finished_executions_creation_count'] =  non_finished_exec_creation_count
+
 
         return context
 
