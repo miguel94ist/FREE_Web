@@ -1,18 +1,123 @@
 {% extends base %}
 {% load i18n %}
+{% load static %}
 
 {% load quiz_tags %}
+
+{% block headscript%}
+	<script id="csrf_token" type="application/json">{{csrf_token}}</script>
+	{{apparatus.config|json_script:"apparatus-config"}}
+	{{apparatus.id|json_script:"apparatus-id"}}
+	{{protocol.config|json_script:"protocol-config"}}
+	{{protocol.id|json_script:"protocol-id"}}
+	{{execution_json|json_script:"execution-config"}}
+	{{final_result|json_script:"final-result"}}
+	{{quiz.id|json_script:"quiz-id"}}
+
+	<script>
+		X_CSRFToken = document.getElementById('csrf_token').textContent
+
+		var apparatus_id = JSON.parse(document.getElementById('apparatus-id').textContent);
+		var protocol_id = JSON.parse(document.getElementById('protocol-id').textContent);
+		var current_execution = JSON.parse(document.getElementById('execution-config').textContent);
+		var quiz_id = JSON.parse(document.getElementById('quiz-id').textContent);
+
+	</script>
+
+{% endblock %}
+
+{% block head %}
+
+    <!-- datatables -->
+    <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.11.5/js/dataTables.semanticui.min.js"></script>
+
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/dataTables.semanticui.min.css">
+
+
+    <!-- datatables  buutons (copy , csv excel)-->
+    <script src="https://cdn.datatables.net/buttons/2.2.2/js/dataTables.buttons.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.semanticui.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.html5.min.js"></script>
+
+    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.2.2/css/buttons.semanticui.min.css">
+
+
+    <!-- Video -->
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/webrtc-adapter/8.0.0/adapter.min.js" ></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/spin.js/2.3.2/spin.min.js"></script>
+
+
+    {% block experiment_head %}
+    {% endblock %} 
+
+
+{% endblock %}  
+
+
 
 {% block title %} {{ quiz.title }} {% endblock %}
 {% block description %} {{ quiz.title }} - {{ quiz.description }} {% endblock %}
 
+
 {% block content %}
 
 
-{% if user.is_authenticated %}
-  <p>{% trans "You have already sat this exam and only one sitting is permitted" %}.</p>
-{% else %}
-  <p>{% trans "This exam is only accessible to signed in users" %}.</p>
-{% endif %}
+<div class="right floated thirteen wide computer sixteen wide phone column"  id="content">
+
+	<div class="ui container">
+
+		<h1>  <h1>You've finished the quiz    {{quiz.title}}</h1>
+
+	</div> 
+	<div class="ui  container ">
+		<div id="quiz_tab" class="ui top attached tabular menu">
+			<a class=" item" id="description-tab-slip" data-tab="description-tab">{% trans 'Description' %}</a>
+			<a class="item active" id="result-tab-slip" data-tab="result-tab">{% trans 'Results'%}</a>
+		</div>
+
+	
+		<div class="ui bottom attached tab segment" data-tab="description-tab" >
+			<div class="ui grid" >
+				<div class="ten wide column ">
+					{{quiz.description}}
+				</div>
+	
+			</div>  
+		</div>
+
+
+		<div class="ui bottom attached tab segment active" data-tab="result-tab" >
+			<div class="ui grid" >
+				<div class="ten wide column ">
+
+          
+      
+          {% if user.is_authenticated %}
+          <p>{% trans "You have already did this quiz and only one execution is permitted" %}.</p>
+        {% else %}
+          <p>{% trans "This exam is only accessible to signed in users" %}.</p>
+        {% endif %}
+        
+          
+        
+        
+
+
+        </div>
+			</div>
+		</div>  
+	</div>
+</div>
+
 
 {% endblock %}
+
+{% block script %}
+<script type='text/javascript'>
+  document.addEventListener("DOMContentLoaded", () => {
+    $('.tabular.menu .item').tab();                  
+  });
+</script>
+
+{% endblock%}

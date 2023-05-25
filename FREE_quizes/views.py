@@ -222,17 +222,16 @@ class QuizTake(FormView):
                                                         self.quiz)
             else:
                 score_send = self.sitting.get_percent_correct/100
-                context += {
-                    'quiz': self.quiz,
-                    'score': self.sitting.get_current_score,
-                    'max_score': self.sitting.right_max_score,
-                    'percent': self.sitting.get_percent_correct,
-                    'sitting': self.sitting,
-                    'score_send': score_send,
-                    'app_name': __package__.rsplit('.', 1)[-1]
-                }
+                context['quiz']= self.quiz
+                context['score']= self.sitting.get_current_score
+                context['max_score']= self.sitting.right_max_score
+                context['percent']= self.sitting.get_percent_correct
+                context['sitting']= self.sitting
+                context['score_send']= score_send
+                context['app_name']= __package__.rsplit('.', 1)[-1]
+                
 
-                print("results:",results)
+                print("context:",context)
                 print("app name:",__package__.rsplit('.', 1)[-1])
                 return render(request, self.not_submited_template_name, context)
         else:
