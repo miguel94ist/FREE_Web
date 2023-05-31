@@ -635,6 +635,11 @@ class Question(models.Model):
                                null=True,
                                verbose_name=_("Figure"))
 
+    title = models.CharField(max_length=30,
+                               blank=True,
+                               help_text=_("Enter a small description of the question"),
+                               verbose_name=_('Question Title'))
+
     content = models.CharField(max_length=1000,
                                blank=False,
                                help_text=_("Enter the question text that "
@@ -664,6 +669,6 @@ class Question(models.Model):
         ordering = [F('priority').asc(nulls_last=True)]
 
     def __str__(self):
-        return self.content
+        return self.title
     def question_type(self):
         pass

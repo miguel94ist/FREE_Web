@@ -62,9 +62,9 @@ class CategoryAdmin(admin.ModelAdmin):
 
 
 class MCQuestionAdmin(SummernoteModelAdmin, TabbedTranslationAdmin):
-    list_display = ('content', 'category', )
+    list_display = ('title', 'content', 'category', )
     list_filter = ('category',)
-    fields = ('content', 'evaluated', 
+    fields = ('title', 'content', 'evaluated', 
               'figure',  'explanation', 'priority', 'answer_order')
 
     search_fields = ('content', 'explanation')
@@ -82,25 +82,25 @@ class ProgressAdmin(admin.ModelAdmin):
 
 
 class TFQuestionAdmin(SummernoteModelAdmin, TabbedTranslationAdmin):
-    list_display = ('content', 'category', )
+    list_display = ('title', 'content', 'category', )
     list_filter = ('category',)
-    fields = ('content',  'evaluated', 
+    fields = ('title', 'content',  'evaluated', 
               'figure',  'explanation','priority', 'correct',)
 
     search_fields = ('content', 'explanation')
     summernote_fields = ('content')
 
 class EssayQuestionAdmin(SummernoteModelAdmin, TabbedTranslationAdmin):
-    list_display = ('content', 'category', )
+    list_display = ('title', 'content', 'category', )
     list_filter = ('category',)
-    fields = ('content',  'evaluated',   'explanation', 'verif_function','priority','decimal_precision')
+    fields = ('title', 'content',  'evaluated',   'explanation', 'verif_function','priority','decimal_precision')
     search_fields = ('content', 'explanation')
     summernote_fields = ('content',   'explanation')
 
 class  Experiment_ExecutionAdmin(SummernoteModelAdmin, TabbedTranslationAdmin):
-    list_display = ('content', 'category', )
+    list_display = ('title', 'content', 'category', )
     list_filter = ('category',)
-    fields = ('content', 'category', 'sub_category',  'evaluated', 'explanation', 'priority')
+    fields = ('title', 'content', 'category', 'sub_category',  'evaluated', 'explanation', 'priority')
     search_fields = ('content', 'explanation')
 
 class SittingAdmin(admin.ModelAdmin):

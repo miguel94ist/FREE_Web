@@ -97,8 +97,6 @@ class Essay_Question(Question):
     def answer_choice_to_string(self, guess):
         return str(guess)
 
-    def __str__(self):
-        return self.content
 
 
 

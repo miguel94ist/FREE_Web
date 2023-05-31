@@ -8,7 +8,7 @@ class QuizTranslationOptions(TranslationOptions):
 translator.register(Quiz, QuizTranslationOptions)
 
 class QuestionTranslationOptions(TranslationOptions):
-    fields = ('content','explanation',)
+    fields = ('title', 'content','explanation',)
 translator.register(Question, QuestionTranslationOptions)
 
 class Experiment_ExecutionTranslationOptions(TranslationOptions):
