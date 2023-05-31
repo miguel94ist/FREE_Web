@@ -147,7 +147,8 @@ class Quiz(models.Model):
                     " in the quiz list and can only be"
                     " taken by users who can edit"
                     " quizzes."))
-
+    visible = models.BooleanField(_('Visible'), default=False, blank=False)
+    
     def save(self, force_insert=False, force_update=False, *args, **kwargs):
         self.url = re.sub('\s+', '-', self.url).lower()
 

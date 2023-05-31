@@ -49,7 +49,7 @@ class QuizListTable(Table):
 class QuizListView(SingleTableView):
     template_name = 'FREE_quizes/quiz_list.html'
     table_class = QuizListTable
-    queryset = Quiz.objects.all().filter(draft=False)
+    queryset = Quiz.objects.all().filter(draft=False, visible=True)
 
 class SittingListTable(Table):
     quiz_title = Column(accessor='quiz.title',verbose_name='Quiz Title')
