@@ -102,6 +102,7 @@ class  Experiment_ExecutionAdmin(SummernoteModelAdmin, TabbedTranslationAdmin):
     list_filter = ('category',)
     fields = ('title', 'content', 'category', 'sub_category',  'evaluated', 'explanation', 'priority')
     search_fields = ('content', 'explanation')
+    summernote_fields = ('content',   'explanation')
 
 class SittingAdmin(admin.ModelAdmin):
     list_display =('user','complete')
