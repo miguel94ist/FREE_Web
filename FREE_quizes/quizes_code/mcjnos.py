@@ -1,7 +1,7 @@
-def verify_mc(current_question, user_answer, decimal_places, current_quiz, execution):
-    print(current_question, user_answer, decimal_places, current_quiz, execution)
-    print(execution.result_set.all()[0].result_type)
-    print(execution.result_set.all()[0].value)
+def verify_mc(current_question, user_answer, decimal_places, current_quiz, execution, all_executions):
+#    print(current_question, user_answer, decimal_places, current_quiz, execution)
+#    print(execution.result_set.all()[0].result_type)
+#    print(execution.result_set.all()[0].value)
     if int(user_answer) == 12:
         return True
     else:

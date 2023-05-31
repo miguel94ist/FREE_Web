@@ -211,6 +211,7 @@ class QuizTake(FormView):
             context['base'] = "free/base_stripped.html"
             context['lti'] = True
         else:
+            context['base'] = "free/base.html"
             context['lti'] = False
 
 
@@ -290,20 +291,20 @@ class QuizTake(FormView):
                 random_exec = self.get_random_execution(context['protocol'])
                 context['execution_id'] = random_exec.pk
             else:
-                if not self.sitting.execution:
+                if not self.sitting.current_execution:
                     config_generator = JSF(context['protocol'].config)
                     config = config_generator.generate()
                     context['sample_config'] = config
                     context['question_type'] = "CREATE"
                 else:
                     context['question_type'] = "FETCH"
-                    context['execution_id'] = self.sitting.execution
+                    context['execution_id'] = self.sitting.current_execution
         else:
             context['question_type'] = self.question.question_type()
             pass
 
         context['quiz'] = self.quiz
-        context['execution'] = self.sitting.execution
+        context['execution'] = self.sitting.current_execution
         if self.question.__class__ is Essay_Question:       
             context['decimal_cases'] = self.question.decimal_precision
 
@@ -320,8 +321,8 @@ class QuizTake(FormView):
             context['previous'] = self.previous
         if hasattr(self, 'progress'):
             context['progress'] = self.progress
-        if self.sitting.execution != None:
-            context['execution_id'] = self.sitting.execution.id
+        if self.sitting.current_execution != None:
+            context['execution_id'] = self.sitting.current_execution.id
         context['execution_json'] = {}
         context['final_result'] = {}
         #self.sitting.decimal_precision = random.randint(3,7)
@@ -337,15 +338,17 @@ class QuizTake(FormView):
                 guess = None
                 is_correct = True
                 self.sitting.add_execution(execution_id)
-
+#self.sitting.finished_executions.add(self.sitting.current_execution)
+#self.sitting.current_execution = None
                 self.sitting.add_user_answer(self.question, guess)
                 self.sitting.remove_first_question()
             else:
-                if self.sitting.execution_id and self.sitting.execution.status == 'F':
+                if self.sitting.current_execution and self.sitting.current_execution.status == 'F':
                     guess = None
                     is_correct = True
                     progress.update_score(self.question, 1, 1)
-
+                    self.sitting.finished_executions.add(self.sitting.current_execution)
+                    self.sitting.current_execution = None
                     self.sitting.add_user_answer(self.question, guess)
                     self.sitting.remove_first_question()
                 else:
@@ -363,7 +366,7 @@ class QuizTake(FormView):
                 random_exec.pk = None
                 random_exec.user = self.sitting.user
                 random_exec.save()
-                self.sitting.execution = random_exec
+                self.sitting.current_execution = random_exec
                 
                 random_result.pk = None
                 random_result.execution = random_exec
@@ -371,7 +374,8 @@ class QuizTake(FormView):
 
             if self.question.__class__ is Essay_Question:
                 is_correct = (
-                    self.question.check_if_correct(guess,self.quiz, self.sitting.execution
+                    #self.sitting.finished_executions.order_by("id")
+                    self.question.check_if_correct(guess,self.quiz, self.sitting.finished_executions.order_by("id")
                                                 ,self.question.decimal_precision))
             else:
                 is_correct = self.question.check_if_correct(guess)
@@ -505,7 +509,7 @@ class QuizTake(FormView):
     def form_valid_anon(self, form):
         guess = form.cleaned_data['answer']
         is_correct = (
-            self.question.check_if_correct(guess,self.sitting.execution))
+            self.question.check_if_correct(guess,self.sitting.current_execution))
 
         if is_correct:
             self.request.session[self.quiz.anon_score_id()] += 1

@@ -409,13 +409,15 @@ class Sitting(models.Model):
         verbose_name=_("Quiz"), 
         on_delete=models.CASCADE)
 
-    execution = models.ForeignKey(
+    current_execution = models.ForeignKey(
         Execution,
         related_name='%(app_label)s_%(class)s_execution',
         verbose_name=_("Execution"), 
         blank = True, 
         null=True, 
         on_delete=models.SET_NULL)
+
+    finished_executions = models.ManyToManyField(Execution)
 
     question_order = models.CharField(
         max_length=1024,
@@ -605,7 +607,7 @@ class Sitting(models.Model):
     
     def add_execution(self, execution_id):
         current_execution = Execution.objects.get(pk=execution_id)
-        self.execution = current_execution
+        self.current_execution = current_execution
         self.save()
         pass
 

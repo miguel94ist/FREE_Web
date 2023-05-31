@@ -14,8 +14,9 @@ from FREE_quizes.quizes_code import *
 from model_utils.managers import InheritanceManager
 
 from .quiz_models import Question
-from free.models import Result
+from free.models import Result, Execution
 from free.views.api import ResultSerializer
+
 import importlib
 
 
@@ -36,7 +37,6 @@ class Experiment_Execution(Question):
         max_length=6,
         choices=RetrieveMethod.choices,
     )
-
     class Meta:
         verbose_name = _("Experiment Execution")
         verbose_name_plural = _("Experiment Executions")
@@ -71,7 +71,7 @@ class Essay_Question(Question):
         return "ESSAY"
 
 
-    def check_if_correct(self, user_answer,  current_quiz, execution, decimal_places):
+    def check_if_correct(self, user_answer,  current_quiz, executions, decimal_places):
 
         if user_answer is None:
             return False
@@ -80,8 +80,8 @@ class Essay_Question(Question):
                 module = importlib.import_module('FREE_quizes.quizes_code')
                 m = getattr(module, current_quiz.url)
                 f = getattr(m, self.verif_function)
-    #            if_correct = self.outer_locals[self.verif_function](self,guess,  execution,decimal)
-                if_correct = f(self , user_answer, decimal_places, current_quiz, execution)
+                last_execution = executions.last()
+                if_correct = f(self , user_answer, decimal_places, current_quiz, last_execution, executions)
             else:
                 if_correct = True                                                  
         except KeyError:
