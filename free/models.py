@@ -40,6 +40,7 @@ class Apparatus(models.Model):
     last_online = models.DateTimeField(_('Last ping'), auto_now=True)
     image = models.ImageField(upload_to='apparatus/', default='apparatus/missing_image.jpg')
     parameters = models.JSONField(_('Parameters'), default=dict, blank=True)
+    visible = models.BooleanField(_('Visible'), default=False, blank=False)
 
     def __str__(self):
         return _('%(apparatus_type)s in %(location)s') % {'apparatus_type': self.apparatus_type.name, 'location': self.location}

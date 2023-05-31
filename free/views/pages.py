@@ -115,7 +115,7 @@ class ApparatusTable(Table):
 class ApparatusesView(LoginRequiredMixin,SingleTableView):
     template_name = 'free/apparatuses.html'
     table_class = ApparatusTable
-    queryset = Apparatus.objects.all()
+    queryset = Apparatus.objects.filter(visible=True)
 
 class ApparatusesRedirectNewExperiment(RedirectView):
     def get_redirect_url(self, *args, **kwargs):
