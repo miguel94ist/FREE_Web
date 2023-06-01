@@ -40,6 +40,23 @@ class Experiment_Execution(Question):
     class Meta:
         verbose_name = _("Experiment Execution")
         verbose_name_plural = _("Experiment Executions")
+    config_function = models.CharField(max_length=100,
+                               blank=True,
+                               help_text=_("Enter the name of the function"
+                                           "that will update the expertiment configuration"),
+                               verbose_name=_('Function name'))
+    
+    def update_experiment_input(self, config, current_quiz):
+        try:
+            module = importlib.import_module('FREE_quizes.quizes_code')
+            m = getattr(module, current_quiz.url)
+            f = getattr(m, self.config_function)
+            config = f(config)
+        except :
+            pass
+
+        return config
+
 
 
 def verify_mc():

@@ -98,9 +98,9 @@ class EssayQuestionAdmin(SummernoteModelAdmin, TabbedTranslationAdmin):
     summernote_fields = ('content',   'explanation')
 
 class  Experiment_ExecutionAdmin(SummernoteModelAdmin, TabbedTranslationAdmin):
-    list_display = ('title', 'content', 'category', )
+    list_display = ('title', 'content', 'category')
     list_filter = ('category',)
-    fields = ('title', 'content', 'category', 'sub_category',  'evaluated', 'explanation', 'priority')
+    fields = ('title', 'content', 'category', 'sub_category', 'config_function', 'evaluated', 'explanation', 'priority')
     search_fields = ('content', 'explanation')
     summernote_fields = ('content',   'explanation')
 

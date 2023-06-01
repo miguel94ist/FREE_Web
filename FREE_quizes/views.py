@@ -294,6 +294,7 @@ class QuizTake(FormView):
                 if not self.sitting.current_execution:
                     config_generator = JSF(context['protocol'].config)
                     config = config_generator.generate()
+                    config = self.question.update_experiment_input(config, self.quiz)
                     context['sample_config'] = config
                     context['question_type'] = "CREATE"
                 else:
