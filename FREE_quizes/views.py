@@ -299,13 +299,21 @@ class QuizTake(FormView):
                     context['question_type'] = "CREATE"
                 else:
                     context['question_type'] = "FETCH"
-                    context['execution_id'] = self.sitting.current_execution
+                    context['execution_id'] = self.sitting.current_execution.id
+                    context['execution'] = self.sitting.current_execution
         else:
             context['question_type'] = self.question.question_type()
+            if self.sitting.current_execution != None:
+                context['execution_id'] = self.sitting.current_execution.id
+                context['execution'] = self.sitting.current_execution
+            else:
+                if self.sitting.finished_executions.count()>0:
+                    context['execution_id'] = self.sitting.finished_executions.last().id
+                    context['execution'] = self.sitting.finished_executions.last()
+
             pass
 
         context['quiz'] = self.quiz
-        context['execution'] = self.sitting.current_execution
         if self.question.__class__ is Essay_Question:       
             context['decimal_cases'] = self.question.decimal_precision
 
@@ -322,8 +330,7 @@ class QuizTake(FormView):
             context['previous'] = self.previous
         if hasattr(self, 'progress'):
             context['progress'] = self.progress
-        if self.sitting.current_execution != None:
-            context['execution_id'] = self.sitting.current_execution.id
+
         context['execution_json'] = {}
         context['final_result'] = {}
         #self.sitting.decimal_precision = random.randint(3,7)
