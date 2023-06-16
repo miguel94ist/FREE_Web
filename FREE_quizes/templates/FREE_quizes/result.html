@@ -108,7 +108,7 @@
                       <br>
               <form action="{% url 'lti_provider:lti-post-grade'%}"  method="post">{% csrf_token %}
                 <label for="Submit Grade "></label>
-                <input type=hidden name="score" value="{{score_send}}">
+                <input type=hidden name="score" value="{{score_send|stringformat:".2f"}}">
                 <input type=hidden name="sitting_pk" value="{{sitting.pk}}">
                 <input type=hidden name="app_name" value="{{app_name}}">
                 <button class="ui button" type="submit">Submit grade</button>
@@ -132,13 +132,13 @@
               Quizz outcome
             </h2>
             <p>
-              {% trans "You answered" %} {{ score }} {% trans "questions correctly out of" %} {{ max_score }}, {% trans "giving you" %} {{ percent }} {% trans "percent correct" %}
+              {% trans "You answered" %} {{correct_answers}} {% trans "questions correctly out of" %} {{ max_score }}.
             </p>
             <h2>
               Exercises score
             </h2>
             <p>
-              {{ percent }} {% trans "percent correct" %}
+              The score of this exercise (taking into consideration the weigth of each question) is {{ percent|stringformat:".2f" }} {% trans "percent correct" %}
             </p>
             {% if quiz.pass_mark %}
             <p class="lead">{% autoescape off %}{{ sitting.result_message }}{% endautoescape %}</p>
@@ -176,6 +176,8 @@
               <tr>
                 <th>Question</th>
                 <th>Answer</th>
+                <th>Evaluated</th>
+                <th>weight</th>
                 <th>Correct</th>
                 <th>Explanation</th>
               </tr>
@@ -184,25 +186,35 @@
             {% for question in details %}
             <tr>
               <td>
-                {{ question.content }}
+                {% autoescape off %}{{ question.content }}{% endautoescape %}
               </td>
               <td>
                 {% autoescape off %}{{ question.ans }}{% endautoescape %}
               </td>
               <td>
-                {% if question.correct %}
-                <div class="well " style="background-color: #99edc3;">
-              {% else %}
-              <div class="well " style="background-color: #bc544b;">
-                {% endif %}
+                {{ question.evaluated }}
+              </td>
+              {% if question.evaluated %}
+                <td>
+                  {{ question.evaluationWeight }}
+                </td>
+                <td>
+                  {% if question.correct %}
+                    <div class="well " style="background-color: #99edc3;">
+                  {% else %}
+                    <div class="well " style="background-color: #bc544b;">
+                  {% endif %}
 
-                {{ question.correct }}
-                </div>
-              </td>
-              <td>
-                {% autoescape off %} {{ question.expl }}{% endautoescape %}
-              </td>
-        
+                    {{ question.correct }}
+                    </div>
+                </td>
+                <td>
+                  {% autoescape off %} {{ question.expl }}{% endautoescape %}
+                </td>
+                {% else %}
+                <td>  </td><td>  </td><td>  </td>
+
+                {% endif %}
               <hr>
             </tr>
 

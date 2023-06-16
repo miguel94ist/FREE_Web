@@ -347,6 +347,7 @@ class SittingManager(models.Manager):
                                   question_list=questions,
                                   incorrect_questions="",
                                   current_score=0,
+                                  total_weigth= 0,
                                   complete=False,
                                   user_answers='{}')
         return new_sitting
@@ -435,7 +436,9 @@ class Sitting(models.Model):
         verbose_name=_("Incorrect questions"),
         validators=[validate_comma_separated_integer_list])
 
+    correct_answers = models.IntegerField(verbose_name=_("Current Score"), default=0)
     current_score = models.IntegerField(verbose_name=_("Current Score"))
+    total_weigth = models.IntegerField(verbose_name=_("Current Score"))
 
     complete = models.BooleanField(default=False, blank=False,
                                    verbose_name=_("Complete"))
@@ -478,35 +481,26 @@ class Sitting(models.Model):
         self.question_list = others
         self.save()
 
-    def add_to_score(self, points):
-        self.current_score += int(points)
+    def add_to_score(self, points, weigth = 1):
+        if int(points) > 0:
+            self.correct_answers +=1
+        self.current_score += int(points) * weigth
+        self.total_weigth += weigth
         self.save()
 
     @property
     def get_current_score(self):
-        return self.current_score
+        if self.current_score > 0:
+            return self.current_score / self.total_weigth 
+        else:
+            return self.current_score
 
     def _question_ids(self):
         return [int(n) for n in self.question_order.split(',') if n]
 
     @property
     def get_percent_correct(self):
-        dividend = float(self.current_score)
-        divisor = len(self._question_ids())
-        for i in self._question_ids():
-            if not Question.objects.get(pk=i).evaluated:
-                divisor -= 1
-        if divisor < 1:
-            return 0            # prevent divide by zero error
-
-        if dividend > divisor:
-            return 100
-        correct = int(round((dividend / divisor) * 100))
-
-        if correct >= 1:
-            return correct
-        else:
-            return 0
+        return self.get_current_score *100;
     
     def mark_quiz_complete(self):
         self.complete = True
@@ -631,6 +625,9 @@ class Question(models.Model):
 
     evaluated = models.BooleanField(default=True, blank=True,
                                    verbose_name=_("To be evaluated"))
+    evaluationWeight = models.PositiveIntegerField(default=1, blank=True,
+                                   verbose_name=_("Evaluation Weigth"))
+
 
     figure = models.ImageField(upload_to='uploads/%Y/%m/%d',
                                blank=True,

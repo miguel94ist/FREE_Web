@@ -223,6 +223,7 @@ class QuizTake(FormView):
                                                         self.quiz)
             else:
                 score_send = self.sitting.get_percent_correct/100
+                score_send = self.sitting.get_current_score
                 context['quiz']= self.quiz
                 context['score']= self.sitting.get_current_score
                 context['max_score']= self.sitting.right_max_score
@@ -230,7 +231,7 @@ class QuizTake(FormView):
                 context['sitting']= self.sitting
                 context['score_send']= score_send
                 context['app_name']= __package__.rsplit('.', 1)[-1]
-                
+                context['correct_answers'] = self.sitting.correct_answers
 
                 print("context:",context)
                 print("app name:",__package__.rsplit('.', 1)[-1])
@@ -389,9 +390,10 @@ class QuizTake(FormView):
                 is_correct = self.question.check_if_correct(guess)
 
             if is_correct is True:
-                self.sitting.add_to_score(1)
+                self.sitting.add_to_score(1, self.question.evaluationWeight)
                 progress.update_score(self.question, 1, 1)
             else:
+                self.sitting.add_to_score(0, self.question.evaluationWeight)
                 self.sitting.add_incorrect_question(self.question)
                 progress.update_score(self.question, 0, 1)
 
@@ -412,6 +414,7 @@ class QuizTake(FormView):
     def final_result_user(self):
         score_send = self.sitting.get_percent_correct/100
         answer = json.loads(self.sitting.user_answers)
+        correct_answers = self.sitting.correct_answers
         answered_questions = self.sitting._question_ids()
         incorrect_questions = self.sitting.get_incorrect_questions
         details = []
@@ -426,12 +429,15 @@ class QuizTake(FormView):
             q_details = {'id': q_id, 
                          'ans': q_answ,
                          'content': q.content,
+                         'evaluated': q.evaluated,
+                         'evaluationWeight': q.evaluationWeight,
                          'correct': q_correct, 
                          'expl': q.explanation}
             details.append(q_details)
         results = {
             'details': details,
             'quiz': self.quiz,
+            'correct_answers': correct_answers,
             'score': self.sitting.get_current_score, 
             'max_score': self.sitting.right_max_score,
             'percent': self.sitting.get_percent_correct,
