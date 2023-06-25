@@ -413,7 +413,15 @@ class Sitting(models.Model):
     current_execution = models.ForeignKey(
         Execution,
         related_name='%(app_label)s_%(class)s_execution',
-        verbose_name=_("Execution"), 
+        verbose_name=_("Current Execution"), 
+        blank = True, 
+        null=True, 
+        on_delete=models.SET_NULL)
+    last_execution = models.ForeignKey(
+        Execution,
+        related_name='%(app_label)s_%(class)s_last_execution',
+
+        verbose_name=_("Last Execution"), 
         blank = True, 
         null=True, 
         on_delete=models.SET_NULL)
@@ -602,6 +610,7 @@ class Sitting(models.Model):
     def add_execution(self, execution_id):
         current_execution = Execution.objects.get(pk=execution_id)
         self.current_execution = current_execution
+        self.last_execution = current_execution
         self.save()
         pass
 

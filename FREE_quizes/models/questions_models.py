@@ -88,7 +88,7 @@ class Essay_Question(Question):
         return "ESSAY"
 
 
-    def check_if_correct(self, user_answer,  current_quiz, executions, decimal_places):
+    def check_if_correct(self, user_answer,  current_quiz, last_execution, executions, decimal_places):
 
         if user_answer is None:
             return False
@@ -97,7 +97,6 @@ class Essay_Question(Question):
                 module = importlib.import_module('FREE_quizes.quizes_code')
                 m = getattr(module, current_quiz.url)
                 f = getattr(m, self.verif_function)
-                last_execution = executions.last()
                 if_correct = f(self , user_answer, decimal_places, current_quiz, last_execution, executions)
             else:
                 if_correct = True                                                  

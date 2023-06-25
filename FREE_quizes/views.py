@@ -384,7 +384,7 @@ class QuizTake(FormView):
             if self.question.__class__ is Essay_Question:
                 is_correct = (
                     #self.sitting.finished_executions.order_by("id")
-                    self.question.check_if_correct(guess,self.quiz, self.sitting.finished_executions.order_by("id")
+                    self.question.check_if_correct(guess,self.quiz, self.sitting.last_execution, self.sitting.finished_executions.order_by("id")
                                                 ,self.question.decimal_precision))
             else:
                 is_correct = self.question.check_if_correct(guess)
