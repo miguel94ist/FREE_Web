@@ -43,8 +43,8 @@ class Experiment_Execution(Question):
     config_function = models.CharField(max_length=100,
                                blank=True,
                                help_text=_("Enter the name of the function"
-                                           "that will update the expertiment configuration"),
-                               verbose_name=_('Function name'))
+                                           "that will update the default expertiment configuration"),
+                               verbose_name=_('Experiment default configuration function'))
     
     def update_experiment_input(self, config, current_quiz):
         try:
@@ -58,9 +58,35 @@ class Experiment_Execution(Question):
         return config
 
 
+    assessement_parameters_function = models.CharField(max_length=100,
+                               blank=True,
+                               help_text=_("Enter the name of the function"
+                                           "that will generate different parameters for the assessemnsts"),
+                               verbose_name=_('Experiment parameters function'))
 
-def verify_mc():
-    return True
+    def get_student_experiment_parameters(self, current_quiz, current_question):
+        try:
+            module = importlib.import_module('FREE_quizes.quizes_code')
+            m = getattr(module, current_quiz.url)
+            f = getattr(m, current_question.assessement_parameters_function)
+            parameters = f()
+            return parameters
+        except :
+            return None
+    def check_if_correct(self, current_execution, student_parameters):  
+        for param in student_parameters:
+            param_name = param['name']
+            student_value = current_execution.config[param['name']]
+            print(param['value'],  student_value)
+            if param['value'] !=  student_value:
+                print("wrong")
+                return False
+        return True
+            
+
+
+
+
 @python_2_unicode_compatible
 class Essay_Question(Question):
 

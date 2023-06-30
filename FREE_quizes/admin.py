@@ -100,7 +100,7 @@ class EssayQuestionAdmin(SummernoteModelAdmin, TabbedTranslationAdmin):
 class  Experiment_ExecutionAdmin(SummernoteModelAdmin, TabbedTranslationAdmin):
     list_display = ('title', 'content', 'category')
     list_filter = ('category',)
-    fields = ('title', 'content', 'category', 'sub_category', 'config_function', 'evaluated',  'evaluationWeight', 'explanation', 'priority')
+    fields = ('title', 'content','assessement_parameters_function', 'category', 'sub_category', 'config_function', 'evaluated',  'evaluationWeight', 'explanation', 'priority')
     search_fields = ('content', 'explanation')
     summernote_fields = ('content',   'explanation')
 

@@ -7,6 +7,17 @@ def verify_mc(current_question, user_answer, decimal_places, current_quiz, execu
     else:
         return False
 
+def exec2_parameters():
+    return [{'name': 'R', 
+             'description': 'radius',
+              'value': 5}
+            ]
+
+
+def f1(config):
+    config['Iteration'] = config['Iteration']/2
+    return config
+
 def area_approximation(self, guess, execution,decimal):
     if execution == None:
         return False

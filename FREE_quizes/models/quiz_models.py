@@ -417,6 +417,7 @@ class Sitting(models.Model):
         blank = True, 
         null=True, 
         on_delete=models.SET_NULL)
+    
     last_execution = models.ForeignKey(
         Execution,
         related_name='%(app_label)s_%(class)s_last_execution',
@@ -427,6 +428,8 @@ class Sitting(models.Model):
         on_delete=models.SET_NULL)
 
     finished_executions = models.ManyToManyField(Execution)
+
+    student_parameters = models.JSONField("Experiment Student Parameter", blank = True, null=True, default=None)
 
     question_order = models.CharField(
         max_length=1024,

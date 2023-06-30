@@ -93,47 +93,84 @@
 			{% if question_type == 'CREATE' %}
 			<div class="ui bottom attached tab segment active" data-tab="questions-tab" >
 				<div class="ui grid" >
-					<div class="ten wide column ">
-							{% autoescape off %}<p>{{ question.content }} </p> {% endautoescape %}
+					<div class="row">
+						<div class="ten wide column ">
+								{% autoescape off %}<p>{{ question.content }} </p> {% endautoescape %}
+								{% if execution_id %}
+									<form action="" method="POST" id="form">{% csrf_token %}
+										<input type=hidden name="question_id" value="{{ question.id }}">
+										<input type=hidden name="execution_id" id="form_execution_id" value="{{ execution_id }}">
+										<input type=hidden name="question_type" value="{{ question_type }}">
+										
+										<input type="submit" value="{% trans "Continue to Quiz" %}" class="ui disabled green button" id="continueButton" >
+
+									</form>
+								{% else %}
+									<form action="" method="POST" id="form">{% csrf_token %}
+										<input type=hidden name="question_id" value="{{ question.id }}">
+										<input type=hidden name="execution_id" id="form_execution_id" value="{{ execution_id }}">
+										<input type=hidden name="question_type" value="{{ question_type }}">
+									</form>
+				
+									<script type='text/javascript'>
+										document.addEventListener("DOMContentLoaded", () => {
+											create_experiment();
+										});
+									</script>
+							{% endif %}	
+						</div>
+						<div class="six wide column ">
+							{% if student_experiment_parameters %}
+								<h2> Required Experiment parameters</h2>
+									<p> please configure the expriment below with the following parameters</p>
+									<p>{{student_experiment_parameters}}</p>
+									<table class="ui celled table">
+										<thead>
+										  	<tr>
+												<th>id</th>
+												<th>Parameter</th>
+												<th>value</th>
+											</tr>
+										</thead>
+										<tbody>
+											{% for v in student_experiment_parameters %}
+											<tr>
+												<td >{{v.name}}</td> {{v.description}} {{v.value}}
+												<td >{{v.description}}</td>  {{v.value}}
+												<td >{{v.value}}</td>  											</tr>
+											{% endfor %}
+
+										</tbody>
+									  </table>
+
+									<p> Any parameter that is not in this table should be defined by the student.</p>
+
+								{% endif %}	
+						</div>
+					</div>
+					<div class="row">
+						<div class="ten wide column ">
 							<p> Please configure the experiment below. dont forget to save, submit and wait for its completion.</p>
-							{% if execution_id %}
-								<form action="" method="POST" id="form">{% csrf_token %}
-									<input type=hiddens name="question_id" value="{{ question.id }}">
-									<input type=hiddens name="execution_id" id="form_execution_id" value="{{ execution_id }}">
-									<input type=hiddens name="question_type" value="{{ question_type }}">
-									
-									<input type="submit" value="{% trans "Continue to Quiz" %}" class="ui disabled blue button" id="continueButton" >
-								</form>
-							{% else %}
-								<form action="" method="POST" id="form">{% csrf_token %}
-									<input type=hidden name="question_id" value="{{ question.id }}">
-									<input type=hidden name="execution_id" id="form_execution_id" value="{{ execution_id }}">
-									<input type=hidden name="question_type" value="{{ question_type }}">
-								</form>
-			
-								<script type='text/javascript'>
-									document.addEventListener("DOMContentLoaded", () => {
-										create_experiment();
-									});
-								</script>
-						{% endif %}	
+						</div>
 					</div>
 				</div>
 			</div>  
 			{% elif question_type == 'FETCH' %}
 			<div class="ui bottom attached tab segment active" data-tab="questions-tab" >
 				<div class="ui grid" >
-					<div class="ten wide column ">
-							{% autoescape off %}
-								<p>{{ question.content }} </p>
-							{% endautoescape %}
-							<form action="" method="POST" id="form">{% csrf_token %}
-							<input type=hidden name="question_id" value="{{ question.id }}">
-							<input type=hidden name="execution_id" id="form_execution_id" value="{{ execution_id }}">
-							<input type=hidden name="question_type" value="{{ question_type }}">
-							
-							<input type="submit" value="{% trans "Continue to Quiz" %}" class="ui disabled green button" id="continueButton" >
-							</form>
+					<div class="row">
+						<div class="ten wide column ">
+								{% autoescape off %}
+									<p>{{ question.content }} </p>
+								{% endautoescape %}
+								<form action="" method="POST" id="form">{% csrf_token %}
+								<input type=hidden name="question_id" value="{{ question.id }}">
+								<input type=hidden name="execution_id" id="form_execution_id" value="{{ execution_id }}">
+								<input type=hidden name="question_type" value="{{ question_type }}">
+								
+								<input type="submit" value="{% trans "Continue to Quiz" %}" class="ui disabled green button" id="continueButton" >
+								</form>
+						</div>
 					</div>
 				</div>
 			</div>  

@@ -293,13 +293,17 @@ class QuizTake(FormView):
                 context['execution_id'] = random_exec.pk
             else:
                 if not self.sitting.current_execution:
+                    student_experiment_parameters = self.question.get_student_experiment_parameters(self.quiz, self.question)
+                    context['student_experiment_parameters'] = student_experiment_parameters
+                    self.sitting.student_parameters = student_experiment_parameters
                     config_generator = JSF(context['protocol'].config)
                     config = config_generator.generate()
                     config = self.question.update_experiment_input(config, self.quiz)
                     context['sample_config'] = config
                     context['question_type'] = "CREATE"
                 else:
-                    context['question_type'] = "FETCH"
+                    context['student_experiment_parameters'] = self.sitting.student_parameters
+                    context['question_type'] = "CREATE"
                     context['execution_id'] = self.sitting.current_execution.id
                     context['execution'] = self.sitting.current_execution
         else:
@@ -348,14 +352,22 @@ class QuizTake(FormView):
                 is_correct = True
                 self.sitting.add_execution(execution_id)
 #self.sitting.finished_executions.add(self.sitting.current_execution)
-#self.sitting.current_execution = None
+                self.sitting.current_execution = None
                 self.sitting.add_user_answer(self.question, guess)
                 self.sitting.remove_first_question()
             else:
                 if self.sitting.current_execution and self.sitting.current_execution.status == 'F':
                     guess = None
-                    is_correct = True
-                    progress.update_score(self.question, 1, 1)
+                    if self.question.evaluated:
+                        is_correct = self.question.check_if_correct(self.sitting.current_execution, self.sitting.student_parameters) 
+                        if is_correct is True:
+                            self.sitting.add_to_score(1, self.question.evaluationWeight)
+                            progress.update_score(self.question, 1, 1)
+                        else:
+                            self.sitting.add_to_score(0, self.question.evaluationWeight)
+                            self.sitting.add_incorrect_question(self.question)
+                            progress.update_score(self.question, 0, 1)
+
                     self.sitting.finished_executions.add(self.sitting.current_execution)
                     self.sitting.current_execution = None
                     self.sitting.add_user_answer(self.question, guess)
@@ -376,7 +388,8 @@ class QuizTake(FormView):
                 random_exec.user = self.sitting.user
                 random_exec.save()
                 self.sitting.current_execution = random_exec
-                
+                self.sitting.save()
+
                 random_result.pk = None
                 random_result.execution = random_exec
                 random_result.save()
