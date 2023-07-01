@@ -122,21 +122,21 @@
 						<div class="six wide column ">
 							{% if student_experiment_parameters %}
 								<h2> Required Experiment parameters</h2>
-									<p> please configure the expriment below with the following parameters</p>
-									<p>{{student_experiment_parameters}}</p>
+									<p> Please configure the expriment below with the following parameters</p>
+									<!-- <p>{{student_experiment_parameters}}</p>-->
 									<table class="ui celled table">
 										<thead>
 										  	<tr>
-												<th>id</th>
+												<!-- <th>id</th> -->
 												<th>Parameter</th>
-												<th>value</th>
+												<th>Value</th>
 											</tr>
 										</thead>
 										<tbody>
 											{% for v in student_experiment_parameters %}
 											<tr>
-												<td >{{v.name}}</td> {{v.description}} {{v.value}}
-												<td >{{v.description}}</td>  {{v.value}}
+												<!-- <td >{{v.name}}</td> {{v.description}} {{v.value}} -->
+												<td >{{v.description}}</td>  <!--  {{v.value}} -->
                                                                                                 {% if v.label %}
 												    <td >{{v.label}}</td> 
                                                                                                 {%  else %}
