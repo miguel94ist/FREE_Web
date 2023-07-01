@@ -137,7 +137,12 @@
 											<tr>
 												<td >{{v.name}}</td> {{v.description}} {{v.value}}
 												<td >{{v.description}}</td>  {{v.value}}
-												<td >{{v.value}}</td>  											</tr>
+                                                                                                {% if v.label %}
+												    <td >{{v.label}}</td> 
+                                                                                                {%  else %}
+												    <td >{{v.value}}</td>
+                                                                                                {% endif %}
+     											</tr>
 											{% endfor %}
 
 										</tbody>
