@@ -651,7 +651,7 @@ class Question(models.Model):
                                help_text=_("Enter a small description of the question"),
                                verbose_name=_('Question Title'))
 
-    content = models.CharField(max_length=1000,
+    content = models.CharField(max_length=5000,
                                blank=False,
                                help_text=_("Enter the question text that "
                                            "you want displayed"),
