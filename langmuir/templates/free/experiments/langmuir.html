@@ -188,6 +188,7 @@
                 <th id="adc_value1">{% trans "Voltage [V]" %}</th>
                 <th id="adc_value2">{% trans "Current [uA]" %}</th>
                 <th id="adc_value3">{% trans "Pressure [Pa]" %}</th>
+                <th id="new_pressure_gauge">{% trans "VSR53USB [Pa]" %}</th>
             </tr>
         </thead>
     </table>
@@ -218,6 +219,11 @@ function process_final_data(data_line){
 
 }
 
+var label_pressure_gauge = ["PPT100","VSR53USB"]
+var color_ampl = ["blue","red"]
+let frist_time_plot = 0
+
+
 function process_experiment_data(data){
 	 //process_experiment_data_default(data);
 	//console.log("process_experiment_data");
@@ -236,7 +242,43 @@ function process_experiment_data(data){
 		data_value_p = data[line].value.map(data => parseFloat(data.adc_value3)*100).filter(function (element) { 
             		return element !== undefined;
           	});
-		process_partial_data(data_value_t,data_value_v,data_value_i,data_value_p);
+            
+                if ("new_pressure_gauge" in data[line].value[0]){
+		    data_value_p_new = data[line].value.map(data => parseFloat(data.new_pressure_gauge)*100).filter(function (element) { 
+            		return element !== undefined;
+          	    });
+                    console.log("newgauge")
+                }
+                else{
+                    console.log("not newgauge")
+                    data_value_p_new = "nodata"
+                }
+                if (frist_time_plot === 0 )
+                {
+                     if (data_value_p_new === "nodata")
+                     {
+                       number_data_set = 1
+                     }
+                     else{
+                       number_data_set = 2
+                     }
+                     for (let i = 0; i < number_data_set; i++){ 
+                         plot_pressure_time.data.datasets = plot_pressure_time.data.datasets.concat([{
+                                     label: label_pressure_gauge[i],
+                                     borderColor: color_ampl[i],
+                                     backgroundColor: color_ampl[i],
+                                     pointRadius:1,
+                                     showLine:true,
+                                     borderWidth:1,
+                                     data: [],
+                                 },
+                             ]);
+                     }
+                     frist_time_plot = 1
+                }
+
+                
+		process_partial_data(data_value_t,data_value_v,data_value_i,data_value_p,data_value_p_new);
 		table_insert_partial_data(data[line]);	
 		}	
 	}
@@ -257,16 +299,22 @@ function table_insert_partial_data(data){
 	console.log("ooo");
 
     data.value.map(data => {
-	row_data = []
+       row_data = []
+       i = 1
        col_id.forEach(c_id => {
-            if (c_id == "adc_value3"){
-                value_data_table=  String(parseFloat(data[c_id])*100);
+            if (c_id === "adc_value3" || c_id === "new_pressure_gauge"){
+                value_data_table=  String((parseFloat(data[c_id])*100).toFixed(2));
             }
             else{
                 value_data_table= data[c_id]
             }
+                i=i+1
        		row_data.push(value_data_table)
 	});
+       if (i === 3)
+       {
+          row_data.push("-")
+       }
        t.row.add(row_data)
        return row_data
 	} );
@@ -284,7 +332,8 @@ function table_insert_partial_data(data){
 
 
 
-function process_partial_data(time,voltage,current ,pressure){
+
+function process_partial_data(time,voltage,current ,pressure, new_pressure){
     //voltage = parseFloat(data_value_v) 
     //current = parseFloat(data_value_)
     //pressure = parseFloat(data_line.adc_value3)
@@ -316,7 +365,13 @@ function process_partial_data(time,voltage,current ,pressure){
 	plot_pressure_time.data.labels = plot_pressure_time.data.labels.concat(time);
 
 	plot_pressure_time.data.datasets[0].data = plot_pressure_time.data.datasets[0].data.concat(pressure);
-
+        if (new_pressure == "nodata")
+        {
+           
+        }
+        else{
+            plot_pressure_time.data.datasets[1].data = plot_pressure_time.data.datasets[1].data.concat(new_pressure);
+        }
 	plot_pressure_time.update();
 
 
@@ -476,16 +531,15 @@ function on_ready_experiment_UI(){
         type: 'line',
         labels: [],
         data: {
-            datasets: [{
-                borderColor: "blue",
-                backgroundColor: "blue",
-                data: [ ],
-            },],
+            datasets: [],
         },
         options: {
             plugins: {
                 legend: {
-                    display: false,
+                    display: true,
+                    align: 'center',
+                    position: 'right',
+
                 }, 
                 autocolors: false,
             },
