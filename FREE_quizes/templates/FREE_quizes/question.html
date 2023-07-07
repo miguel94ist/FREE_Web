@@ -97,6 +97,8 @@
 						<div class="ten wide column ">
 								{% autoescape off %}<p>{{ question.content }} </p> {% endautoescape %}
 								{% if execution_id %}
+								<div class="ui grid" >
+								<div class="four wide column ">
 									<form action="" method="POST" id="form">{% csrf_token %}
 										<input type=hidden name="question_id" value="{{ question.id }}">
 										<input type=hidden name="execution_id" id="form_execution_id" value="{{ execution_id }}">
@@ -105,6 +107,15 @@
 										<input type="submit" value="{% trans "Continue to Quiz" %}" class="ui disabled green button" id="continueButton" >
 
 									</form>
+								</div>
+								<div class="four wide column ">
+									<form action="" method="POST" id="form">{% csrf_token %}
+										<input type=hidden name="restart_execution" value="true">
+										<input type="submit" value="{% trans "Restart Execution" %}" class="ui disabled orange button" id="restartButton" >
+
+									</form>
+								</div>
+							</div>
 								{% else %}
 									<form action="" method="POST" id="form">{% csrf_token %}
 										<input type=hidden name="question_id" value="{{ question.id }}">
@@ -156,6 +167,8 @@
 					<div class="row">
 						<div class="ten wide column ">
 							<p> Please configure the experiment below. dont forget to save, submit and wait for its completion.</p>
+							<p> If you configured the experiment execution incorrectly, or you did no get the expected results, you can restart a new execution.</p>
+
 						</div>
 					</div>
 				</div>
@@ -288,6 +301,7 @@
 				console.log(window.frames[0].window.execution_status, window.frames[0].window.executionID)
 				if (aux == 'F'){
 					$("#continueButton").removeClass("disabled");
+					$("#restartButton").removeClass("disabled");
 				}
 			}
 

@@ -357,21 +357,29 @@ class QuizTake(FormView):
                 self.sitting.remove_first_question()
             else:
                 if self.sitting.current_execution and self.sitting.current_execution.status == 'F':
-                    guess = None
-                    if self.question.evaluated:
-                        is_correct = self.question.check_if_correct(self.sitting.current_execution, self.sitting.student_parameters) 
-                        if is_correct is True:
-                            self.sitting.add_to_score(1, self.question.evaluationWeight)
-                            progress.update_score(self.question, 1, 1)
-                        else:
-                            self.sitting.add_to_score(0, self.question.evaluationWeight)
-                            self.sitting.add_incorrect_question(self.question)
-                            progress.update_score(self.question, 0, 1)
+                    try:
+                        if self.request.POST['restart_execution'] == 'true':
+                            self.sitting.current_execution.delete()
+                            self.sitting.current_execution = None
+                            self.sitting.last_execution = None
+                            self.sitting.save()
+                            print('restart execution')
+                    except: 
+                        guess = None
+                        if self.question.evaluated:
+                            is_correct = self.question.check_if_correct(self.sitting.current_execution, self.sitting.student_parameters) 
+                            if is_correct is True:
+                                self.sitting.add_to_score(1, self.question.evaluationWeight)
+                                progress.update_score(self.question, 1, 1)
+                            else:
+                                self.sitting.add_to_score(0, self.question.evaluationWeight)
+                                self.sitting.add_incorrect_question(self.question)
+                                progress.update_score(self.question, 0, 1)
 
-                    self.sitting.finished_executions.add(self.sitting.current_execution)
-                    self.sitting.current_execution = None
-                    self.sitting.add_user_answer(self.question, guess)
-                    self.sitting.remove_first_question()
+                        self.sitting.finished_executions.add(self.sitting.current_execution)
+                        self.sitting.current_execution = None
+                        self.sitting.add_user_answer(self.question, guess)
+                        self.sitting.remove_first_question()
                 else:
                     guess = None
                     is_correct = True
