@@ -20,9 +20,9 @@ urlpatterns = [
         view=SittingListView.as_view(),
         name='quiz_incomplete'),
 
-    url(r'^category/$',
-        view=CategoriesListView.as_view(),
-        name='quiz_category_list_all'),
+#    url(r'^category/$',
+#        view=CategoriesListView.as_view(),
+#        name='quiz_category_list_all'),
 
     url(r'^category/(?P<category_name>[\w|\W-]+)/$',
         view=ViewQuizListByCategory.as_view(),

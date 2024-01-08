@@ -132,13 +132,13 @@
               Quizz outcome
             </h2>
             <p>
-              {% trans "You answered" %} {{correct_answers}} {% trans "questions correctly out of" %} {{ max_score }}.
+              {% trans "You answered" %} {{correct_questions}} {% trans "questions correctly out of" %} {{ total_questions }}.
             </p>
             <h2>
               Exercises score
             </h2>
             <p>
-              The score of this exercise (taking into consideration the weigth of each question) is {{ percent|stringformat:".2f" }} {% trans "percent correct" %}
+              The score of this exercise (taking into consideration the weight of each question) is {{ percent_score|stringformat:".2f" }} {% trans "percent correct" %}
             </p>
             {% if quiz.pass_mark %}
             <p class="lead">{% autoescape off %}{{ sitting.result_message }}{% endautoescape %}</p>
@@ -186,30 +186,30 @@
             {% for question in details %}
             <tr>
               <td>
-                {% autoescape off %}{{ question.content }}{% endautoescape %}
+                {% autoescape off %}{{ question.question.content }}{% endautoescape %}
               </td>
               <td>
-                {% autoescape off %}{{ question.ans }}{% endautoescape %}
+                {% autoescape off %}{{ question.answer.answer }}{% endautoescape %}
               </td>
               <td>
-                {{ question.evaluated }}
+                {{ question.answer.evaluated }}
               </td>
-              {% if question.evaluated %}
+              {% if question.answer.evaluated %}
                 <td>
-                  {{ question.evaluationWeight }}
+                  {{ question.answer.evaluationWeight }}
                 </td>
                 <td>
-                  {% if question.correct %}
+                  {% if question.answer.grade %}
                     <div class="well " style="background-color: #99edc3;">
                   {% else %}
                     <div class="well " style="background-color: #bc544b;">
                   {% endif %}
 
-                    {{ question.correct }}
+                    {{ question.answer.grade }}
                     </div>
                 </td>
                 <td>
-                  {% autoescape off %} {{ question.expl }}{% endautoescape %}
+                  {% autoescape off %} {{ question.answer.explanation }}{% endautoescape %}
                 </td>
                 {% else %}
                 <td>  </td><td>  </td><td>  </td>

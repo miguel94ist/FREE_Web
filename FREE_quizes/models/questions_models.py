@@ -13,11 +13,86 @@ from django.conf import settings
 from FREE_quizes.quizes_code import *
 from model_utils.managers import InheritanceManager
 
-from .quiz_models import Question
+#from .quiz_models import Question
 from free.models import Result, Execution
 from free.views.api import ResultSerializer
 
 import importlib
+
+
+@python_2_unicode_compatible
+class Question(models.Model):
+    """
+    Base class for all question types.
+    Shared properties placed here.
+    """
+
+#    quiz = models.ManyToManyField(Quiz,
+##                                  verbose_name=_("Quiz"),
+#                                  blank=True)
+
+#    category = models.ForeignKey(Category,
+#                                 verbose_name=_("Category"),
+#                                 related_name='%(app_label)s_%(class)s_category',
+#                                 blank=True,
+#                                 null=True,
+#                                 on_delete=models.CASCADE)
+
+    evaluated = models.BooleanField(default=True, blank=True,
+                                   verbose_name=_("To be evaluated"))
+    evaluationWeight = models.PositiveIntegerField(default=1, blank=True,
+                                   verbose_name=_("Evaluation Weigth"))
+
+
+    figure = models.ImageField(upload_to='uploads/%Y/%m/%d',
+                               blank=True,
+                               null=True,
+                               verbose_name=_("Figure"))
+
+    title = models.CharField(max_length=30,
+                               blank=True,
+                               help_text=_("Enter a small description of the question"),
+                               verbose_name=_('Question Title'))
+
+    internal_title = models.CharField(max_length=30,
+                               blank=True,
+                               help_text=_("Title to identify questin in admin"),
+                               verbose_name=_('internal Title'))
+
+
+    content = models.CharField(max_length=5000,
+                               blank=False,
+                               help_text=_("Enter the question text that "
+                                           "you want displayed"),
+                               verbose_name=_('Question Content'))
+
+    explanation = models.TextField(max_length=2000,
+                                   blank=True,
+                                   help_text=_("Explanation to be shown "
+                                               "after the question has "
+                                               "been answered."),
+                                   verbose_name=_('Explanation'))
+
+    
+#    priority = models.PositiveIntegerField(
+#        blank=True, null=True, verbose_name=_("Priority"),
+#        help_text=_("Question priority to show in quiz, smaller means bigger priority"))
+
+    objects = InheritanceManager()
+
+    def get_answers(self):
+        return False
+
+    class Meta:
+        verbose_name = _("Question")
+        verbose_name_plural = _("Questions")
+#        ordering = [F('priority').asc(nulls_last=True)]
+
+    def __str__(self):
+        return self.internal_title
+    def question_type(self):
+        
+        pass
 
 
 
@@ -108,6 +183,11 @@ class Essay_Question(Question):
                                            "that will correct the question"),
                                verbose_name=_('Function name'))
 
+    
+    multiple_answer_fields = models.JSONField("Experiment Student Parameter", 
+                                          blank = True, null=True, 
+                                          default=None)
+
     outer_locals = locals()
 
     def question_type(self):
@@ -185,7 +265,7 @@ class TF_Question(Question):
     class Meta:
         verbose_name = _("True/False Question")
         verbose_name_plural = _("True/False Questions")
-        ordering = ['category']
+        #ordering = ['category']
 
 class MCQuestion(Question):
 

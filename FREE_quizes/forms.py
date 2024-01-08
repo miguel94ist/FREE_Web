@@ -17,7 +17,10 @@ class EssayForm(forms.Form):
         #if question.sub_category != None:
         #    self.fields["answers"] = forms.FloatField(required=False)
         #else:
-        self.fields["answer"] = forms.FloatField()
+        for f in question.multiple_answer_fields.keys():    
+            self.fields[f] = forms.FloatField()
+            self.fields[f].label = f+" (%s)"%(question.multiple_answer_fields[f]['unit'],)
+        
         
 class Experiment_ExectionForm(forms.Form):
     def __init__(self, question, *args, **kwargs):

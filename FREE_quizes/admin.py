@@ -26,25 +26,25 @@ class QuizAdminForm(forms.ModelForm):
         model = Quiz
         exclude = []
 
-    questions = forms.ModelMultipleChoiceField(
-        queryset=Question.objects.all().select_subclasses(),
-        required=False,
-        label=_("Questions"),
-        widget=FilteredSelectMultiple(
-            verbose_name=_("Questions"),
-            is_stacked=False))
+    #questions = forms.ModelMultipleChoiceField(
+    #    queryset=Question.objects.all().select_subclasses(),
+    #    required=False,
+    #    label=_("Questions"),
+    #    widget=FilteredSelectMultiple(
+    #        verbose_name=_("Questions"),
+    #        is_stacked=False))
 
     def __init__(self, *args, **kwargs):
         super(QuizAdminForm, self).__init__(*args, **kwargs)
-        if self.instance.pk:
-            self.fields['questions'].initial =\
-                self.instance.question_set.all().select_subclasses()
+#        if self.instance.pk:
+#            self.fields['questions'].initial =\
+#                self.instance.question_set.all().select_subclasses()
 
     def save(self, commit=True):
         quiz = super(QuizAdminForm, self).save(commit=False)
         quiz.save()
-        quiz.question_set.set(self.cleaned_data['questions'])
-        self.save_m2m()
+#        quiz.question_set.set(self.cleaned_data['questions'])
+#        self.save_m2m()
         return quiz
 
 
@@ -53,19 +53,19 @@ class QuizAdmin(SummernoteModelAdmin, TabbedTranslationAdmin):
 
     list_display = ('title',  )
     list_filter = ()
-    search_fields = ('description', 'category', )
+    search_fields = ('description', )
     summernote_fields = ('description')
 
-class CategoryAdmin(admin.ModelAdmin):
-    search_fields = ('category', 'apparatus_type')
+#class CategoryAdmin(admin.ModelAdmin):
+#    search_fields = ('category', 'apparatus_type')
 
 
 
 class MCQuestionAdmin(SummernoteModelAdmin, TabbedTranslationAdmin):
-    list_display = ('title', 'content', 'category', )
-    list_filter = ('category',)
-    fields = ('title', 'content', 'evaluated', 'evaluationWeight',
-              'figure',  'explanation', 'priority', 'answer_order')
+    list_display = ('title', 'internal_title', 'content', )
+#    list_filter = ('category',)
+    fields = ('title', 'internal_title', 'content', 'evaluated', 'evaluationWeight',
+              'figure',  'explanation', 'answer_order')
 
     search_fields = ('content', 'explanation')
 
@@ -82,30 +82,32 @@ class ProgressAdmin(admin.ModelAdmin):
 
 
 class TFQuestionAdmin(SummernoteModelAdmin, TabbedTranslationAdmin):
-    list_display = ('title', 'content', 'category', )
-    list_filter = ('category',)
-    fields = ('title', 'content',  'evaluated',  'evaluationWeight',
-              'figure',  'explanation','priority', 'correct',)
+    list_display = ('internal_title','title', 'content',)
+#    list_filter = ('category',)
+    fields = ('title', 'internal_title', 'content',  'evaluated',  'evaluationWeight',
+              'figure',  'explanation', 'correct',)
 
     search_fields = ('content', 'explanation')
     summernote_fields = ('content')
 
 class EssayQuestionAdmin(SummernoteModelAdmin, TabbedTranslationAdmin):
-    list_display = ('title', 'content', 'category', )
-    list_filter = ('category',)
-    fields = ('title', 'content',  'evaluated',  'evaluationWeight',  'explanation', 'verif_function','priority','decimal_precision')
+    list_display = ('title', 'internal_title', 'content', )
+    #list_filter = ('category',)
+    fields = ('title', 'internal_title', 'content',  'evaluated',  
+              'evaluationWeight',   'verif_function', 'multiple_answer_fields',
+              'explanation','decimal_precision')
     search_fields = ('content', 'explanation')
     summernote_fields = ('content',   'explanation')
 
 class  Experiment_ExecutionAdmin(SummernoteModelAdmin, TabbedTranslationAdmin):
-    list_display = ('title', 'content', 'category')
-    list_filter = ('category',)
-    fields = ('title', 'content','assessement_parameters_function', 'category', 'sub_category', 'config_function', 'evaluated',  'evaluationWeight', 'explanation', 'priority')
+    list_display = ('title', 'internal_title', 'content')
+#    list_filter = ('category',)
+    fields = ('title', 'internal_title','content','assessement_parameters_function', 'sub_category', 'config_function', 'evaluated',  'evaluationWeight', 'explanation', )
     search_fields = ('content', 'explanation')
     summernote_fields = ('content',   'explanation')
 
 class SittingAdmin(admin.ModelAdmin):
-    list_display =('user','complete')
+    list_display =('id', 'user','complete')
 
 class FREE_quizes_AdminSite(admin.AdminSite):
     site_header = "FREE quizes admin"
@@ -114,7 +116,7 @@ class FREE_quizes_AdminSite(admin.AdminSite):
 FREE_quizes_admin_site = FREE_quizes_AdminSite(name='FREE_quizes_admin')
 
 FREE_quizes_admin_site.register(Quiz, QuizAdmin)
-FREE_quizes_admin_site.register(Category, CategoryAdmin)
+#FREE_quizes_admin_site.register(Category, CategoryAdmin)
 FREE_quizes_admin_site.register(MCQuestion, MCQuestionAdmin)
 FREE_quizes_admin_site.register(Progress, ProgressAdmin)
 FREE_quizes_admin_site.register(TF_Question, TFQuestionAdmin)

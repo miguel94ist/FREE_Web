@@ -2,7 +2,6 @@ def verify_mc(current_question, user_answer, decimal_places, current_quiz, execu
 #    print(current_question, user_answer, decimal_places, current_quiz, execution)
 #    print(execution.result_set.all()[0].result_type)
 #    print(execution.result_set.all()[0].value)
-    
     if user_answer['xxxxx'] == 12:
         return True
     else:

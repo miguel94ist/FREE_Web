@@ -15,42 +15,46 @@ from django.conf import settings
 from model_utils.managers import InheritanceManager
 from django.db.models import F
 
-from free.models import Protocol,Execution
+from free.models import Protocol,Execution, Apparatus
 import random
 
-class CategoryManager(models.Manager):
+from .questions_models import Question
 
-    def new_category(self, category):
-        new_category = self.create(category=re.sub('\s+', '-', category)
-                                   .lower())
+from sortedm2m.fields import SortedManyToManyField
 
-        new_category.save()
-        return new_category
+#class CategoryManager(models.Manager):
 
-@python_2_unicode_compatible
-class Category(models.Model):
+#    def new_category(self, category):
+#        new_category = self.create(category=re.sub('\s+', '-', category)
+#                                   .lower())
+#
+#        new_category.save()
+#        return new_category
 
-    category = models.CharField(
-        verbose_name=_("Category"),
-        max_length=250, blank=True,
-        unique=True, null=True)
+#@python_2_unicode_compatible
+#class Category(models.Model):
+
+#    category = models.CharField(
+#        verbose_name=_("Category"),
+#        max_length=250, blank=True,
+#        unique=True, null=True)
     
-    apparatus_protocol = models.ForeignKey(
-        Protocol,
-        verbose_name=_("Apparatus Protocol"), 
-        related_name='%(app_label)s_%(class)s_apparatus_protocol',
-        blank = True, 
-        null=True, 
-        on_delete=models.SET_NULL)
+#    apparatus_protocol = models.ForeignKey(
+#        Protocol,
+#        verbose_name=_("Apparatus Protocol"), 
+#        related_name='%(app_label)s_%(class)s_apparatus_protocol',
+#        blank = True, 
+#        null=True, 
+#        on_delete=models.SET_NULL)
 
-    objects = CategoryManager()
+#    objects = CategoryManager()
 
-    class Meta:
-        verbose_name = _("Category")
-        verbose_name_plural = _("Categories")
+#    class Meta:
+#        verbose_name = _("Category")
+#        verbose_name_plural = _("Categories")
 
-    def __str__(self):
-        return self.category
+#    def __str__(self):#
+#        return self.category
 
 
 # @python_2_unicode_compatible
@@ -95,12 +99,25 @@ class Quiz(models.Model):
         verbose_name=_("user friendly url"))
 
 
-    random_order = models.BooleanField(
-        blank=False, default=False,
-        verbose_name=_("Random Order"),
-        help_text=_("Display the questions in "
-                    "a random order or as they "
-                    "are set?"))
+    experiments_protocol = models.ForeignKey(
+        Protocol,
+        verbose_name=_("Experiments Protocol"), 
+        related_name='%(app_label)s_%(class)s_experiments_protocol',
+        blank = True, 
+        null=True, 
+        on_delete=models.SET_NULL)
+    single_apparatus = models.BooleanField(
+        blank=True,
+        default=True,
+        verbose_name=_("Single Apparatus"),
+        help_text=_("use of a single apparatus for all executions"))
+
+#    random_order = models.BooleanField(
+#        blank=False, default=False,
+#        verbose_name=_("Random Order"),
+#        help_text=_("Display the questions in "
+#                    "a random order or as they "
+#                    "are set?"))
 
     max_questions = models.PositiveIntegerField(
         blank=True, null=True, verbose_name=_("Max Questions"),
@@ -149,6 +166,8 @@ class Quiz(models.Model):
                     " quizzes."))
     visible = models.BooleanField(_('Visible'), default=False, blank=False)
     
+    orderedQuestions = SortedManyToManyField(Question, 
+                                             related_name='%(app_label)s_%(class)s_question',)
     def save(self, force_insert=False, force_update=False, *args, **kwargs):
         self.url = re.sub('\s+', '-', self.url).lower()
 
@@ -175,7 +194,7 @@ class Quiz(models.Model):
 
     @property
     def get_max_score(self):
-        return self.get_questions().count()
+        return len(self.orderedQuestions.all())
 
     def anon_score_id(self):
         return str(self.id) + "_score"
@@ -269,6 +288,7 @@ class Progress(models.Model):
 
         Does not return anything.
         """
+        return
         category_test = Category.objects.filter(category=question.category)\
                                         .exists()
 
@@ -322,34 +342,36 @@ class Progress(models.Model):
 class SittingManager(models.Manager):
 
     def new_sitting(self, user, quiz):
-        if quiz.random_order is True:
-            question_set = quiz.question_set.all() \
-                                            .select_subclasses() \
-                                            .order_by('?')
-        else:
-            question_set = quiz.question_set.all() \
-                                            .select_subclasses()
+#        if quiz.random_order is True:
+#            question_set = quiz.question_set.all() \
+#                                            .select_subclasses() \
+#                                            .order_by('?')
+#        else:
+        ordered_questions = quiz.orderedQuestions.all()
+#        question_set = quiz.question_set.all() \
+#                                        .select_subclasses()
 
-        question_set = [item.id for item in question_set]
+#        question_set = [item.id for item in question_set]
 
-        if len(question_set) == 0:
+        if len(ordered_questions) == 0:
             raise ImproperlyConfigured('Question set of the quiz is empty. '
                                        'Please configure questions properly')
 
-        if quiz.max_questions and quiz.max_questions < len(question_set):
-            question_set = question_set[:quiz.max_questions]
+#        if quiz.max_questions and quiz.max_questions < len(question_set):
+#            question_set = question_set[:quiz.max_questions]
 
-        questions = ",".join(map(str, question_set)) + ","
+#        questions = ",".join(map(str, question_set)) + ","
 
         new_sitting = self.create(user=user,
                                   quiz=quiz,
-                                  question_order=questions,
-                                  question_list=questions,
-                                  incorrect_questions="",
-                                  current_score=0,
-                                  total_weigth= 0,
-                                  complete=False,
-                                  user_answers='{}')
+#                                  ordered_questions=ordered_questions,
+#                                  question_list=ordered_questions,
+#                                  incorrect_questions="",
+#                                  current_score=0,
+#                                  total_weigth= 0,
+#                                  complete=False,
+#                                  user_answers='{}'
+)
         return new_sitting
 
     def user_sitting(self, user, quiz):
@@ -407,8 +429,20 @@ class Sitting(models.Model):
     quiz = models.ForeignKey(
         Quiz,
         related_name='%(app_label)s_%(class)s_quiz',
-        verbose_name=_("Quiz"), 
+        verbose_name=_("Quiz"),
         on_delete=models.CASCADE)
+
+    apparatus = models.ForeignKey(
+        Apparatus,
+        related_name='%(app_label)s_%(class)s_apparatus',
+        verbose_name=_("Assigned Apparatus"), 
+        blank = True, 
+        null=True, 
+        on_delete=models.SET_NULL)
+    
+    current_question = models.IntegerField(verbose_name=_("Current Question"), 
+                                           default=0)
+
 
     current_execution = models.ForeignKey(
         Execution,
@@ -427,25 +461,23 @@ class Sitting(models.Model):
         null=True, 
         on_delete=models.SET_NULL)
 
+    user_answers = models.JSONField(default=list,
+                                    verbose_name=_("User Answers"))
+
+
     finished_executions = models.ManyToManyField(Execution)
 
-    student_parameters = models.JSONField("Experiment Student Parameter", blank = True, null=True, default=None)
+    current_execution_req_parameters = models.JSONField("Experiment Student Parameter", 
+                                          blank = True, null=True, 
+                                          default=None)
 
-    question_order = models.CharField(
-        max_length=1024,
-        verbose_name=_("Question Order"),
-        validators=[validate_comma_separated_integer_list])
-
-    question_list = models.CharField(
-        max_length=1024,
-        verbose_name=_("Question List"),
-        validators=[validate_comma_separated_integer_list])
-
-    incorrect_questions = models.CharField(
-        max_length=1024,
-        blank=True,
+    incorrect_questions = models.JSONField(
+#        max_length=1024,
+#        blank=True,
         verbose_name=_("Incorrect questions"),
-        validators=[validate_comma_separated_integer_list])
+        default=list,
+#        validators=[validate_comma_separated_integer_list]
+        )
 
     correct_answers = models.IntegerField(verbose_name=_("Current Score"), default=0)
     current_score = models.IntegerField(verbose_name=_("Current Score"), default=0)
@@ -454,8 +486,6 @@ class Sitting(models.Model):
     complete = models.BooleanField(default=False, blank=False,
                                    verbose_name=_("Complete"))
 
-    user_answers = models.TextField(blank=True, default='{}',
-                                    verbose_name=_("User Answers"))
 
     start = models.DateTimeField(auto_now_add=True,
                                  verbose_name=_("Start"))
@@ -477,6 +507,11 @@ class Sitting(models.Model):
         If no question is found, returns False
         Does NOT remove the question from the front of the list.
         """
+        try:
+            return self.quiz.orderedQuestions.all()[self.current_question]
+        except:
+            return False
+
         if not self.question_list:
             return False
 
@@ -485,6 +520,7 @@ class Sitting(models.Model):
         return Question.objects.get_subclass(id=question_id)
 
     def remove_first_question(self):
+        return
         if not self.question_list:
             return
 
@@ -561,6 +597,7 @@ class Sitting(models.Model):
             return self.quiz.fail_text
 
     def add_user_answer(self, question, guess):
+        return
         current = json.loads(self.user_answers)
         current[question.id] = guess
         self.user_answers = json.dumps(current)
@@ -598,8 +635,8 @@ class Sitting(models.Model):
         Returns the number of questions answered so far and the total number of
         questions.
         """
-        answered = len(json.loads(self.user_answers))
-        total = self.get_max_score
+        answered = len(self.user_answers)
+        total = self.quiz.orderedQuestions.all()
         return answered, total
     
     def questions_left(self):
@@ -617,69 +654,3 @@ class Sitting(models.Model):
         self.save()
         pass
 
-@python_2_unicode_compatible
-class Question(models.Model):
-    """
-    Base class for all question types.
-    Shared properties placed here.
-    """
-
-    quiz = models.ManyToManyField(Quiz,
-                                  verbose_name=_("Quiz"),
-                                  blank=True)
-
-    category = models.ForeignKey(Category,
-                                 verbose_name=_("Category"),
-                                 related_name='%(app_label)s_%(class)s_category',
-                                 blank=True,
-                                 null=True,
-                                 on_delete=models.CASCADE)
-
-    evaluated = models.BooleanField(default=True, blank=True,
-                                   verbose_name=_("To be evaluated"))
-    evaluationWeight = models.PositiveIntegerField(default=1, blank=True,
-                                   verbose_name=_("Evaluation Weigth"))
-
-
-    figure = models.ImageField(upload_to='uploads/%Y/%m/%d',
-                               blank=True,
-                               null=True,
-                               verbose_name=_("Figure"))
-
-    title = models.CharField(max_length=30,
-                               blank=True,
-                               help_text=_("Enter a small description of the question"),
-                               verbose_name=_('Question Title'))
-
-    content = models.CharField(max_length=5000,
-                               blank=False,
-                               help_text=_("Enter the question text that "
-                                           "you want displayed"),
-                               verbose_name=_('Question Content'))
-
-    explanation = models.TextField(max_length=2000,
-                                   blank=True,
-                                   help_text=_("Explanation to be shown "
-                                               "after the question has "
-                                               "been answered."),
-                                   verbose_name=_('Explanation'))
-
-    
-    priority = models.PositiveIntegerField(
-        blank=True, null=True, verbose_name=_("Priority"),
-        help_text=_("Question priority to show in quiz, smaller means bigger priority"))
-
-    objects = InheritanceManager()
-
-    def get_answers(self):
-        return False
-
-    class Meta:
-        verbose_name = _("Question")
-        verbose_name_plural = _("Questions")
-        ordering = [F('priority').asc(nulls_last=True)]
-
-    def __str__(self):
-        return self.title
-    def question_type(self):
-        pass

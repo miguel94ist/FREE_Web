@@ -13,7 +13,7 @@ jsonschema>=4.0.1
 markdown==3.3.4
 Pillow==9.2.0
 pip-chill==1.0.1
-psycopg2==2.8.6
+#psycopg2==2.8.6
 pyopenssl==22.0.0
 pyyaml==5.4.1
 service-identity==21.1.0
@@ -27,3 +27,4 @@ nameparser==1.1.2
 jsf==0.7.1
 serial==0.0.97
 django-semanticui-forms==1.6.5
+django-sortedm2

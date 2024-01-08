@@ -58,8 +58,8 @@
 
 
 
-{% block title %} {{ quiz.title }} {% endblock %}
-{% block description %} {{ quiz.title }} - {{ quiz.description }} {% endblock %}
+{% block title %} {{ quiz.title }} XXXXXXX {% endblock %}
+{% block description %} {{ quiz.title }} - {{ quiz.description }}YYYYYYYY {% endblock %}
 
 
 {% block content %}
@@ -70,7 +70,7 @@
 
 		<h1>Quiz {{quiz.title}}
 		{% if progress %}
-		({% trans "Step" %} {{ progress.0|add:1 }} {% trans "of" %} {{ progress.1 }})
+		(  {% trans "Step" %} {{ current_question }} {% trans "of" %} {{ quiz.get_max_score }})
 		{% endif %}
 			</h1>
 	</div> 
@@ -157,7 +157,7 @@
 											{% endfor %}
 
 										</tbody>
-									  </table>
+									</table>
 
 									<p> Any parameter that is not in this table should be defined by the student.</p>
 
@@ -208,9 +208,33 @@
 								<p>Answer with {{decimal_cases}} decimal cases</p>
 							{% endif %}
 
-
 							<input type="submit" value='{% trans "Submit answer" %}' class="ui green button" >
 						</form>
+					</div>
+					<div class="six wide column ">
+						<h3>required answers</h3>
+						<table class="ui celled table">
+							<thead>
+								  <tr>
+									<th>Value</th>
+									<th>Description</th>
+									<th>decimal places</th>
+									<th>Unit</th>
+								</tr>
+							</thead>
+							<tbody>
+								{% for ans in multiple_answer_fields %}
+								<tr>
+									<td >{{ans.name}}</td>
+									<td >{{ans.description}}</td> 
+									<td >{{ans.precision}}</td>
+									<td >{{ans.unit}}</td>
+									 </tr>
+								{% endfor %}
+
+							</tbody>
+						</table>
+
 					</div>
 				</div>
 			</div>  
@@ -266,14 +290,44 @@
 		{% endif %}	
 
 	</div>
-	<div class="ui  container ">
+	{{question_type}}
+	{% if question_type == 'CREATE' %}
+
+
 		{% if execution_id %}
+		<div class="ui  container ">
+			<iframe src="{% url 'free:stripped-execution' execution_id %}" title="execution" width="100%" height="900" id="iframe_execution" >
+			</iframe>
+		</div>
+		{% endif%}
+
+
+
+	{% else %}
+
+
+	{% if previous_executions %}
+	<div class="ui  container ">
+		<h1>Other previous executions</h1>
+		{% for ex in previous_executions %}
+			<a href="{% url 'free:stripped-execution' execution_id %}" target="_blank">
+				Execution {{ex}} 
+			</a>
+		{% endfor %}
+	</div>
+	{% endif%}
+		
+
+	{% if execution_id %}
+	<div class="ui  container ">
+		<h1>Last execution</h1>
 		<iframe src="{% url 'free:stripped-execution' execution_id %}" title="execution" width="100%" height="900" id="iframe_execution" >
 		</iframe>
-		
-		{% endif%}
-		
 	</div>
+	{% endif%}
+
+	{% endif %}	
+
 </div>
 
 
