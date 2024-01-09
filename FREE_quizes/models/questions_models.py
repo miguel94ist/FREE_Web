@@ -144,7 +144,7 @@ class Experiment_Execution(Question):
             module = importlib.import_module('FREE_quizes.quizes_code')
             m = getattr(module, current_quiz.url)
             f = getattr(m, current_question.assessement_parameters_function)
-            parameters = f(current_quiz, user_answers)
+            parameters = f(user_answers)
             return parameters
         except :
             return None
