@@ -317,7 +317,7 @@ class QuizTake(FormView):
                 if not self.sitting.current_execution:
                     ## create a new execution
                     ## generate the parameters of the execution
-                    student_experiment_parameters = self.question.get_student_experiment_parameters(self.quiz, self.question)
+                    student_experiment_parameters = self.question.get_student_experiment_parameters(self.quiz, self.question, self.sitting.user_answers)
                     context['student_experiment_parameters'] = student_experiment_parameters
                     self.sitting.current_execution_req_parameters = student_experiment_parameters
                     config_generator = JSF(context['protocol'].config)

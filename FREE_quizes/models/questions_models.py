@@ -139,23 +139,24 @@ class Experiment_Execution(Question):
                                            "that will generate different parameters for the assessemnsts"),
                                verbose_name=_('Experiment parameters function'))
 
-    def get_student_experiment_parameters(self, current_quiz, current_question):
+    def get_student_experiment_parameters(self, current_quiz, current_question, user_answers):
         try:
             module = importlib.import_module('FREE_quizes.quizes_code')
             m = getattr(module, current_quiz.url)
             f = getattr(m, current_question.assessement_parameters_function)
-            parameters = f()
+            parameters = f(current_quiz, user_answers)
             return parameters
         except :
             return None
-    def check_if_correct(self, current_execution, student_parameters):  
-        for param in student_parameters:
-            param_name = param['name']
-            student_value = current_execution.config[param['name']]
-            print(param['value'],  student_value)
-            if param['value'] !=  student_value:
-                print("wrong")
-                return False
+    def check_if_correct(self, current_execution, student_parameters):
+        if student_parameters:  
+            for param in student_parameters:
+                param_name = param['name']
+                student_value = current_execution.config[param['name']]
+                print(param['value'],  student_value)
+                if param['value'] !=  student_value:
+                    print("wrong")
+                    return False
         return True
             
 
