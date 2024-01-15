@@ -239,13 +239,12 @@ SWAGGER_SETTINGS = {
 AUTHENTICATION_BACKENDS = (
    'django.contrib.auth.backends.ModelBackend',
 )
-
+    
 if env.bool('FREE_MS_OAUTH'):
     AUTHENTICATION_BACKENDS += ('social_core.backends.microsoft.MicrosoftOAuth2',)
-    
+
     SOCIAL_AUTH_MICROSOFT_GRAPH_KEY = env.str('SOCIAL_AUTH_MICROSOFT_GRAPH_KEY')
     SOCIAL_AUTH_MICROSOFT_GRAPH_SECRET = env.str('SOCIAL_AUTH_MICROSOFT_GRAPH_SECRET')
-
     SOCIAL_AUTH_MICROSOFT_GRAPH_PIPELINE = (
         'social_core.pipeline.social_auth.social_details',
         'social_core.pipeline.social_auth.social_uid',
@@ -259,6 +258,8 @@ if env.bool('FREE_MS_OAUTH'):
     )
 
 
+
+   
 
 if env.bool('FREE_GOOGLE_OAUTH'):
     AUTHENTICATION_BACKENDS += ('social_core.backends.google.GoogleOAuth2',)
