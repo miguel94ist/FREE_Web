@@ -61,6 +61,7 @@ INSTALLED_APPS = [
     'social_django', # required for oauth (Google, ...) athentication
     'free.videoConfig',
     'free.userAdmin',
+    'sortedm2m',
     # APPARATUS TYPES BELOW
     'pendulum',
     'dev_MonteCarlo',
@@ -70,6 +71,7 @@ INSTALLED_APPS = [
     'cavity',
     'planck',
     'colisione',
+    'mag3d',
     #Quiz apps
 
 ]
