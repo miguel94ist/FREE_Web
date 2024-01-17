@@ -1,0 +1,672 @@
+{% extends 'free/experiment.html' %}
+{% load static %}
+{% load i18n %}
+
+
+{% block experiment_head %}
+    <!-- pendulum libraries -->
+    
+
+     <!-- slider  -->
+     <script src="https://cdnjs.cloudflare.com/ajax/libs/fomantic-ui/2.8.4/components/slider.min.js"></script>
+     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fomantic-ui/2.8.4/components/slider.min.css">
+ 
+    <!-- pendulum libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+ 
+     <!--<script src="https://cdn.jsdelivr.net/npm/chart.js@3.8.0/dist/chart.min.js"></script>-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-annotation/1.4.0/chartjs-plugin-annotation.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-zoom/1.2.1/chartjs-plugin-zoom.min.js"></script>
+    <script src="https://unpkg.com/chartjs-chart-error-bars@3.7.2/build/index.umd.min.js"></script>
+    <script src="https://d3js.org/d3-array.v3.min.js"></script>
+
+
+{% endblock %}  
+
+
+{% block configtab %}
+<!-- Begin of the configuration tab-->
+    
+    
+        <div class="ui two column grid container">
+            <div class="column">
+                <div class="ui segment">
+                    <legend> <h3>{% trans 'Current [**]'%}</h3></legend>
+                    <div style="padding-top: 5%;"  class="ui blue small bottom aligned labeled  slider"  id="slider-current" ></div>
+                        
+                        <div class="ui input" >
+                            <input class="free-input" type="number" id="current">
+                        </div>
+                </div>
+            </div>
+            <div class="column">
+                <div class="ui segment">
+                    <legend><h3>{% trans 'Angle [**]'%}</h3></legend>
+                    <div style="padding-top: 5%;"  class="ui blue small bottom aligned labeled  slider" id="slider-angle" ></div>
+                        
+                        <div class="ui input">
+                            <input class="free-input" type="number" id="angle">
+                        </div>
+                </div>
+            </div>
+        </div>
+		<!-- 2 -->
+        <div class="ui two column grid container">
+            <div class="column">
+                <div class="ui segment">
+                    <legend> <h3>{% trans 'pos_init'%}</h3></legend>
+                    <div style="padding-top: 5%;"  class="ui blue small bottom aligned labeled slider"  id="slider-pos_init" ></div>
+                        
+                        <div class="ui input" >
+                            <input class="free-input" type="number" id="pos_init">
+                        </div>
+                </div>
+            </div>
+			
+			 <div class="column">
+                <div class="ui segment">
+                    <legend> <h3>{% trans 'pos_final '%}</h3></legend>
+                    <div style="padding-top: 5%;"  class="ui blue small bottom aligned labeled slider"  id="slider-pos_final" ></div>
+                        
+                        <div class="ui input" >
+                            <input class="free-input" type="number" id="pos_final">
+                        </div>
+                </div>
+            </div>
+           
+        </div>
+		<!--3-->
+		<div class="ui two column grid container">
+            <div class="column">
+                <div class="ui segment">
+                    <legend> <h3>{% trans 'n_samples'%}</h3></legend>
+                    <div style="padding-top: 5%;"  class="ui blue small bottom aligned labeled slider"  id="slider-n_samples" ></div>
+                        
+                        <div class="ui input" >
+                            <input class="free-input" type="number" id="n_samples">
+                        </div>
+                </div>
+            </div>
+			   
+        </div>
+		
+		
+		
+<!-- End of the configuration tab-->
+{% endblock %}
+
+
+
+<!-- Begin of the execution tab-->
+{% block executiontab %}
+<div class="ui grid stackable">
+            <div class=" sixteen wide column">
+            <h3>Magnetic Field</h3>
+                <div >
+                    <canvas id="plot_Current_Field_position"></canvas>
+                </div>
+        </div>	
+	
+</div>
+
+    <table id="results_table" class="ui celled table display" style="width:100%">
+        <thead>
+            <tr>
+                <th id="position">{% trans "Position" %}</th>
+                <th id="current">{% trans "Current [*]" %}</th>
+                <th id="field_x">{% trans "Field X [*]" %}</th>
+                <th id="field_y">{% trans "Field Y [*]" %}</th>
+                <th id="field_z">{% trans "Field Z [*]" %}</th>
+            </tr>
+        </thead>
+    </table>
+{% endblock %}   
+<!-- End of the execution tab-->
+
+		
+{% block protocol_auxiliary_functions %}
+
+
+<script>
+    //var receive_error_velocity
+    //var receive_error_period
+
+    var plot_Current_Field_position
+	let data_value_p 
+	let data_value_fx
+	let data_value_fy 
+	let data_value_fz 
+	let data_value_c 
+    //var period_data = []
+
+
+function process_final_data(data_line){
+
+
+}
+
+var label_pressure_gauge = ["Field X","FieldY","Field Z"]
+var color_ampl = ["blue","red","black"]
+let frist_time_plot = 0
+
+
+
+function process_experiment_data(data){
+	 //process_experiment_data_default(data);
+	console.log("process_experiment_data");	
+	for (line in data){
+		if(data[line].result_type == 'p'){
+		data_value_p = data[line].value.map(data => data.position).filter(function (element) { 
+            		return element !== undefined;
+          	});
+		data_value_c = data[line].value.map(data => parseFloat(data.current)).filter(function (element) { 
+            		return element !== undefined;
+          	});
+		data_value_fx = data[line].value.map(data => parseFloat(data.field_x)).filter(function (element) { 
+            		return element !== undefined;
+          	});
+		data_value_fy = data[line].value.map(data => parseFloat(data.field_y)).filter(function (element) { 
+            		return element !== undefined;
+          	});
+		data_value_fz = data[line].value.map(data => parseFloat(data.field_z)).filter(function (element) { 
+            		return element !== undefined;
+          	});
+
+
+               if (frist_time_plot === 0 )
+                {
+                 for (let i = 0; i < 3; i++){ 
+                         plot_Current_Field_position.data.datasets = plot_Current_Field_position.data.datasets.concat([{
+                                     label: label_pressure_gauge[i],
+                                     borderColor: color_ampl[i],
+                                     backgroundColor: color_ampl[i],
+                                     pointRadius:1,
+                                     showLine:true,
+                                     borderWidth:1,
+                                     data: [],
+                                 },
+                             ]);
+                     }
+                     frist_time_plot = 1
+                }
+
+                
+		process_partial_data(data_value_p,data_value_fx,data_value_fy,data_value_fz);
+		table_insert_partial_data(data[line]);
+		}	
+	}
+	
+}
+
+let count_draw = 0
+
+
+
+
+function table_insert_partial_data(data){
+    let value_data_table = "";
+    table_columns = jQuery( "#results_table > thead> tr> th" );
+    col_id = []
+    for ( ind = 0, len = table_columns.length; ind < len; ind++ ) {
+        col_id.push($(table_columns[ind]).attr("id"))
+    }
+    var t = $('#results_table').DataTable();
+	console.log("ooo");
+	console.log(col_id)
+        console.log("data.value")
+        console.log(data.value)
+
+    data.value.map(data => {
+       console.log(data )       
+       row_data = []
+       col_id.forEach(c_id => {
+                value_data_table = data[c_id]
+       		row_data.push(value_data_table)
+	});
+       t.row.add(row_data)
+       count_draw = count_draw +1;
+       return row_data
+	});
+
+    console.log(count_draw)
+    if (count_draw >= data.value.length){
+	t.draw()
+       count_draw = 0
+    }
+    console.log("row_data")
+    console.log(row_data)
+
+}
+
+
+
+
+function process_partial_data(p,fx,fy,fz){
+    //voltage = parseFloat(data_value_v) 
+    //current = parseFloat(data_value_)
+    //pressure = parseFloat(data_line.adc_value3)
+    //time = data_line.time
+
+	plot_Current_Field_position.data.labels = plot_Current_Field_position.data.labels.concat(p);
+
+	plot_Current_Field_position.data.datasets[0].data = plot_Current_Field_position.data.datasets[0].data.concat(fx);
+        plot_Current_Field_position.data.datasets[1].data = plot_Current_Field_position.data.datasets[1].data.concat(fy);
+        plot_Current_Field_position.data.datasets[2].data = plot_Current_Field_position.data.datasets[2].data.concat(fz);
+	
+
+        plot_Current_Field_position.update();
+
+
+}
+
+
+
+function on_save_experiment_UI(){
+
+}
+
+
+
+
+function on_ready_experiment_UI(){
+
+    configure_slider("current")
+    configure_slider("angle")
+    configure_slider("pos_init")
+    configure_slider("pos_final")
+    configure_slider("n_samples")
+	
+	
+//	buildPlot1(0,'plot_current_voltage');
+ //   buildPlot2(0,'plot_voltage_time');
+  //  buildPlot3(0,'plot_current_time');
+//	buildPlot4(0, 'plot_pressure_time');
+	
+	
+    //receive_error_velocity = 0.1;
+   // receive_error_period = 0.0005;//response.data.value.e_period;
+
+    ctx = $("#plot_Current_Field_position")[0].getContext('2d');
+    plot_Current_Field_position = new Chart(ctx, {
+        type: 'line',
+        labels: [],
+        data: {
+            datasets: [],
+        },
+        options: {
+            plugins: {
+                legend: {
+                    display: true,
+                    align: 'center',
+                    position: 'right',
+
+                }, 
+                autocolors: false,
+            },
+            scales: {
+                y: {
+                    title:{
+                        display: true, 
+                        text: gettext('Magnetic field [*]'),
+                    }
+                  //  min: 8.5,
+                    //max: 9.5,
+                },
+                x: {
+                    title:{
+                        display: true, 
+                        text: gettext('Position [**]'),
+                    },
+                },
+            },
+        }
+    });
+
+
+}
+function configure_slider(name){
+	console.log(Object.keys(protocol_input_arguments[name]))
+        $('#slider-'+name).slider({
+            min:  protocol_input_arguments[name].minimum,
+            max: protocol_input_arguments[name].maximum, 
+            step: protocol_input_arguments[name].multipleOf,
+            start: protocol_input_arguments[name].default,
+            input: '#'+name,
+            onChange: function(value) {
+                console.log("QQQQQQQQQQQQQQQQQQ "+value)
+                $('#'+name).prop("value", value)
+                onInputChanged()
+                if ("relation" in protocol_input_arguments[name]){
+                    if(protocol_input_arguments[name].relation.type === "<"){
+                        if(parseInt($('#'+name).val()) < parseInt($('#'+protocol_input_arguments[name].relation.name).val()) ){
+                            $('#'+protocol_input_arguments[name].relation.name).val(value)
+                            $('#slider-'+protocol_input_arguments[name].relation.name).slider('set value', value);
+                        }
+                    }
+                    if (protocol_input_arguments[name].relation.type === ">"){
+                        if (parseInt(value) > parseInt($('#'+protocol_input_arguments[name].relation.name).val())){
+                            $('#'+name).val(parseInt($('#'+protocol_input_arguments[name].relation.name).val()))
+                            $('#slider-'+name).slider('set value', parseInt($('#'+protocol_input_arguments[name].relation.name).val()))
+                        }
+                        else{
+                            $('#'+name).val(value)
+                        }
+                    }
+                }
+           },
+           onMove: function(value){
+                $('#'+name).val(value)
+                if ("relation" in protocol_input_arguments[name]){
+                    if(protocol_input_arguments[name].relation.type === "<"){
+                                if(parseInt($('#'+name).val()) < parseInt($('#'+protocol_input_arguments[name].relation.name).val()) ){
+                                        $('#'+protocol_input_arguments[name].relation.name).val(value)
+                                        $('#slider-'+protocol_input_arguments[name].relation.name).slider('set value', value);
+                        }
+                    }
+                    if (protocol_input_arguments[name].relation.type === ">"){
+                 		if (parseInt(value) > parseInt($('#'+protocol_input_arguments[name].relation.name).val())){
+                   			$('#'+name).val(parseInt($('#'+protocol_input_arguments[name].relation.name).val()))
+                   			$('#slider-'+name).slider('set value', parseInt($('#'+protocol_input_arguments[name].relation.name).val()))
+                        }
+                        else{
+                            $('#'+name).val(value)
+                        }
+			        }
+              }
+        }});
+        $('#'+name).change(function() {
+            if ("relation" in protocol_input_arguments[name] && protocol_input_arguments[name].relation.type === ">"){
+                if ($(this).val() > parseInt($('#'+protocol_input_arguments[name].relation.name).val()) ){
+                    $('#'+name).val(parseInt($('#'+protocol_input_arguments[name].relation.name).val()))
+                    $('#slider-'+name).slider('set value', parseInt($('#'+protocol_input_arguments[name].relation.name).val()))
+                }
+                else{
+                    if($(this).val() > protocol_input_arguments[name].maximum)
+                        $(this).prop("value", protocol_input_arguments[name].maximum)
+                    if($(this).val() < protocol_input_arguments[name].minimum)
+                        $(this).prop("value", protocol_input_arguments[name].minimum)
+                $('#slider-'+name).slider('set value', $(this).val())
+                }
+            }
+            else{
+                if($(this).val() > protocol_input_arguments[name].maximum)
+                    $(this).prop("value", protocol_input_arguments[name].maximum)
+                if($(this).val() < protocol_input_arguments[name].minimum)
+                    $(this).prop("value", protocol_input_arguments[name].minimum)
+                
+                $('#slider-'+name).slider('set value', $(this).val())
+            }
+                //$("#slider-"+name).slider('set value', $(this).val())
+            
+        });
+    }
+	
+function configure_radio() {
+         $('.ui.radio.checkbox').checkbox();
+         gas_selector = $('#radio').find('[name="gas_type"]:checked').val();
+         console.log(gas_selector)
+         if (gas_selector === undefined){
+                 console.log("error")
+                 gas_selector = 1
+            }
+
+}
+
+
+
+function buildPlot1(res, plotdiv) {
+
+console.log(res);
+var trace1 = {
+      x: [],
+      y: [],
+  error_y: {
+    type: 'data',
+    color: '#85144B',
+    array: [],
+    thickness: 1.5,
+    width:3,
+    visible: true
+  },
+  mode: 'markers',
+  line: {
+    color: "#1f77b4", 
+    width: 1
+  },marker: {
+    color: "rgb(0, 255, 255)", 
+    size: 6, 
+    line: {
+      color: "black", 
+      width: 0.5
+    }
+  },
+  type:"scatter",
+      /*line: {
+        color: '#80CAF6',
+        shape: 'linear'
+      },*/
+      
+      name: "res[1]"
+    };
+
+  var output_data = [trace1];
+
+  var layout = {
+    margin: {
+    l: 50,
+    r: 50,
+    b: 50,
+    t: 50,
+    pad: 4
+  },
+    showlegend:false, 
+    xaxis: {
+          title: gettext('Voltage[V]'),
+          titlefont:{
+                color: 'black',
+                size: 14
+                },
+               howticklabels: false
+               // rangemode: 'tozero'
+              
+               //rangeslider: {}
+          },
+    yaxis: {
+          title: gettext('Current [µA]'),
+          fixedrange: true,
+          titlefont:{
+                color: 'black',
+                size: 14
+                }
+               // rangemode: 'tozero'
+          }
+   };
+
+   Plotly.newPlot(plotdiv, output_data, layout, {responsive: true});
+ 
+}
+
+function buildPlot2(res,plotdiv) {
+console.log(res);
+var trace2 = {
+      x: [],
+      y: [],
+  error_y: {
+    type: 'data',
+    color: '#85144B',
+    array: [],
+    thickness: 1.5,
+    width:3,
+    visible: true
+  },
+  mode: 'lines+markers',
+  line: {
+    color: "#1f77b4", 
+    width: 1
+  },marker: {
+    color: "rgb(0, 255, 255)", 
+    size: 6, 
+    line: {
+      color: "black", 
+      width: 0.5
+    }
+  },
+  type:"scatter",
+      
+      name: res[2]
+    };
+
+  var output_data = [trace2];
+
+  var layout = {
+ 
+
+    xaxis: {
+          
+          title: gettext('Elapsed Time[ms]'),
+          titlefont:{
+                color: 'black',
+                size: 14
+                }
+              //  rangemode: 'tozero'
+          },
+    yaxis: {
+      //range:[0.19,0.21],
+          title: gettext('Voltage [V]'),
+          titlefont:{
+                color: 'black',
+                size: 14
+                }
+                //rangemode: 'tozero'
+          }
+   };
+
+   Plotly.newPlot(plotdiv, output_data, layout,  {responsive: false});
+ 
+  }
+  
+  
+
+function buildPlot3(res,plotdiv) {
+console.log(res);
+var trace3 = {
+      x: [],
+      y: [],
+  error_y: {
+    type: 'data',
+    color: '#85144B',
+    array: [],
+    thickness: 1.5,
+    width:3,
+    visible: true
+  },
+  mode: 'lines+markers',
+  line: {
+    color: "#1f77b4", 
+    width: 1
+  },marker: {
+    color: "rgb(0, 255, 255)", 
+    size: 6, 
+    line: {
+      color: "black", 
+      width: 0.5
+    }
+  },
+  type:"scatter",
+      
+      name: res[3]
+    };
+
+  var output_data = [trace3];
+
+  var layout = {
+ 
+
+    xaxis: {
+          
+          title: gettext('Elapsed Time[ms]'),
+          titlefont:{
+                color: 'black',
+                size: 14
+                }
+              //  rangemode: 'tozero'
+          },
+    yaxis: {
+      //range:[0.19,0.21],
+          title: gettext('Current [µA]'),
+          titlefont:{
+                color: 'black',
+                size: 14
+                }
+                //rangemode: 'tozero'
+          }
+   };
+
+   Plotly.newPlot(plotdiv, output_data, layout,  {responsive: false});
+ 
+  }
+  
+ function buildPlot4(res,plotdiv) {
+console.log(res);
+var trace4 = {
+      x: [],
+      y: [],
+  error_y: {
+    type: 'data',
+    color: '#85144B',
+    array: [],
+    thickness: 1.5,
+    width:3,
+    visible: true
+  },
+  mode: 'lines+markers',
+  line: {
+    color: "#1f77b4", 
+    width: 1
+  },marker: {
+    color: "rgb(0, 255, 255)", 
+    size: 6, 
+    line: {
+      color: "black", 
+      width: 0.5
+    }
+  },
+  type:"scatter",
+      
+      name: res[4]
+    };
+
+  var output_data = [trace4];
+
+  var layout = {
+ 
+
+    xaxis: {
+          
+          title: gettext('Elapsed Time[ms]'),
+          titlefont:{
+                color: 'black',
+                size: 14
+                }
+              //  rangemode: 'tozero'
+          },
+    yaxis: {
+      //range:[0.19,0.21],
+          title: gettext('Pressure [mbar]'),
+          titlefont:{
+                color: 'black',
+                size: 14
+                }
+                //rangemode: 'tozero'
+          }
+   };
+
+   Plotly.newPlot(plotdiv, output_data, layout,  {responsive: false});
+ 
+  }
+
+
+
+
+</script>
+{% endblock %}
