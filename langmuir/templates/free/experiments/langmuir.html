@@ -315,11 +315,11 @@ function table_insert_partial_data(data){
        {
           row_data.push("-")
        }
+       count_draw = count_draw +1;
        t.row.add(row_data)
        return row_data
 	} );
 
-    count_draw = count_draw +1;
 
     if (count_draw >= data.value.length){
 	t.draw()
