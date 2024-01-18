@@ -31,7 +31,7 @@
         <div class="ui two column grid container">
             <div class="column">
                 <div class="ui segment">
-                    <legend> <h3>{% trans 'Current [**]'%}</h3></legend>
+                    <legend> <h3>{% trans 'Current [mA]'%}</h3></legend>
                     <div style="padding-top: 5%;"  class="ui blue small bottom aligned labeled  slider"  id="slider-current" ></div>
                         
                         <div class="ui input" >
@@ -41,7 +41,7 @@
             </div>
             <div class="column">
                 <div class="ui segment">
-                    <legend><h3>{% trans 'Angle [**]'%}</h3></legend>
+                    <legend><h3>{% trans 'Angle [&#176;]'%}</h3></legend>
                     <div style="padding-top: 5%;"  class="ui blue small bottom aligned labeled  slider" id="slider-angle" ></div>
                         
                         <div class="ui input">
@@ -54,7 +54,7 @@
         <div class="ui two column grid container">
             <div class="column">
                 <div class="ui segment">
-                    <legend> <h3>{% trans 'pos_init'%}</h3></legend>
+                    <legend> <h3>{% trans 'Starting Position [mm]'%}</h3></legend>
                     <div style="padding-top: 5%;"  class="ui blue small bottom aligned labeled slider"  id="slider-pos_init" ></div>
                         
                         <div class="ui input" >
@@ -65,7 +65,7 @@
 			
 			 <div class="column">
                 <div class="ui segment">
-                    <legend> <h3>{% trans 'pos_final '%}</h3></legend>
+                    <legend> <h3>{% trans 'Final Position [mm]'%}</h3></legend>
                     <div style="padding-top: 5%;"  class="ui blue small bottom aligned labeled slider"  id="slider-pos_final" ></div>
                         
                         <div class="ui input" >
@@ -79,7 +79,7 @@
 		<div class="ui two column grid container">
             <div class="column">
                 <div class="ui segment">
-                    <legend> <h3>{% trans 'n_samples'%}</h3></legend>
+                    <legend> <h3>{% trans 'Number of Samples'%}</h3></legend>
                     <div style="padding-top: 5%;"  class="ui blue small bottom aligned labeled slider"  id="slider-n_samples" ></div>
                         
                         <div class="ui input" >
@@ -112,11 +112,11 @@
     <table id="results_table" class="ui celled table display" style="width:100%">
         <thead>
             <tr>
-                <th id="position">{% trans "Position" %}</th>
-                <th id="current">{% trans "Current [*]" %}</th>
-                <th id="field_x">{% trans "Field X [*]" %}</th>
-                <th id="field_y">{% trans "Field Y [*]" %}</th>
-                <th id="field_z">{% trans "Field Z [*]" %}</th>
+                <th id="position">{% trans "Position [mm]" %}</th>
+                <th id="current">{% trans "Current [nT]" %}</th>
+                <th id="field_x">{% trans "Field X [nT]" %}</th>
+                <th id="field_y">{% trans "Field Y [nT]" %}</th>
+                <th id="field_z">{% trans "Field Z [nT]" %}</th>
             </tr>
         </thead>
     </table>
@@ -307,7 +307,7 @@ function on_ready_experiment_UI(){
                 y: {
                     title:{
                         display: true, 
-                        text: gettext('Magnetic field [*]'),
+                        text: gettext('Magnetic Induction Field [nT]'),
                     }
                   //  min: 8.5,
                     //max: 9.5,
@@ -315,7 +315,7 @@ function on_ready_experiment_UI(){
                 x: {
                     title:{
                         display: true, 
-                        text: gettext('Position [**]'),
+                        text: gettext('Distance to origin [mm]'),
                     },
                 },
             },
@@ -324,7 +324,153 @@ function on_ready_experiment_UI(){
 
 
 }
+
+function add_relation(name,value)
+{
+
+}
+
+
+
+
+
+Number.prototype.countDecimals = function () {
+
+    if (Math.floor(this.valueOf()) === this.valueOf()) return 0;
+
+    var str = this.toString();
+    if (str.indexOf(".") !== -1 && str.indexOf("-") !== -1) {
+        return str.split("-")[1] || 0;
+    } else if (str.indexOf(".") !== -1) {
+        return str.split(".")[1].length || 0;
+    }
+    return str.split("-")[1] || 0;
+}
+
+
 function configure_slider(name){
+        //help_spac = Number.parseFloat(0);
+        //ticker =  Number.parseFloat(protocol_input_arguments[name].subPart);
+	console.log(Object.keys(protocol_input_arguments[name]))        
+
+        if(Object.keys(protocol_input_arguments[name]).indexOf("enum") !== -1)
+	{
+		console.log(name)
+		console.log("meuemueu")
+		label = protocol_input_arguments[name].enum;
+		$('#slider-'+name).slider({
+           	 	min:  0,
+            		max: label.length-1,
+            		step: 1,
+            		start: protocol_input_arguments[name].default,
+            		input: '#'+name,
+            		autoAdjustLabels: false,
+			interpretLabel: function (value) {
+				return label[value]
+			},
+			onChange: function( event, ui ) {
+            			// Set the real value into the inputs
+            			console.log(label[ui]); 
+				$('#'+name).val( label[ ui]);
+                                onInputChanged()
+
+
+        		},
+    			onMove: function(value){ 
+				console.log(label[value]); 
+				$('#'+name).val( label[value]);
+    			}
+		})
+        	$('#'+name).change(function() {
+			//thisVal = $(this).val();
+   			// o user so pode digitar [0,20,25] isso tem de corresponder to [0,1,2]...
+
+     			//if (thisVal >= 0 && thisVal <= label[0])
+			//{ 
+			//	$("#slider-"+name).slider('set value', label[0]);
+   			//}
+   			//else if (thisVal > 6 && thisVal <= label[1]) 
+			//{ 	
+			//	$("#slider-"+name).slider('set value', label[1]);
+  			//}
+   			//else if (thisVal > 20) 
+			//{ 
+			//	$("#slider-"+name).slider('set value', label[2]);
+   			//}
+   			//else 
+			//{ 
+			//	return false
+   			//}
+ 		});
+
+
+	}
+	else{
+                 let help_spac = Number.parseFloat(protocol_input_arguments[name].minimum).toFixed(protocol_input_arguments[name].multipleOf.countDecimals());
+                 let ticker =  Number.parseFloat(protocol_input_arguments[name].subPart).toFixed(protocol_input_arguments[name].multipleOf.countDecimals());
+
+       		$('#slider-'+name).slider({
+            		min:  protocol_input_arguments[name].minimum,
+            		max: protocol_input_arguments[name].maximum, 
+            		step: protocol_input_arguments[name].multipleOf,
+            		start: protocol_input_arguments[name].default,
+            		input: '#'+name,
+            		autoAdjustLabels: false,
+	    		interpretLabel: function (value) {
+                                   check_me = Number.parseFloat(Number.parseFloat(value)*Number.parseFloat(protocol_input_arguments[name].multipleOf) + Number.parseFloat(protocol_input_arguments[name].minimum)).toFixed(protocol_input_arguments[name].multipleOf.countDecimals())
+            			   if (value === 0) 
+               			   { 
+                  			      if (ticker>Number.parseFloat(protocol_input_arguments[name].minimum).toFixed(protocol_input_arguments[name].multipleOf.countDecimals()))
+                			        {	
+                			             help_spac = Number.parseFloat(ticker).toFixed(protocol_input_arguments[name].multipleOf.countDecimals()); 	
+                 			       } 
+                 			       else{
+                 			            help_spac = Number.parseFloat(Number.parseFloat(ticker)+Number.parseFloat(protocol_input_arguments[name].minimum)).toFixed(protocol_input_arguments[name].multipleOf.countDecimals());
+                 			       }
+                			        return Number.parseFloat(protocol_input_arguments[name].minimum).toFixed(protocol_input_arguments[name].multipleOf.countDecimals());
+             			    }
+              			    else if (check_me === help_spac) 
+              			    { 
+            			   	help_spac = Number.parseFloat(Number.parseFloat(help_spac)+Number.parseFloat(ticker)).toFixed(protocol_input_arguments[name].multipleOf.countDecimals()); 
+            			   	return check_me
+              			    }
+              			    else if (check_me === Number.parseFloat( protocol_input_arguments[name].maximum).toFixed(protocol_input_arguments[name].multipleOf.countDecimals())) 	
+              			    {
+               			        return Number.parseFloat( protocol_input_arguments[name].maximum).toFixed(protocol_input_arguments[name].multipleOf.countDecimals())
+              			    }
+              			    else 
+               			    { 
+               			        return ""
+              			    }
+  	    			},
+            		onChange: function(value) {
+                		//console.log("QQQQQQQQQQQQQQQQQQ "+value)
+                                       $('#'+name).val(Number.parseFloat(value).toFixed(protocol_input_arguments[name].multipleOf.countDecimals()))
+                		       add_relation(name,value);
+                		       onInputChanged()
+           		},
+	   		onMove: function(value)
+			{
+				// var helper = NumberparseFloat(value).toFixed(2);
+				$('#'+name).val(Number.parseFloat(value).toFixed(protocol_input_arguments[name].multipleOf.countDecimals()))
+
+				add_relation(name,value);
+			} 
+
+        		})
+        	$('#'+name).change(function() {
+            		if($(this).val() > protocol_input_arguments[name].maximum)
+                		$(this).prop("value", protocol_input_arguments[name].maximum)
+            		if($(this).val() < protocol_input_arguments[name].minimum)
+                		$(this).prop("value", protocol_input_arguments[name].minimum)
+            		$("#slider-"+name).slider('set value', $(this).val())
+            	});
+	}
+    }
+
+
+
+function configure_slider_old(name){
 	console.log(Object.keys(protocol_input_arguments[name]))
         $('#slider-'+name).slider({
             min:  protocol_input_arguments[name].minimum,
@@ -332,7 +478,7 @@ function configure_slider(name){
             step: protocol_input_arguments[name].multipleOf,
             start: protocol_input_arguments[name].default,
             input: '#'+name,
-            onChange: function(value) {
+            Change: function(value) {
                 console.log("QQQQQQQQQQQQQQQQQQ "+value)
                 $('#'+name).prop("value", value)
                 onInputChanged()
