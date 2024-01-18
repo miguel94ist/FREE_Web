@@ -313,13 +313,23 @@ class QuizTake(FormView):
                     self.sitting.current_execution = random_exec
                 context['execution_id'] = self.sitting.current_execution.pk
             else:
-                if self.quiz.single_apparatus or self.sitting.apparatus == None:
-                    online_apparatus = [x for x in Apparatus.objects.filter(protocols=self.quiz.experiments_protocol) if x.current_status=='Online']
-                    self.sitting.apparatus = random.choice(online_apparatus)
+                if self.quiz.single_apparatus:
+                    if self.sitting.apparatus == None:
+                        online_apparatus = [x for x in Apparatus.objects.filter(protocols=self.quiz.experiments_protocol) if x.current_status=='Online']
+                        try:
+                            self.sitting.apparatus = random.choice(online_apparatus)
+                        except:
+                            pass
                     context['apparatus'] = self.sitting.apparatus
                 else:
-                    context['apparatus'] = self.sitting.apparatus
-
+                    if not self.sitting.current_execution:
+                        online_apparatus = [x for x in Apparatus.objects.filter(protocols=self.quiz.experiments_protocol) if x.current_status=='Online']
+                        try:
+                            context['apparatus'] = random.choice(online_apparatus)
+                        except:
+                            pass
+                    else:
+                        context['apparatus'] = self.sitting.current_execution.apparatus
                 #verify if there is a current execution
                 if not self.sitting.current_execution:
                     ## create a new execution
