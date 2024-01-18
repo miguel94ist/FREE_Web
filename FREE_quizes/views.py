@@ -21,6 +21,8 @@ from model_utils.managers import InheritanceManager
 from free.models import *
 from jsf import JSF
 import json
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db.models import Q
 
 class QuizMarkerMixin(object):
     @method_decorator(login_required)
@@ -46,10 +48,15 @@ class QuizListTable(Table):
         model = Quiz
         fields = ['title', 'category', 'exam_paper', 'single_attempt']    
 
-class QuizListView(SingleTableView):
+class QuizListView(LoginRequiredMixin, SingleTableView):
     template_name = 'FREE_quizes/quiz_list.html'
     table_class = QuizListTable
-    queryset = Quiz.objects.all().filter(draft=False, visible=True)
+    def get_queryset(self):
+        if self.request.user.is_superuser:            
+            queryset = Quiz.objects.all().filter(Q(draft=True) | Q(visible=True)) 
+        else:
+            queryset = Quiz.objects.all().filter(draft=False, visible=True) 
+        return queryset
 
 class SittingListTable(Table):
     quiz_title = Column(accessor='quiz.title',verbose_name='Quiz Title')
