@@ -17,7 +17,7 @@ import random as rd
 #            ]
 
 
-def execution_parameters_random_cavidade():
+def execution_parameters_random_cavidade(user_answers):
 
     injection = [15,35, 50, 80, 100, 120, 150]
     index_ijection  =rd.randint(0, len(injection)-1)
