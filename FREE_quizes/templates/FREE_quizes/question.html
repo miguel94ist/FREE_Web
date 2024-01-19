@@ -290,51 +290,43 @@
 		{% endif %}	
 
 	</div>
-	{% if apparatus %}
 		{% if question_type == 'CREATE' %}
-
-
-			{% if execution_id %}
-			<div class="ui  container ">
-				<iframe src="{% url 'free:stripped-execution' execution_id %}" title="execution" width="100%" height="900" id="iframe_execution" >
+			{% if apparatus %}
+				{% if execution_id %}
+					<div class="ui  container ">
+						<iframe src="{% url 'free:stripped-execution' execution_id %}" title="execution" width="100%" height="900" id="iframe_execution" >
+						</iframe>
+					</div>
+				{% endif %}	
+			{% else %}
+				<div class="ui  container ">
+				<h1>Problem contacting and available apparatus</h1>
+					<p> Unfortunately there is not apparatus available for running the experiments</p>
+					<p> Try returning the quiz later</p>
 				</iframe>
-			</div>
+				</div>
+
+			{% endif%}
+		{% else %}
+			{% if previous_executions %}
+				<div class="ui  container ">
+					<h1>Other previous executions</h1>
+					{% for ex in previous_executions %}
+						<a href="{% url 'free:stripped-execution' ex %}" target="_blank">
+							Execution {{ex}} 
+						</a>
+					{% endfor %}
+				</div>
 			{% endif%}
 
-
-
-		{% else %}
-
-
-		{% if previous_executions %}
-		<div class="ui  container ">
-			<h1>Other previous executions</h1>
-			{% for ex in previous_executions %}
-				<a href="{% url 'free:stripped-execution' execution_id %}" target="_blank">
-					Execution {{ex}} 
-				</a>
-			{% endfor %}
-		</div>
-		{% endif%}
-			
-
-		{% if execution_id %}
-		<div class="ui  container ">
-			<h1>Last execution</h1>
-			<iframe src="{% url 'free:stripped-execution' execution_id %}" title="execution" width="100%" height="900" id="iframe_execution" >
-			</iframe>
-		</div>
-		{% endif%}
-
+			{% if execution_id %}
+				<div class="ui  container ">
+					<h1>Last execution ({{execution_id}})</h1>
+					<iframe src="{% url 'free:stripped-execution' execution_id %}" title="execution" width="100%" height="900" id="iframe_execution" >
+					</iframe>
+				</div>
+			{% endif%}
 		{% endif %}	
-	{% else %}
-		<div class="ui  container ">
-		<h1>Problem contacting and available apparatus</h1>
-			<p> Unfortunately there is not apparatus available for running the experiments</p>
-			<p> Try restarting the quiz later</p>
-	</iframe>
-	</div>
-	{% endif %}	
 </div>
 
 
