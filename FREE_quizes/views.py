@@ -577,7 +577,8 @@ class QuizTake(FormView):
             'percent_score': 100.0 * correct_score/max_score,
             'sitting': self.sitting,
             'app_name': __package__.rsplit('.', 1)[-1],
-            'questions': self.quiz.orderedQuestions.all()
+            'questions': self.quiz.orderedQuestions.all(),
+            'score_send':correct_score/max_score
         }      
 
         self.sitting.mark_quiz_complete()
