@@ -479,9 +479,9 @@ class Sitting(models.Model):
 #        validators=[validate_comma_separated_integer_list]
         )
 
-    correct_answers = models.IntegerField(verbose_name=_("Current Score"), default=0)
+    correct_answers = models.IntegerField(verbose_name=_("Correct answers"), default=0)
     current_score = models.IntegerField(verbose_name=_("Current Score"), default=0)
-    total_weigth = models.IntegerField(verbose_name=_("Current Score"), default=0)
+    total_weigth = models.IntegerField(verbose_name=_("Total weight"), default=0)
 
     complete = models.BooleanField(default=False, blank=False,
                                    verbose_name=_("Complete"))

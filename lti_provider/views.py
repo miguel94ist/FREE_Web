@@ -221,6 +221,12 @@ class LTIPostGrade(LTIAuthMixin, View):
         """
         try:
             score = float(request.POST.get('score'))
+            sitting_id = int(request.POST.get('sitting_pk'))
+            Sitting = apps.get_model("FREE_quizes",'Sitting')
+            s = Sitting.objects.get(pk=sitting_id)
+            db_final_grade = s.current_score/s.total_weigth
+            if (score!= db_final_grade):
+                score = 0
         except ValueError:
             score = 0
         redirect_url = request.POST.get('next', '/')
@@ -248,7 +254,7 @@ class LTIPostGrade(LTIAuthMixin, View):
             msg = ('Your score was submitted. Great job!')
             messages.add_message(request, messages.INFO, msg)
             #confirm submition:
-            Sitting = apps.get_model(request.POST.get('app_name'),'Sitting')
+            Sitting = apps.get_model("FREE_quizes",'Sitting')
             print("sitting pk",request.POST.get('sitting_pk'))
             sit = Sitting.objects.get(pk=request.POST.get('sitting_pk'))
             sit.mark_quiz_sent_moodle()

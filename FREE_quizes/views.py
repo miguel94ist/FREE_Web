@@ -224,24 +224,23 @@ class QuizTake(FormView):
 
         if self.logged_in_user:
             self.sitting = Sitting.objects.unsent_sitting(request.user,self.quiz)
-            if (self.sitting is False 
-                or self.request.session.get('lti_login') is None):
+            if (self.sitting is False or self.request.session.get('lti_login') is None):
                 self.sitting = Sitting.objects.user_sitting(request.user,
                                                         self.quiz)
             else:
-                score_send = self.sitting.get_percent_correct/100
-                score_send = self.sitting.get_current_score
+                context['score_send']= self.sitting.final_grade
                 context['quiz']= self.quiz
-                context['score']= self.sitting.get_current_score
+                context['sitting'] = self.sitting
+                """                context['score']= self.sitting.get_current_score
                 context['max_score']= self.sitting.right_max_score
                 context['percent']= self.sitting.get_percent_correct
                 context['sitting']= self.sitting
-                context['score_send']= score_send
                 context['app_name']= __package__.rsplit('.', 1)[-1]
                 context['correct_answers'] = self.sitting.correct_answers
 
                 print("context:",context)
                 print("app name:",__package__.rsplit('.', 1)[-1])
+                """
                 return render(request, self.not_submited_template_name, context)
         else:
             self.sitting = self.anon_load_sitting()
@@ -580,7 +579,8 @@ class QuizTake(FormView):
             'questions': self.quiz.orderedQuestions.all(),
             'score_send':correct_score/max_score
         }      
-
+        self.sitting.current_score = correct_score
+        self.sitting.total_weigth = max_score
         self.sitting.mark_quiz_complete()
         if self.request.session.get('lti_login') is not None:
             results['lti'] = True
