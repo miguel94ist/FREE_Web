@@ -560,7 +560,7 @@ class QuizTake(FormView):
                 max_score += ans[ 'evaluationWeight']
                 if ans['grade']:
                     correct_questions += 1
-                    correct_score +=1
+                    correct_score += ans[ 'evaluationWeight']
         quiz_details =[]
         for i in range(len(self.sitting.user_answers)):
             quiz_details.append({
