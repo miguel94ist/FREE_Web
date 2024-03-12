@@ -72,6 +72,7 @@ INSTALLED_APPS = [
     'planck',
     'colisione',
     'mag3d',
+    'polaroid',
     #Quiz apps
 
 ]
