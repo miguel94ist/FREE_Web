@@ -115,7 +115,7 @@ class Execution(models.Model):
             return None
 
     def __str__(self):
-        return _('Execution of %(protocol)s') % {'protocol': str(self.protocol)}
+         return _('Execution of %(protocol)s') % {'protocol': str(self.protocol)}
 
     class Meta:
         verbose_name = _('Execution')

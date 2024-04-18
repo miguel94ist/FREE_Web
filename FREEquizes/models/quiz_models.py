@@ -374,10 +374,6 @@ class SittingManager(models.Manager):
 )
         return new_sitting
 
-    def get_currrent_sitting(self, user, quiz):
-        quiz_list = self.get(user=user, quiz=quiz, archived=False)
-        return  quiz_list
-    
     def user_sitting(self, user, quiz):
         if quiz.single_attempt is True and self.filter(user=user,
                                                        quiz=quiz,
@@ -448,28 +444,25 @@ class Sitting(models.Model):
                                            default=0)
 
 
-    #current_execution = models.ForeignKey(
-    #    Execution,
-    #    related_name='%(app_label)s_%(class)s_execution',
-    #    verbose_name=_("Current Execution"), 
-    #    blank = True, 
-    #    null=True, 
-    #    on_delete=models.SET_NULL)
+    current_execution = models.ForeignKey(
+        Execution,
+        related_name='%(app_label)s_%(class)s_execution',
+        verbose_name=_("Current Execution"), 
+        blank = True, 
+        null=True, 
+        on_delete=models.SET_NULL)
     
-    #last_execution = models.ForeignKey(
-    #    Execution,
-    #    related_name='%(app_label)s_%(class)s_last_execution',
+    last_execution = models.ForeignKey(
+        Execution,
+        related_name='%(app_label)s_%(class)s_last_execution',
 
-    #    verbose_name=_("Last Execution"), 
-    #    blank = True, 
-    #    null=True, 
-    #    on_delete=models.SET_NULL)
+        verbose_name=_("Last Execution"), 
+        blank = True, 
+        null=True, 
+        on_delete=models.SET_NULL)
 
     user_answers = models.JSONField(default=list,
                                     verbose_name=_("User Answers"))
-
-    answered_questions_list = models.JSONField(default=list,
-                                    verbose_name=_("Answered questions"))
 
 
     finished_executions = models.ManyToManyField(Execution)
@@ -492,8 +485,6 @@ class Sitting(models.Model):
 
     complete = models.BooleanField(default=False, blank=False,
                                    verbose_name=_("Complete"))
-    archived = models.BooleanField(default=False, blank=False,
-                                   verbose_name=_("Archived"))
 
 
     start = models.DateTimeField(auto_now_add=True,

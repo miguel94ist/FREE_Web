@@ -26,6 +26,3 @@ class Experiment_ExectionForm(forms.Form):
     def __init__(self, question, *args, **kwargs):
         super(Experiment_ExectionForm, self).__init__(*args, **kwargs)
         
-class Navigate_quizz(forms.Form):
-    def __init__(self, question, *args, **kwargs):
-        super(Navigate_quizz, self).__init__(*args, **kwargs)
