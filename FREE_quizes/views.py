@@ -9,7 +9,7 @@ from django.shortcuts import get_object_or_404, render
 from django.utils.decorators import method_decorator
 from django.views.generic import DetailView, ListView, TemplateView, FormView
 
-from .forms import QuestionForm, EssayForm, Experiment_ExectionForm
+from .forms import QuestionForm, EssayForm, Experiment_ExectionForm, Navigate_quizz
 from .models import Quiz, Progress, Sitting, Question, Essay_Question
 from FREE_quizes.models.questions_models import Experiment_Execution
 
@@ -204,14 +204,15 @@ class QuizTake(FormView):
     not_submited_template_name = 'FREE_quizes/send_result.html'
 
     def dispatch(self, request, *args, **kwargs):
+        #code executed when receives a request FREE_quizes/xxx/take (1)
         self.quiz = get_object_or_404(Quiz, url=self.kwargs['quiz_name'])
         if self.quiz.draft and not request.user.has_perm('quiz.change_quiz'):
             raise PermissionDenied
 
         try:
-            self.logged_in_user = self.request.user.is_authenticated()
+            self.logged_in_user = self.request.user#.is_authenticated()
         except TypeError:
-            self.logged_in_user = self.request.user.is_authenticated
+            raise PermissionDenied
 
         context = {}
         if self.request.session.get('lti_login') is not None:
@@ -221,29 +222,34 @@ class QuizTake(FormView):
             context['base'] = "free/base.html"
             context['lti'] = False
 
-
-        if self.logged_in_user:
-            self.sitting = Sitting.objects.unsent_sitting(request.user,self.quiz)
-            if (self.sitting is False or self.request.session.get('lti_login') is None):
-                self.sitting = Sitting.objects.user_sitting(request.user,
-                                                        self.quiz)
-            else:
-                context['score_send']= self.sitting.final_grade
-                context['quiz']= self.quiz
-                context['sitting'] = self.sitting
-                """                context['score']= self.sitting.get_current_score
-                context['max_score']= self.sitting.right_max_score
-                context['percent']= self.sitting.get_percent_correct
-                context['sitting']= self.sitting
-                context['app_name']= __package__.rsplit('.', 1)[-1]
-                context['correct_answers'] = self.sitting.correct_answers
-
-                print("context:",context)
-                print("app name:",__package__.rsplit('.', 1)[-1])
-                """
-                return render(request, self.not_submited_template_name, context)
+        #TODO - melhorar a gestão dos sittings...... 
+        #self.sitting = Sitting.objects.unsent_sitting(request.user,self.quiz)
+        try:
+            self.sitting = Sitting.objects.get_currrent_sitting(request.user,self.quiz)
+        except Sitting.DoesNotExist:
+            self.sitting = Sitting.objects.new_sitting(request.user,self.quiz)
+        
+        return super(QuizTake, self).dispatch(request, *args, **kwargs)
+    
+        if (self.sitting is False or self.request.session.get('lti_login') is None):
+            self.sitting = Sitting.objects.user_sitting(request.user,
+                                                    self.quiz)
         else:
-            self.sitting = self.anon_load_sitting()
+            context['score_send']= self.sitting.final_grade
+            context['quiz']= self.quiz
+            context['sitting'] = self.sitting
+            """                context['score']= self.sitting.get_current_score
+            context['max_score']= self.sitting.right_max_score
+            context['percent']= self.sitting.get_percent_correct
+            context['sitting']= self.sitting
+            context['app_name']= __package__.rsplit('.', 1)[-1]
+            context['correct_answers'] = self.sitting.correct_answers
+
+            print("context:",context)
+            print("app name:",__package__.rsplit('.', 1)[-1])
+            """
+            return render(request, self.not_submited_template_name, context)
+    
 
         if self.sitting is False:
             return render(request, self.single_complete_template_name, context)
@@ -251,33 +257,130 @@ class QuizTake(FormView):
         return super(QuizTake, self).dispatch(request, *args, **kwargs)
 
     def get_form(self, *args, **kwargs):
-        if self.logged_in_user:
-            self.question = self.sitting.get_first_question()
-            self.progress = self.sitting.progress()
-        else:
-            self.question = self.anon_next_question()
-            self.progress = self.anon_sitting_progress()
 
 
+        #verify if user terminated quiz
+        try:
+            if self.request.POST['terminate_quiz'] == 'true' and len(self.sitting.quiz.orderedQuestions.all()) == len (self.sitting.answered_questions_list):
+                self.sitting.complete = True
+                self.sitting.save()
+                print('Terminating quizz')
+        except: 
+            pass
+
+        #verivfy is user navigated on quiz (prev, next buttons)
+        try:
+            self.sitting.current_question -= int(self.request.POST['previous_step'])
+            self.sitting.current_question += int(self.request.POST['next_step'])
+        except:
+            pass
+        if self.sitting.current_question > len(self.sitting.answered_questions_list):
+            self.sitting.current_question = len(self.sitting.answered_questions_list)
+        if self.sitting.current_question < 0 :
+            self.sitting.current_question = 0
+        self.sitting.save()
+        
+        #get current question and progress.....
+        self.question =  self.quiz.orderedQuestions.all()[self.sitting.current_question]
+        self.progress = self.sitting.progress()
+
+        #update the form an initializa relevant infomration
+        form_class = self.form_class
         try:
             self.question = self.question.essay_question
+            form_class = EssayForm
         except:
             pass
         
         try:
             self.question = self.question.experiment_execution
+            form_class = Experiment_ExectionForm
+
+            #get current execution
+            self.current_execution = None
+            try:
+                cur_exec_id = self.sitting.user_answers[self.sitting.current_question]["execution_id"]
+                self.current_execution = Execution.objects.filter(pk = cur_exec_id)[0]
+            except:
+                pass
+
+            if self.current_execution == None:
+                #creat or fect a nex experiment
+                current_experiment_info = { }
+                current_apparatus = None
+                protocol = self.quiz.experiments_protocol
+
+                #fetch a random execution
+                if self.question.sub_category == 'Fetch':
+                    random_exec = self.get_random_execution(protocol)
+                    self.current_execution = random_exec
+                    current_experiment_info["execution_id"] = self.current_execution.id
+                    ###### TODO
+                #create a new execution
+                if self.question.sub_category == 'Create':
+                    current_apparatus = self.find_available_apparatus()
+                    if current_apparatus:
+                        required_experiment_parameters = self.question.get_student_experiment_parameters(self.quiz, self.question, self.sitting.user_answers)
+                        current_experiment_info["req_parameters"] = required_experiment_parameters
+                        #self.sitting.current_execution_req_parameters = student_experiment_parameters
+                        config_generator = JSF(protocol.config)
+                        config = config_generator.generate()
+                        config = self.question.update_experiment_input(config, self.quiz)
+
+                        e = Execution()
+                        e.user = self.logged_in_user
+                        e.apparatus = current_apparatus
+                        e.protocol = protocol
+                        e.config = config
+                        e.status = 'C'
+                        e.save()
+                        self.current_execution = e
+                        current_experiment_info["execution_id"] = self.current_execution.id
+                        try:
+                            self.sitting.user_answers[self.sitting.current_question] = current_experiment_info
+                        except:
+                            self.sitting.user_answers.append(current_experiment_info)
+
+                self.sitting.save()
+
         except:
             pass
-        
-        
-        if self.question.__class__ is Essay_Question:
-            form_class = EssayForm
-        elif self.question.__class__ is Experiment_Execution:
-            form_class = Experiment_ExectionForm
-        else:
-            form_class = self.form_class
 
+        try:
+            if self.sitting.answered_questions_list[self.sitting.current_question]:
+                self.already_answered = True
+            else:
+                self.already_answered = False
+        except:
+            self.already_answered = False
+     
+        
         return form_class(**self.get_form_kwargs())
+
+    def find_available_apparatus(self):
+        current_apparatus = None
+        if self.quiz.single_apparatus:
+            #single_apparatus
+            if self.sitting.apparatus == None:
+                online_apparatus = [x for x in Apparatus.objects.filter(protocols=self.quiz.experiments_protocol) if x.current_status=='Online']
+                try:
+                    self.sitting.apparatus = random.choice(online_apparatus)
+                    current_apparatus = self.sitting.apparatus
+                except:
+                    pass
+            else:
+                current_apparatus = self.sitting.apparatus
+
+        else:
+            # differente apararyus per execution
+            online_apparatus = [x for x in Apparatus.objects.filter(protocols=self.quiz.experiments_protocol) if x.current_status=='Online']
+            try:
+                current_apparatus = random.choice(online_apparatus)
+            except:
+                pass
+        return current_apparatus
+
+
 
     def get_form_kwargs(self):
         kwargs = super(QuizTake, self).get_form_kwargs()
@@ -285,104 +388,28 @@ class QuizTake(FormView):
         return dict(kwargs, question=self.question)
 
     def form_valid(self, form):
-        if self.logged_in_user:
+
+        if form.__class__ != Navigate_quizz:
+            ## code executed when user presses a button (continue to quiz, submit answer, restart execution, re-answer)
+            
             self.form_valid_user(form)
-            if self.sitting.get_first_question() is False:
-                return self.final_result_user()
+
         else:
-            self.form_valid_anon(form)
-            if not self.request.session[self.quiz.anon_q_list()]:
-                return self.final_result_anon()
+            pass
+            #self.request.POST = {}
 
-        self.request.POST = {}
-
-
+        self.success_url = self.request.path
+        return super().form_valid(form)
         return super(QuizTake, self).get(self, self.request)
+
     #fiil the page
     def get_context_data(self, **kwargs):
+        #code executed when filling the page (2)
+        
         context = super(QuizTake, self).get_context_data(**kwargs)
-        context['question'] = self.question
-        if self.question.__class__ is Experiment_Execution:
-            context['protocol'] = self.quiz.experiments_protocol
 
-            if self.question.sub_category == 'Fetch':
-                context['question_type'] = "FETCH"
-                if self.sitting.current_execution == None:
-                    random_exec = self.get_random_execution(context['protocol'])
-                    self.sitting.current_execution = random_exec
-                context['execution_id'] = self.sitting.current_execution.pk
-            else:
-                if self.quiz.single_apparatus:
-                    if self.sitting.apparatus == None:
-                        online_apparatus = [x for x in Apparatus.objects.filter(protocols=self.quiz.experiments_protocol) if x.current_status=='Online']
-                        try:
-                            self.sitting.apparatus = random.choice(online_apparatus)
-                        except:
-                            pass
-                    context['apparatus'] = self.sitting.apparatus
-                else:
-                    if not self.sitting.current_execution:
-                        online_apparatus = [x for x in Apparatus.objects.filter(protocols=self.quiz.experiments_protocol) if x.current_status=='Online']
-                        try:
-                            context['apparatus'] = random.choice(online_apparatus)
-                        except:
-                            pass
-                    else:
-                        context['apparatus'] = self.sitting.current_execution.apparatus
-                #verify if there is a current execution
-                if not self.sitting.current_execution:
-                    ## create a new execution
-                    ## generate the parameters of the execution
-                    student_experiment_parameters = self.question.get_student_experiment_parameters(self.quiz, self.question, self.sitting.user_answers)
-                    context['student_experiment_parameters'] = student_experiment_parameters
-                    self.sitting.current_execution_req_parameters = student_experiment_parameters
-                    config_generator = JSF(context['protocol'].config)
-                    config = config_generator.generate()
-                    config = self.question.update_experiment_input(config, self.quiz)
-                    context['sample_config'] = config
-                    context['question_type'] = "CREATE"
-                else:
-                    ## retrieve a already created execution
-                    context['student_experiment_parameters'] = self.sitting.current_execution_req_parameters
-                    context['question_type'] = "CREATE"
-                    context['execution_id'] = self.sitting.current_execution.id
-                    context['execution'] = self.sitting.current_execution
-        else:
-            context['question_type'] = self.question.question_type()
-
-            previous_executions = []        
-            for ans in self.sitting.user_answers:
-                if ans['execution_id']:
-                    previous_executions.append(ans['execution_id'])
-            
-            multiple_answer_fields = []
-            for k in self.question.multiple_answer_fields.keys():
-                d = self.question.multiple_answer_fields[k].copy()
-                d['name'] = k
-                multiple_answer_fields.append(d)
-            context['multiple_answer_fields'] = multiple_answer_fields
-            if len(previous_executions) > 0:
-                context['execution_id'] = previous_executions[-1]
-                context['execution'] = Execution.objects.filter(id= previous_executions[-1]).first()
-            if len(previous_executions) > 1:
-                context['previous_executions'] = previous_executions[:-1]
-
-#            if self.sitting.current_execution != None:
-#                context['execution_id'] = self.sitting.current_execution.id
-#                context['execution'] = self.sitting.current_execution
-#            else:
-#                if self.sitting.finished_executions.count()>0:
-#                    context['execution_id'] = self.sitting.finished_executions.last().id
-#                    context['execution'] = self.sitting.finished_executions.last()
-
-            pass
 
         context['quiz'] = self.quiz
-        if self.question.__class__ is Essay_Question:       
-            context['decimal_cases'] = self.question.decimal_precision
-
-
-
         if self.request.session.get('lti_login') is not None:
             context['base'] = "free/base_stripped.html"
             context['lti'] = True
@@ -390,42 +417,189 @@ class QuizTake(FormView):
             context['base'] = "free/base.html"
             context['lti'] = False
 
-        if hasattr(self, 'previous'):
-            context['previous'] = self.previous
-        if hasattr(self, 'progress'):
-            context['progress'] = self.progress
+        if self.sitting.complete:
+            context = self.final_result_user(context)
+            context['view'].template_name = context['view'].result_template_name
+        else:
 
-        context['execution_json'] = {}
-        context['final_result'] = {}
-        context['current_question']= self.sitting.current_question+1
-        #self.sitting.decimal_precision = random.randint(3,7)
-        self.sitting.save()
+            context['prev_button'] = False
+            context['next_button'] = False
+            if self.sitting.current_question < len(self.sitting.answered_questions_list):
+                context['next_button'] = True
+            if self.sitting.current_question > 0:
+                context['prev_button'] = True
+
+            context['already_answered'] = self.already_answered
+
+            if self.already_answered:
+                context['question_result'] = {}
+                context['question_result']['evaluated'] = self.sitting.user_answers[self.sitting.current_question]['evaluated']
+                context['question_result']['answer'] = self.sitting.user_answers[self.sitting.current_question]['answer']
+                context['question_result']['expected_result'] = ""
+                context['question_result']['weight'] = self.sitting.user_answers[self.sitting.current_question]['evaluationWeight']
+                context['question_result']['grade'] = int(self.sitting.user_answers[self.sitting.current_question]['grade'])
+
+            if self.sitting.current_question +1 == len(self.sitting.quiz.orderedQuestions.all()):
+                context['next_button'] = False
+            if len(self.sitting.quiz.orderedQuestions.all()) == len(self.sitting.answered_questions_list):
+                context['completed_quiz'] = True
+
+            context['question'] = self.question
+            if self.question.__class__ is Experiment_Execution:
+                context['protocol'] = self.quiz.experiments_protocol
+                if self.question.sub_category == 'Fetch':
+                    context['question_type'] = "FETCH"
+                if self.question.sub_category == 'Create':
+                    context['question_type'] = "CREATE"
+
+                if self.current_execution:
+                        ## retrieve a already created execution
+                    context['student_experiment_parameters'] = self.sitting.user_answers[self.sitting.current_question]['req_parameters']
+                    context['question_type'] = "CREATE"
+                    context['execution_id'] = self.current_execution.id
+                    context['execution'] = self.current_execution
+                    """            else:
+                    if self.question.sub_category == 'Fetch':
+                        context['question_type'] = "FETCH"
+                        if self.current_execution == None:
+                            random_exec = self.get_random_execution(context['protocol'])
+                            self.current_execution = random_exec
+                        context['execution_id'] = self.current_execution.pk
+                    else:
+                        if self.quiz.single_apparatus:
+                            # differente apararyus per execution
+                            if self.sitting.apparatus == None:
+                                online_apparatus = [x for x in Apparatus.objects.filter(protocols=self.quiz.experiments_protocol) if x.current_status=='Online']
+                                try:
+                                    self.sitting.apparatus = random.choice(online_apparatus)
+                                    context['apparatus'] = self.sitting.apparatus
+                                except:
+                                    pass
+                        else:
+                            online_apparatus = [x for x in Apparatus.objects.filter(protocols=self.quiz.experiments_protocol) if x.current_status=='Online']
+                            try:
+                                context['apparatus'] = random.choice(online_apparatus)
+                            except:
+                                pass
+
+                        student_experiment_parameters = self.question.get_student_experiment_parameters(self.quiz, self.question, self.sitting.user_answers)
+                        context['student_experiment_parameters'] = student_experiment_parameters
+                        self.sitting.current_execution_req_parameters = student_experiment_parameters
+                        config_generator = JSF(context['protocol'].config)
+                        config = config_generator.generate()
+                        config = self.question.update_experiment_input(config, self.quiz)
+
+                        e = Execution()
+                        e.user = self.logged_in_user
+                        e.apparatus = context['apparatus'] 
+                        e.protocol = context['protocol']
+                        e.config = config
+                        e.status = 'C'
+                        e.save()
+                        self.current_execution = e
+                        context['question_type'] = "CREATE"
+                        context['execution_id'] = self.current_execution.id
+                        context['execution'] = self.current_execution
+
+                        current_experiment_user_answer = {
+                            "req_parameters": self.sitting.current_execution_req_parameters,
+                            "execution_id": self.current_execution.id
+                        }
+                        self.sitting.user_answers.append(current_experiment_user_answer)
+                        
+                    ## create a new execution
+                    ## generate the parameters of the execution
+                    #student_experiment_parameters = self.question.get_student_experiment_parameters(self.quiz, self.question, self.sitting.user_answers)
+                    #context['student_experiment_parameters'] = student_experiment_parameters
+                    #self.sitting.current_execution_req_parameters = student_experiment_parameters
+                    #config_generator = JSF(context['protocol'].config)
+                    #config = config_generator.generate()
+                    #config = self.question.update_experiment_input(config, self.quiz)
+                    #context['sample_config'] = config
+                    #context['question_type'] = "CREATE"
+
+                    """
+
+
+            if self.question.__class__ is Essay_Question:
+
+                context['answered_question'] = False
+
+                try:
+                    if self.sitting.answered_questions_list[self.sitting.current_question]:
+                        for f in context['form'].fields.keys():
+                            context['form'].fields[f].initial = float(self.sitting.user_answers[self.sitting.current_question]['answer'][f])
+                        context['answered_question'] = True
+                except:
+                    pass
+
+                context['question_type'] = self.question.question_type()
+
+                previous_executions = []        
+                for ans in self.sitting.user_answers:
+                    if ans['execution_id']:
+                        previous_executions.append(ans['execution_id'])
+                
+                multiple_answer_fields = []
+                for k in self.question.multiple_answer_fields.keys():
+                    d = self.question.multiple_answer_fields[k].copy()
+                    d['name'] = k
+                    multiple_answer_fields.append(d)
+                context['multiple_answer_fields'] = multiple_answer_fields
+                if len(previous_executions) > 0:
+                    context['execution_id'] = previous_executions[-1]
+                    context['execution'] = Execution.objects.filter(id= previous_executions[-1]).first()
+                if len(previous_executions) > 1:
+                    context['previous_executions'] = previous_executions[:-1]
+
+    #            if self.sitting.current_execution != None:
+    #                context['execution_id'] = self.sitting.current_execution.id
+    #                context['execution'] = self.sitting.current_execution
+    #            else:
+    #                if self.sitting.finished_executions.count()>0:
+    #                    context['execution_id'] = self.sitting.finished_executions.last().id
+    #                    context['execution'] = self.sitting.finished_executions.last()
+                context['decimal_cases'] = self.question.decimal_precision
+
+
+
+            context['execution_json'] = {}
+            context['final_result'] = {}
+            context['current_question']= self.sitting.current_question+1
+            self.sitting.save()
         return context
 
     ## code executed when user presses a button (continue to quiz, submit answer, restart execution, re-answer)
     def form_valid_user(self, form):
         progress, _ = Progress.objects.get_or_create(user=self.request.user)
-        if self.question.__class__ is Experiment_Execution:
-            if False: # self.question.sub_category == 'Fetch':
-                execution_id = self.request.POST.get('execution_id')
-                progress.update_score(self.question, 1, 1)
-                guess = None
-                is_correct = True
-                self.sitting.add_execution(execution_id)
-#self.sitting.finished_executions.add(self.sitting.current_execution)
-                self.sitting.current_execution = None
-                self.sitting.add_user_answer(self.question, guess)
-                self.sitting.remove_first_question()
-            else:
-                if self.sitting.current_execution and self.sitting.current_execution.status == 'F':
+
+
+        if not self.already_answered:
+            if self.question.__class__ is Experiment_Execution:
+                #user presses the continue button on the experiment executions
+                if False: # self.question.sub_category == 'Fetch':
+                    execution_id = self.request.POST.get('execution_id')
+                    progress.update_score(self.question, 1, 1)
+                    guess = None
+                    is_correct = True
+                    self.sitting.add_execution(execution_id)
+    #self.sitting.finished_executions.add(self.sitting.current_execution)
+                    self.sitting.current_execution = None
+                    self.sitting.add_user_answer(self.question, guess)
+                    self.sitting.remove_first_question()
+                else:
                     try:
                         if self.request.POST['restart_execution'] == 'true':
-                            self.sitting.current_execution.delete()
-                            self.sitting.current_execution = None
-                            self.sitting.last_execution = None
+                            self.current_execution.delete()
+                            self.current_execution = None
+                            self.last_execution = None
                             self.sitting.save()
                             print('restart execution')
                     except: 
+                        pass
+
+
+                    if self.current_execution:# and self.sitting.current_execution.status == 'F':
                         #user presses continue to quiz
                         # exepriment is finished and we need to store:
                         # exepriment parameters: answer self.sitting.current_execution.config
@@ -433,120 +607,208 @@ class QuizTake(FormView):
                         # wether it is to be evaluated evaluated : true of false
                         # score - 0 or none
                         # 
+                        try:
+                            if self.request.POST['confirm_execution'] == 'true' and self.current_execution.status == 'F':
+                                self.sitting.user_answers[self.sitting.current_question]['evaluationWeight'] = self.question.evaluationWeight
+                                self.sitting.user_answers[self.sitting.current_question]['answer'] = self.current_execution.config
+                                if self.question.evaluated and self.question.sub_category != 'Fetch':
+                                    is_correct = self.question.check_if_correct(self.current_execution, self.sitting.current_execution_req_parameters) 
+                                    self.sitting.user_answers[self.sitting.current_question]['evaluated']= True  
+                                    self.sitting.user_answers[self.sitting.current_question]['grade'] =  is_correct
+                                else:
+                                    self.sitting.user_answers[self.sitting.current_question]['evaluated']= False
+                                    self.sitting.user_answers[self.sitting.current_question]['grade'] = 0 
+                                self.sitting.answered_questions_list.append(True)
+                                self.sitting.save()
+                        except: 
+                            pass
+                            a = false
+                            if a:
+                                guess = None
+                                current_experiment_user_answer = {
+                                    "answer": self.current_execution.config,
+                                    "req_parameters": self.sitting.current_execution_req_parameters,
+                                    "evaluationWeight":  self.question.evaluationWeight,
+                                    "execution_id": self.current_execution.id
+                                }
+                                if self.question.evaluated and self.question.sub_category != 'Fetch':
+                                    is_correct = self.question.check_if_correct(self.sitting.current_execution, self.sitting.current_execution_req_parameters) 
+                                    if is_correct is True:
+                                        self.sitting.add_to_score(1, self.question.evaluationWeight)
+                                        progress.update_score(self.question, 1, 1)
+                                    else:
+                                        pass
+                                        #self.sitting.add_to_score(0, self.question.evaluationWeight)
+                                        #self.sitting.add_incorrect_question(self.question)
+                                        #progress.update_score(self.question, 0, 1)
+        #                                self.sitting.user_answers.append({'answer': guess, 
+        #                                                                'grade': is_correct })
+                                    current_experiment_user_answer['evaluated']= True  
+                                    current_experiment_user_answer['grade'] =  is_correct
 
-                        guess = None
-                        current_experiment_user_answer = {
-                            "answer": self.sitting.current_execution.config,
-                            "req_parameters": self.sitting.current_execution_req_parameters,
-                            "evaluationWeight":  self.question.evaluationWeight,
-                            "execution_id": self.sitting.current_execution.id
-                        }
-                        if self.question.evaluated and self.question.sub_category != 'Fetch':
-                            is_correct = self.question.check_if_correct(self.sitting.current_execution, self.sitting.current_execution_req_parameters) 
-                            if is_correct is True:
-                                self.sitting.add_to_score(1, self.question.evaluationWeight)
-                                progress.update_score(self.question, 1, 1)
-                            else:
-                                pass
-                                #self.sitting.add_to_score(0, self.question.evaluationWeight)
-                                #self.sitting.add_incorrect_question(self.question)
-                                #progress.update_score(self.question, 0, 1)
-#                                self.sitting.user_answers.append({'answer': guess, 
-#                                                                'grade': is_correct })
-                            current_experiment_user_answer['evaluated']= True  
-                            current_experiment_user_answer['grade'] =  is_correct
+                                else:
+                                    current_experiment_user_answer['evaluated']= False
+                                    current_experiment_user_answer['grade'] = 0 
 
+                                self.sitting.user_answers.append(current_experiment_user_answer)
+
+                                self.sitting.finished_executions.add(self.current_execution)
+                                self.current_execution = None
+                                self.sitting.current_execution_req_parameters = None
+                                self.sitting.add_user_answer(self.question, guess)
+                                self.sitting.answered_questions_list.append(True)
+                                #self.sitting.current_question += 1
+                                ##self.sitting.remove_first_question()
+                    else:
+                        pass
+                        #creates an new execution
+                        """                        current_experiment_info = { }
+                        current_apparatus = None
+                        protocol = self.quiz.experiments_protocol
+                        if self.question.sub_category == 'Fetch':
+                            random_exec = self.get_random_execution(protocol)
+                            self.current_execution = random_exec
                         else:
-                            current_experiment_user_answer['evaluated']= False
-                            current_experiment_user_answer['grade'] = 0 
+                            available_apparatus = True
+                            if self.quiz.single_apparatus:
+                                # differente apararyus per execution
+                                if self.sitting.apparatus == None:
+                                    online_apparatus = [x for x in Apparatus.objects.filter(protocols=self.quiz.experiments_protocol) if x.current_status=='Online']
+                                    try:
+                                        self.sitting.apparatus = random.choice(online_apparatus)
+                                        current_apparatus = self.sitting.apparatus
+                                    except:
+                                        available_apparatus = False
 
-                        self.sitting.user_answers.append(current_experiment_user_answer)
+                            else:
+                                online_apparatus = [x for x in Apparatus.objects.filter(protocols=self.quiz.experiments_protocol) if x.current_status=='Online']
+                                try:
+                                    current_apparatus = random.choice(online_apparatus)
+                                except:
+                                    available_apparatus = False
 
-                        self.sitting.finished_executions.add(self.sitting.current_execution)
-                        self.sitting.current_execution = None
-                        self.sitting.current_execution_req_parameters = None
-                        self.sitting.add_user_answer(self.question, guess)
-                        self.sitting.current_question += 1
-                        ##self.sitting.remove_first_question()
+                            if available_apparatus:
+                                required_experiment_parameters = self.question.get_student_experiment_parameters(self.quiz, self.question, self.sitting.user_answers)
+                                current_experiment_info["req_parameters"] = required_experiment_parameters
+                                #self.sitting.current_execution_req_parameters = student_experiment_parameters
+                                config_generator = JSF(protocol.config)
+                                config = config_generator.generate()
+                                config = self.question.update_experiment_input(config, self.quiz)
+
+                                e = Execution()
+                                e.user = self.logged_in_user
+                                e.apparatus = current_apparatus
+                                e.protocol = protocol
+                                e.config = config
+                                e.status = 'C'
+                                e.save()
+                                self.current_execution = e
+                                current_experiment_info["execution_id"] = self.current_execution.id
+                                try:
+                                    self.sitting.user_answers[self.sitting.current_question] = current_experiment_info
+                                except:
+                                    self.sitting.user_answers.append(current_experiment_info)
+                            else:
+                                self.current_execution = None
+                            self.sitting.save()
+                        """               
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                        pass
+                        #guess = None
+                        #is_correct = True
+                        #execution_id = self.request.POST.get('execution_id')
+                        #self.sitting.add_execution(execution_id)     
+            else:
+                #user answers a question and presses submit answer
+                guess = {}
+                for f in form.fields.keys():
+                    guess[f] = form.cleaned_data[f]
+                #guess = form.cleaned_data['answer']
+                if self.request.POST.get('protocol_id') != None:
+                    id = self.request.POST.get(protocol_id)
+                    random_exec = self.get_random_execution(int(id))
+                    random_result = Result.objects.get(execution=random_exec.pk,result_type='f')
+                
+                    random_exec.pk = None
+                    random_exec.user = self.sitting.user
+                    random_exec.save()
+                    self.sitting.current_execution = random_exec
+                    self.sitting.save()
+
+                    random_result.pk = None
+                    random_result.execution = random_exec
+                    random_result.save()
+
+
+                if self.question.__class__ is Essay_Question:
+
+                    previous_executions = []
+                    for ans in self.sitting.user_answers:
+                        if ans['execution_id']:
+                            e = Execution.objects.filter(id= ans['execution_id']).first()
+                            previous_executions.append(e)
+
+                    try:
+                        last_execution = previous_executions[-1]
+                    except:
+                        last_execution = None
+
+                    is_correct = (
+                        #self.sitting.finished_executions.order_by("id")
+                        self.question.check_if_correct(guess,self.quiz, last_execution, previous_executions
+                                                    ,self.question.multiple_answer_fields))
                 else:
-                    guess = None
-                    is_correct = True
-                    execution_id = self.request.POST.get('execution_id')
-                    self.sitting.add_execution(execution_id)     
-        else:
-            guess = {}
-            for f in form.fields.keys():
-                guess[f] = form.cleaned_data[f]
-            #guess = form.cleaned_data['answer']
-            if self.request.POST.get('protocol_id') != None:
-                id = self.request.POST.get(protocol_id)
-                random_exec = self.get_random_execution(int(id))
-                random_result = Result.objects.get(execution=random_exec.pk,result_type='f')
-            
-                random_exec.pk = None
-                random_exec.user = self.sitting.user
-                random_exec.save()
-                self.sitting.current_execution = random_exec
+                    is_correct = self.question.check_if_correct(guess)
+
+                if is_correct is True:
+                    self.sitting.add_to_score(1, self.question.evaluationWeight)
+                    progress.update_score(self.question, 1, 1)
+                else:
+                    self.sitting.add_to_score(0, self.question.evaluationWeight)
+                    self.sitting.add_incorrect_question(self.question)
+                    progress.update_score(self.question, 0, 1)
+
+                self.sitting.add_user_answer(self.question, guess)
+                self.sitting.remove_first_question()
+                current_experiment_user_answer = {
+                    "answer": guess,
+                    "req_parameters": None,
+                    "evaluationWeight":  self.question.evaluationWeight,
+                    "execution_id": None,
+                    'evaluated': self.question.evaluated,
+                    'grade': is_correct
+                }
+                self.sitting.user_answers.append(current_experiment_user_answer)
+                self.sitting.answered_questions_list.append(True)
                 self.sitting.save()
+                #self.sitting.current_question += 1
+                #self.sitting.answered_questions_list.append(True)
 
-                random_result.pk = None
-                random_result.execution = random_exec
-                random_result.save()
-
-
-            if self.question.__class__ is Essay_Question:
-
-                previous_executions = []
-                for ans in self.sitting.user_answers:
-                    if ans['execution_id']:
-                        e = Execution.objects.filter(id= ans['execution_id']).first()
-                        previous_executions.append(e)
-
-                try:
-                    last_execution = previous_executions[-1]
-                except:
-                    last_execution = None
-
-                is_correct = (
-                    #self.sitting.finished_executions.order_by("id")
-                    self.question.check_if_correct(guess,self.quiz, last_execution, previous_executions
-                                                ,self.question.multiple_answer_fields))
-            else:
-                is_correct = self.question.check_if_correct(guess)
-
-            if is_correct is True:
-                self.sitting.add_to_score(1, self.question.evaluationWeight)
-                progress.update_score(self.question, 1, 1)
-            else:
-                self.sitting.add_to_score(0, self.question.evaluationWeight)
-                self.sitting.add_incorrect_question(self.question)
-                progress.update_score(self.question, 0, 1)
-
-            self.sitting.add_user_answer(self.question, guess)
-            self.sitting.remove_first_question()
-            current_experiment_user_answer = {
-                "answer": guess,
-                "req_parameters": None,
-                "evaluationWeight":  self.question.evaluationWeight,
-                "execution_id": None,
-                'evaluated': self.question.evaluated,
-                'grade': is_correct
-            }
-            self.sitting.user_answers.append(current_experiment_user_answer)
-            self.sitting.current_question += 1
-
-        #if self.quiz.show_answers_at_end is not True:
-        #    self.previous = {'previous_answer': guess,
-        #                    'previous_outcome': is_correct,
-        #                    'previous_question': self.question,
-        #                    'answer': self.question.get_answers(),
-        #                    'question_type': {self.question
-        #                                    .__class__.__name__: True}}
-        #else:
-        #    self.previous = {}
+            #if self.quiz.show_answers_at_end is not True:
+            #    self.previous = {'previous_answer': guess,
+            #                    'previous_outcome': is_correct,
+            #                    'previous_question': self.question,
+            #                    'answer': self.question.get_answers(),
+            #                    'question_type': {self.question
+            #                                    .__class__.__name__: True}}
+            #else:
+            #    self.previous = {}
 
 
-    def final_result_user(self):
+    def final_result_user(self, context):
         # calculo da informação a presentar no fim
         
         correct_questions = 0
@@ -566,31 +828,24 @@ class QuizTake(FormView):
                 'question': self.quiz.orderedQuestions.all()[i], 
                 'answer': self.sitting.user_answers[i]
             })
-        results = {
-            'details': quiz_details,
-            'quiz': self.quiz,
-            'correct_questions': correct_questions,
-            'total_questions': total_questions,
-            'correct_score': correct_score, 
-            'max_score': max_score,
-            'percent_score': 100.0 * correct_score/max_score,
-            'sitting': self.sitting,
-            'app_name': __package__.rsplit('.', 1)[-1],
-            'questions': self.quiz.orderedQuestions.all(),
-            'score_send':correct_score/max_score
-        }      
-        self.sitting.current_score = correct_score
-        self.sitting.total_weigth = max_score
-        self.sitting.mark_quiz_complete()
-        if self.request.session.get('lti_login') is not None:
-            results['lti'] = True
-        else:
-            results['lti'] = False
+       
+        context['details'] = quiz_details
+        context['quiz']= self.quiz
+        context['correct_questions']= correct_questions
+        context['total_questions']= total_questions
+        context['correct_score']= correct_score
+        context['max_score']= max_score
+        context['percent_score']= 100.0 * correct_score/max_score
+        context['sitting']= self.sitting
+        context['app_name']= __package__.rsplit('.', 1)[-1]
+        context['questions']= self.quiz.orderedQuestions.all()
+        context['score_send']= correct_score/max_score
+         
 
         #if self.quiz.exam_paper is False:
         #    self.sitting.delete()
 
-
+        return context
         return render(self.request, self.result_template_name, context = results)
     
 
