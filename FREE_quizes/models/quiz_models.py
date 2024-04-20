@@ -480,11 +480,18 @@ class Sitting(models.Model):
 
     incorrect_questions = models.JSONField(
 #        max_length=1024,
-#        blank=True,
+        blank=True,
         verbose_name=_("Incorrect questions"),
         default=list,
 #        validators=[validate_comma_separated_integer_list]
         )
+
+    final_result = models.JSONField(
+        blank=True,
+        verbose_name=_("Final results"),
+        default=dict,
+        )
+
 
     correct_answers = models.IntegerField(verbose_name=_("Correct answers"), default=0)
     current_score = models.IntegerField(verbose_name=_("Current Score"), default=0)
@@ -557,10 +564,37 @@ class Sitting(models.Model):
     @property
     def get_percent_correct(self):
         return self.get_current_score *100;
-    
+
+    def archive_quiz(self):
+        self.archived = True
+        self.save()
+
     def mark_quiz_complete(self):
         self.complete = True
         self.end = now()
+
+        total_steps = 0
+        evaluated_questions = 0
+        evaluated_weight = 0
+        correct_questions = 0
+        correct_weight = 0
+        for ans in self.user_answers:
+            total_steps +=1
+            if ans['evaluated']:
+                evaluated_questions +=1
+                evaluated_weight += ans[ 'evaluationWeight']
+                if ans['grade']:
+                    correct_questions += 1
+                    correct_weight += ans[ 'evaluationWeight']*ans['grade']
+        
+        self.final_result['grade'] = correct_weight/evaluated_weight
+        self.final_result['grade_percent'] = int(100*correct_weight/evaluated_weight)
+        self.final_result['total_steps'] = total_steps
+        self.final_result['evaluated_questions'] = evaluated_questions
+        self.final_result['evaluated_weight'] = evaluated_weight
+        self.final_result['correct_questions'] = correct_questions
+        self.final_result['correct_weight'] = correct_weight
+        
         self.save()
 
     def mark_quiz_sent_moodle(self):

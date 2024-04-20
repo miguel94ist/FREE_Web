@@ -8,6 +8,7 @@ from django.core.exceptions import PermissionDenied
 from django.shortcuts import get_object_or_404, render
 from django.utils.decorators import method_decorator
 from django.views.generic import DetailView, ListView, TemplateView, FormView
+from django.shortcuts import redirect
 
 from .forms import QuestionForm, EssayForm, Experiment_ExectionForm, Navigate_quizz
 from .models import Quiz, Progress, Sitting, Question, Essay_Question
@@ -222,53 +223,38 @@ class QuizTake(FormView):
             context['base'] = "free/base.html"
             context['lti'] = False
 
-        #TODO - melhorar a gestão dos sittings...... 
-        #self.sitting = Sitting.objects.unsent_sitting(request.user,self.quiz)
+        #get the current sitting for the user
+        #or creates a new one
         try:
             self.sitting = Sitting.objects.get_currrent_sitting(request.user,self.quiz)
         except Sitting.DoesNotExist:
             self.sitting = Sitting.objects.new_sitting(request.user,self.quiz)
-        
-        return super(QuizTake, self).dispatch(request, *args, **kwargs)
-    
-        if (self.sitting is False or self.request.session.get('lti_login') is None):
-            self.sitting = Sitting.objects.user_sitting(request.user,
-                                                    self.quiz)
-        else:
-            context['score_send']= self.sitting.final_grade
-            context['quiz']= self.quiz
-            context['sitting'] = self.sitting
-            """                context['score']= self.sitting.get_current_score
-            context['max_score']= self.sitting.right_max_score
-            context['percent']= self.sitting.get_percent_correct
-            context['sitting']= self.sitting
-            context['app_name']= __package__.rsplit('.', 1)[-1]
-            context['correct_answers'] = self.sitting.correct_answers
 
-            print("context:",context)
-            print("app name:",__package__.rsplit('.', 1)[-1])
-            """
-            return render(request, self.not_submited_template_name, context)
-    
+        #verify if the user clicke on Archive quiz Button
+        try:
+            if request.POST['archive_quiz'] == 'true' and self.sitting.complete:
+                self.sitting.archive_quiz()
+                print('Terminating quizz')
+                return redirect('FREE_quizes:quiz_index')
+        except: 
+            pass
 
-        if self.sitting is False:
-            return render(request, self.single_complete_template_name, context)
 
         return super(QuizTake, self).dispatch(request, *args, **kwargs)
-
+    
     def get_form(self, *args, **kwargs):
 
 
-        #verify if user terminated quiz
+
+        #verify if the user clicke on terminate quiz Button
         try:
             if self.request.POST['terminate_quiz'] == 'true' and len(self.sitting.quiz.orderedQuestions.all()) == len (self.sitting.answered_questions_list):
-                self.sitting.complete = True
-                self.sitting.save()
+                self.sitting.mark_quiz_complete()
                 print('Terminating quizz')
         except: 
             pass
 
-        #verivfy is user navigated on quiz (prev, next buttons)
+        #verify is user navigated on quiz (prev, next buttons)
         try:
             self.sitting.current_question -= int(self.request.POST['previous_step'])
             self.sitting.current_question += int(self.request.POST['next_step'])
@@ -284,19 +270,21 @@ class QuizTake(FormView):
         self.question =  self.quiz.orderedQuestions.all()[self.sitting.current_question]
         self.progress = self.sitting.progress()
 
-        #update the form an initializa relevant infomration
+        #update the form and initialize relevant information
         form_class = self.form_class
+        #Essay
         try:
             self.question = self.question.essay_question
             form_class = EssayForm
         except:
             pass
         
+        #Experiment execution
         try:
             self.question = self.question.experiment_execution
             form_class = Experiment_ExectionForm
 
-            #get current execution
+            #Tries to get the current execution from the sitting
             self.current_execution = None
             try:
                 cur_exec_id = self.sitting.user_answers[self.sitting.current_question]["execution_id"]
@@ -304,6 +292,7 @@ class QuizTake(FormView):
             except:
                 pass
 
+            #if the user just access this question there is no execution defined.
             if self.current_execution == None:
                 #creat or fect a nex experiment
                 current_experiment_info = { }
@@ -314,8 +303,19 @@ class QuizTake(FormView):
                 if self.question.sub_category == 'Fetch':
                     random_exec = self.get_random_execution(protocol)
                     self.current_execution = random_exec
-                    current_experiment_info["execution_id"] = self.current_execution.id
-                    ###### TODO
+                    #if there is an execution, saves on the sitting
+                    if self.current_execution != None:
+                        current_experiment_info["execution_id"] = self.current_execution.id
+                        current_experiment_info["req_parameters"] = None
+                        current_experiment_info['evaluated']= False
+                        current_experiment_info['grade'] = 0 
+
+                        self.sitting.user_answers.append(current_experiment_info)
+
+                        #mark the question as already answered
+                        self.sitting.answered_questions_list.append(True)
+                        self.sitting.save()
+
                 #create a new execution
                 if self.question.sub_category == 'Create':
                     current_apparatus = self.find_available_apparatus()
@@ -340,12 +340,11 @@ class QuizTake(FormView):
                             self.sitting.user_answers[self.sitting.current_question] = current_experiment_info
                         except:
                             self.sitting.user_answers.append(current_experiment_info)
-
-                self.sitting.save()
-
+                        self.sitting.save()
         except:
             pass
 
+        #verify if questin was allready answered
         try:
             if self.sitting.answered_questions_list[self.sitting.current_question]:
                 self.already_answered = True
@@ -828,18 +827,13 @@ class QuizTake(FormView):
                 'question': self.quiz.orderedQuestions.all()[i], 
                 'answer': self.sitting.user_answers[i]
             })
-       
+        context['final_result'] = self.sitting.final_result
         context['details'] = quiz_details
         context['quiz']= self.quiz
-        context['correct_questions']= correct_questions
-        context['total_questions']= total_questions
-        context['correct_score']= correct_score
         context['max_score']= max_score
-        context['percent_score']= 100.0 * correct_score/max_score
         context['sitting']= self.sitting
         context['app_name']= __package__.rsplit('.', 1)[-1]
         context['questions']= self.quiz.orderedQuestions.all()
-        context['score_send']= correct_score/max_score
          
 
         #if self.quiz.exam_paper is False:
