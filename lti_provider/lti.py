@@ -188,6 +188,9 @@ class LTI(object):
         roles = request.session.get('roles', '').lower()
         return 'instructor' in roles or 'staff' in roles
 
+    def launch_presentation_return_url(self, request):
+        return request.session.get('launch_presentation_return_url', None)
+
     def lis_outcome_service_url(self, request):
         return request.session.get('lis_outcome_service_url', None)
 

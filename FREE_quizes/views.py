@@ -1,14 +1,12 @@
-from binascii import Incomplete
 import random
-from unicodedata import category
-from urllib import request
-
+from time import time
 from django.contrib.auth.decorators import login_required, permission_required
 from django.core.exceptions import PermissionDenied
 from django.shortcuts import get_object_or_404, render
 from django.utils.decorators import method_decorator
-from django.views.generic import DetailView, ListView, TemplateView, FormView
+from django.views.generic import DetailView, ListView, TemplateView, FormView, View
 from django.shortcuts import redirect
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 from .forms import QuestionForm, EssayForm, Experiment_ExectionForm, Navigate_quizz
 from .models import Quiz, Progress, Sitting, Question, Essay_Question
@@ -17,13 +15,16 @@ from FREE_quizes.models.questions_models import Experiment_Execution
 from django_tables2 import Table, TemplateColumn, Column
 from django_tables2.views import SingleTableView
 
-from model_utils.managers import InheritanceManager
 
 from free.models import *
 from jsf import JSF
-import json
+
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Q
+
+from lti_provider.mixins import LTIAuthMixin
+from pylti.common import LTIPostMessageException, post_message
+
 
 class QuizMarkerMixin(object):
     @method_decorator(login_required)
@@ -197,7 +198,100 @@ class QuizMarkingDetail(QuizMarkerMixin, DetailView):
             context['sitting'].get_questions(with_answers=True)
         return context
 
-class QuizTake(FormView):
+
+
+class QuizLTIPostGrade(LTIAuthMixin, View):
+
+    def message_identifier(self):
+        return '{:.0f}'.format(time.time())
+
+    def post(self, request, *args, **kwargs):
+        """
+        Post grade to LTI consumer using XML
+
+        :param: score: 0 <= score <= 1. (Score MUST be between 0 and 1)
+        :return: True if post successful and score valid
+        :exception: LTIPostMessageException if call failed
+        """
+        # meter o codigo de submissão do resultado
+        context={}
+        context['lti'] = True
+        context['base'] = "free/base_stripped.html"
+        self.quiz = get_object_or_404(Quiz, url=self.kwargs['quiz_name'])
+        context['quiz'] = self.quiz
+        context['lti_submited'] = 'ERROR'
+
+        try:
+            self.request.session.get('lti_login')
+            self.sitting = Sitting.objects.get_currrent_sitting(request.user,self.quiz)
+
+            context['sitting']= self.sitting
+
+            score = self.sitting.final_result['grade']
+            message_identifier = '{:.0f}'.format(time())
+            xml = self.lti.generate_request_xml(
+                message_identifier, 'replaceResult',
+                self.lti.lis_result_sourcedid(self.request), score, None)
+            consumers = self.lti.consumers()
+            consumer_key = self.lti.oauth_consumer_key(self.request)
+            outcome_service_url = self.lti.lis_outcome_service_url(self.request)
+            submit_outcome = post_message(consumers, consumer_key, outcome_service_url, xml)
+            if submit_outcome:
+                msg = ('Your score was submitted. Great job!')
+                #messages.add_message(request, messages.INFO, msg)
+                #confirm submition:
+                #Sitting = apps.get_model("FREE_quizes",'Sitting')
+                #print("sitting pk",request.POST.get('sitting_pk'))
+                #sit = Sitting.objects.get(pk=request.POST.get('sitting_pk'))
+                #sit.mark_quiz_sent_moodle()
+                self.sitting.archive_quiz()
+                context['lti_submited'] = 'OK'
+                context['redirect_url'] = self.lti.launch_presentation_return_url(self.request)
+                context['final_result'] = self.sitting.final_result
+
+            else:
+                context['final_result'] = self.sitting.final_result
+                pass
+        except:
+            pass
+        return render(request, 'FREE_quizes/result.html', context)
+
+        """
+
+        xml = self.lti.generate_request_xml(
+            self.message_identifier(), 'replaceResult',
+            self.lti.lis_result_sourcedid(request), score, launch_url)
+        consumers = self.lti.consumers()
+        consumer_key = self.lti.oauth_consumer_key(request)
+        outcome_service_url = self.lti.lis_outcome_service_url(request)
+        if not post_message(
+            consumers, consumer_key,
+                outcome_service_url, xml):
+
+            msg = ('An error occurred while saving your score. '
+                   'Please try again.')
+            messages.add_message(request, messages.ERROR, msg)
+
+            # Something went wrong, display an error.
+            # Is 500 the right thing to do here?
+            raise LTIPostMessageException('Post grade failed')
+        else:
+            msg = ('Your score was submitted. Great job!')
+            messages.add_message(request, messages.INFO, msg)
+            #confirm submition:
+            Sitting = apps.get_model("FREE_quizes",'Sitting')
+            print("sitting pk",request.POST.get('sitting_pk'))
+            sit = Sitting.objects.get(pk=request.POST.get('sitting_pk'))
+            sit.mark_quiz_sent_moodle()
+
+            return HttpResponseRedirect(redirect_url)
+       
+            """
+
+
+
+
+class QuizTake(LoginRequiredMixin, FormView):
     form_class = QuestionForm
     template_name = 'FREE_quizes/question.html'
     result_template_name = 'FREE_quizes/result.html'
@@ -206,22 +300,31 @@ class QuizTake(FormView):
 
     def dispatch(self, request, *args, **kwargs):
         #code executed when receives a request FREE_quizes/xxx/take (1)
+
+        try:
+            if not self.request.user.is_authenticated:
+                raise PermissionDenied
+        except TypeError:
+            raise PermissionDenied
+        self.logged_in_user = self.request.user
+
+
         self.quiz = get_object_or_404(Quiz, url=self.kwargs['quiz_name'])
         if self.quiz.draft and not request.user.has_perm('quiz.change_quiz'):
             raise PermissionDenied
 
-        try:
-            self.logged_in_user = self.request.user#.is_authenticated()
-        except TypeError:
-            raise PermissionDenied
-
+        
         context = {}
         if self.request.session.get('lti_login') is not None:
             context['base'] = "free/base_stripped.html"
             context['lti'] = True
+            #self.lti = LTI(None, None)
+            #self.lti._verify_request(request)
         else:
             context['base'] = "free/base.html"
             context['lti'] = False
+
+            
 
         #get the current sitting for the user
         #or creates a new one
@@ -243,7 +346,6 @@ class QuizTake(FormView):
         return super(QuizTake, self).dispatch(request, *args, **kwargs)
     
     def get_form(self, *args, **kwargs):
-
 
 
         #verify if the user clicke on terminate quiz Button
@@ -407,7 +509,11 @@ class QuizTake(FormView):
         
         context = super(QuizTake, self).get_context_data(**kwargs)
 
-
+        try:
+            context['redirect_url'] = self.redirect_url
+            context['lti_submited'] = self.lti_submited
+        except:
+            pass
         context['quiz'] = self.quiz
         if self.request.session.get('lti_login') is not None:
             context['base'] = "free/base_stripped.html"
@@ -621,7 +727,7 @@ class QuizTake(FormView):
                                 self.sitting.save()
                         except: 
                             pass
-                            a = false
+                            a = False
                             if a:
                                 guess = None
                                 current_experiment_user_answer = {

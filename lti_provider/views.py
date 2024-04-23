@@ -101,12 +101,10 @@ class LTIRoutingView(LTIAuthMixin, View):
             pk = request.GET.get('pk')
             url = self.lookup_assignment_name(assignment_name, pk)
         elif request.POST.get('custom_category', None) is not None:
-            app_url = (f"{request.POST.get('custom_category')}:"
-                              "quiz_question")
+            app_url = (f"{request.POST.get('custom_category')}:quiz_question")
             print("assignment:", app_url)
             print("request:",request.POST.get('custom_quiz_url'))
-            url = reverse(app_url,args=(
-                request.POST.get('custom_quiz_url'),))
+            url = reverse(app_url,args=(request.POST.get('custom_quiz_url'),))
             print("url", url)
         elif request.POST.get('custom_experiment',None) is not None:
             current_apparatus = request.POST.get('custom_apparatus_id')

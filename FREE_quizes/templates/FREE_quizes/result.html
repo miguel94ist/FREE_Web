@@ -77,24 +77,41 @@
 
 
 
-          {% if lti == True %}
+{% if lti == True %}
           <div class="ui container segment">
             <h2>
               Grade submission
             </h2>
-                      In order to submit the grade of this quiz, press the following button.
-                      <br>
-              <form action="{% url 'lti_provider:lti-post-grade'%}"  method="post">{% csrf_token %}
-                <label for="Submit Grade "></label>
-                <input type=hidden name="score" value="{{score_send|stringformat:".2f"}}">
-                <input type=hidden name="sitting_pk" value="{{sitting.pk}}">
-                <input type=hidden name="app_name" value="{{app_name}}">
-                <button class="ui button" type="submit">Submit grade</button>
-              </form>
-              <br>
-              Don't forget to reload your original course page to update your grade!
-              </div>
+  {% if lti_submited == 'OK'%}
+      <br>
+      <div class="ui green message">
+        <p>Grade sucessfully suibmited to the course platform<p>
+        <p>Press the foillowing button to continue youir course</p>
+      </div>
+
+      <a href=" {{redirect_url}}">               
+        <button class="ui green right labeled icon button">
+          continue to course
+        </button>
+      </a>
   {% else %}
+    {% if lti_submited == 'ERROR'%}
+      <div class="ui red message">
+            <p>there was an error sumbitting your grade.</p>
+            <p>try resubmitting with the nexty button, or, if the problem remains, go the the Course web site, and restart your quizz from there. </p>
+      </div>
+    {% endif %}
+      <p>In order to submit the grade of this quiz, press the following button.</p>
+
+      <form class="ui form" action="{% url 'FREE_quizes:quiz_submit_lti'  quiz_name=quiz.title%}" method="POST" id="form">{% csrf_token %}
+        <button id="submitQuizGradeButton" class="ui green right labeled icon button">
+          Submit grades to course
+        </button>
+        <input type=hidden name="submit_lti_grade" value="true">
+        </form>	
+    {% endif %}
+  </div>
+{% else %}
   {% if not sitting.archived %}
               <div class="ui container segment">
                 <a href="{% url 'FREE_quizes:quiz_index'%}"><button class='ui button'>{% trans 'Return to Quiz list'%}</button></a> 
@@ -108,14 +125,14 @@
 
                 
             </div>
-            {% endif %}
-    {% endif %}
+  {% endif %}
+{% endif %}
   
   
 
   
 
-           {% if max_score %}
+{% if max_score %}
         
           <div>
 
@@ -142,10 +159,10 @@
                 <p>{% trans "The result of this exam will be stored in your progress section so you can review and monitor your progression" %}.</p>
             {% endif %}
           </div>
-        {% endif %}
+{% endif %}
       
         
-          {% if questions %}
+{% if questions %}
           <h2>
             Answers overview
           </h2>
@@ -215,7 +232,7 @@
               </tbody>
             </table>
           </div>
-        {% endif %}
+{% endif %}
         
 
 
