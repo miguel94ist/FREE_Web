@@ -393,16 +393,16 @@ class SittingManager(models.Manager):
             sitting = self.filter(user=user, quiz=quiz, complete=False)[0]
         return sitting
 
-    def unsent_sitting(self,user,quiz):
-        try:
-            sitting = self.get(user=user, quiz=quiz,
-                               complete=True, sent_moodle=False)
-        except Sitting.MultipleObjectsReturned:
-            sitting = self.filter(user=user, quiz=quiz, complete=True, 
-                                  sent_moodle=False).last()
-        except Sitting.DoesNotExist:
-            return False
-        return sitting
+    #def unsent_sitting(self,user,quiz):
+    #    try:
+    #        sitting = self.get(user=user, quiz=quiz,
+    #                           complete=True, sent_moodle=False)
+    #    except Sitting.MultipleObjectsReturned:
+    #        sitting = self.filter(user=user, quiz=quiz, complete=True, 
+    #                              sent_moodle=False).last()
+    #    except Sitting.DoesNotExist:
+    #        return False
+    #    return sitting
         
 
 class Sitting(models.Model):
@@ -472,19 +472,19 @@ class Sitting(models.Model):
                                     verbose_name=_("Answered questions"))
 
 
-    finished_executions = models.ManyToManyField(Execution)
+    #finished_executions = models.ManyToManyField(Execution)
 
     current_execution_req_parameters = models.JSONField("Experiment Student Parameter", 
                                           blank = True, null=True, 
                                           default=None)
 
-    incorrect_questions = models.JSONField(
+#    incorrect_questions = models.JSONField(
 #        max_length=1024,
-        blank=True,
-        verbose_name=_("Incorrect questions"),
-        default=list,
+#        blank=True,
+#        verbose_name=_("Incorrect questions"),
+#        default=list,
 #        validators=[validate_comma_separated_integer_list]
-        )
+#        )
 
     final_result = models.JSONField(
         blank=True,
@@ -508,8 +508,8 @@ class Sitting(models.Model):
 
     end = models.DateTimeField(null=True, blank=True, verbose_name=_("End"))
 
-    sent_moodle = models.BooleanField(default=False, blank=False,
-                                   verbose_name=_("Sent")) 
+    #sent_moodle = models.BooleanField(default=False, blank=False,
+    #                               verbose_name=_("Sent")) 
 
     objects = SittingManager()
 
@@ -597,9 +597,9 @@ class Sitting(models.Model):
         
         self.save()
 
-    def mark_quiz_sent_moodle(self):
-        self.sent_moodle = True
-        self.save()
+    #def mark_quiz_sent_moodle(self):
+    #    self.sent_moodle = True
+    #    self.save()
 
     def add_incorrect_question(self, question):
         """
