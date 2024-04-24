@@ -24,7 +24,7 @@ from django.db.models import Q
 
 from lti_provider.mixins import LTIAuthMixin
 from pylti.common import LTIPostMessageException, post_message
-
+from django.contrib import auth
 
 class QuizMarkerMixin(object):
     @method_decorator(login_required)
@@ -248,7 +248,7 @@ class QuizLTIPostGrade(LTIAuthMixin, View):
                 context['lti_submited'] = 'OK'
                 context['redirect_url'] = self.lti.launch_presentation_return_url(self.request)
                 context['final_result'] = self.sitting.final_result
-
+                auth.logout(request) 
             else:
                 context['final_result'] = self.sitting.final_result
                 pass
