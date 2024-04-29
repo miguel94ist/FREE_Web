@@ -1,6 +1,6 @@
 from django import template
 import json
-
+from json2html import *
 register = template.Library()
 
 
@@ -27,4 +27,5 @@ def answer_choice_to_string(question, answer):
 
 @register.filter
 def pretty_json(value):
+    return json2html.convert(json = value, table_attributes='class="ui celled striped table "')
     return json.dumps(value, indent=4)

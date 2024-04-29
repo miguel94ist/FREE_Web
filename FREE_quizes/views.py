@@ -351,7 +351,7 @@ class QuizTake(LoginRequiredMixin, FormView):
                     #if there is an execution, saves on the sitting
                     if self.current_execution != None:
                         current_experiment_info["execution_id"] = self.current_execution.id
-                        current_experiment_info["req_parameters"] = None
+                        current_experiment_info["required_parameters"] = None
                         current_experiment_info['evaluated']= False
                         current_experiment_info['grade'] = 0 
 
@@ -365,9 +365,9 @@ class QuizTake(LoginRequiredMixin, FormView):
                 if self.question.sub_category == 'Create':
                     current_apparatus = self.find_available_apparatus()
                     if current_apparatus:
-                        required_experiment_parameters = self.question.get_student_experiment_parameters(self.quiz, self.question, self.sitting.user_answers)
-                        current_experiment_info["req_parameters"] = required_experiment_parameters
-                        #self.sitting.current_execution_req_parameters = student_experiment_parameters
+                        required_parameters = self.question.get_student_experiment_parameters(self.quiz, self.question, self.sitting.user_answers)
+                        current_experiment_info["required_parameters"] = required_parameters
+
                         config_generator = JSF(protocol.config)
                         config = config_generator.generate()
                         config = self.question.update_experiment_input(config, self.quiz)
@@ -476,7 +476,7 @@ class QuizTake(LoginRequiredMixin, FormView):
                 context['question_result']['answer'] = self.sitting.user_answers[self.sitting.current_question]['answer']
                 context['question_result']['expected_result'] = ""
                 context['question_result']['weight'] = self.sitting.user_answers[self.sitting.current_question]['evaluationWeight']
-                context['question_result']['grade'] = self.sitting.user_answers[self.sitting.current_question]['grade']
+                context['question_result']['grade'] = float(self.sitting.user_answers[self.sitting.current_question]['grade'])
 
             if self.sitting.current_question +1 == len(self.sitting.quiz.orderedQuestions.all()):
                 context['next_button'] = False
@@ -493,7 +493,7 @@ class QuizTake(LoginRequiredMixin, FormView):
 
                 if self.current_execution:
                         ## retrieve a already created execution
-                    context['student_experiment_parameters'] = self.sitting.user_answers[self.sitting.current_question]['req_parameters']
+                    context['student_experiment_parameters'] = self.sitting.user_answers[self.sitting.current_question]['required_parameters']
                     context['question_type'] = "CREATE"
                     context['execution_id'] = self.current_execution.id
                     context['execution'] = self.current_execution
@@ -557,7 +557,8 @@ class QuizTake(LoginRequiredMixin, FormView):
                             self.sitting.user_answers[self.sitting.current_question]['evaluationWeight'] = self.question.evaluationWeight
                             self.sitting.user_answers[self.sitting.current_question]['answer'] = self.current_execution.config
                             if self.question.evaluated and self.question.sub_category != 'Fetch':
-                                is_correct = self.question.check_if_correct(self.current_execution, self.sitting.current_execution_req_parameters) 
+                                #TODO meter aqui uma funcao para avaliar os parametros da ewxepriencia..... (com base nos )
+                                is_correct = self.question.check_if_correct(self.current_execution, self.sitting.user_answers[self.sitting.current_question]['required_parameters']) 
                                 self.sitting.user_answers[self.sitting.current_question]['evaluated']= True  
                                 self.sitting.user_answers[self.sitting.current_question]['grade'] =  is_correct
                             else:
@@ -610,7 +611,7 @@ class QuizTake(LoginRequiredMixin, FormView):
                     is_correct = self.question.check_if_correct(guess)
                 current_question_user_answer = {
                     "answer": guess,
-                    "req_parameters": None,
+                    "required_parameters": None,
                     "evaluationWeight":  self.question.evaluationWeight,
                     "execution_id": None,
                     'evaluated': self.question.evaluated,

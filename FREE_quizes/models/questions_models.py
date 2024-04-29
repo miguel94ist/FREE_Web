@@ -43,7 +43,6 @@ class Question(models.Model):
     evaluationWeight = models.PositiveIntegerField(default=1, blank=True,
                                    verbose_name=_("Evaluation Weigth"))
 
-
     figure = models.ImageField(upload_to='uploads/%Y/%m/%d',
                                blank=True,
                                null=True,
@@ -65,6 +64,13 @@ class Question(models.Model):
                                help_text=_("Enter the question text that "
                                            "you want displayed"),
                                verbose_name=_('Question Content'))
+    #verif_function -> correctness_verification_function
+    correctness_verification_function = models.CharField(max_length=100,
+                               blank=True,
+                               help_text=_("Enter the name of the function"
+                                           "that will evaluate the question"),
+                               verbose_name=_('Correctness Verification Name'))
+
 
     explanation = models.TextField(max_length=2000,
                                    blank=True,
@@ -115,6 +121,7 @@ class Experiment_Execution(Question):
     class Meta:
         verbose_name = _("Experiment Execution")
         verbose_name_plural = _("Experiment Executions")
+
     config_function = models.CharField(max_length=100,
                                blank=True,
                                help_text=_("Enter the name of the function"
@@ -148,6 +155,7 @@ class Experiment_Execution(Question):
             return parameters
         except :
             return None
+        
     def check_if_correct(self, current_execution, student_parameters):
         if student_parameters:  
             for param in student_parameters:
@@ -166,26 +174,10 @@ class Experiment_Execution(Question):
 @python_2_unicode_compatible
 class Essay_Question(Question):
 
-#    rounding = models.BooleanField(
-#        blank=False, default=False,
-#        verbose_name=_("Rounding"),
-#        help_text=_("Will this question be rounded to a decimal case"))
-
-#    def randomize_decimal_precision():
-#        return random.randint(3,7)
-    
     decimal_precision = models.PositiveIntegerField(default=2,
                                             verbose_name=_("Decimal Precision"))
 
-
-    verif_function = models.CharField(max_length=100,
-                               blank=True,
-                               help_text=_("Enter the name of the function"
-                                           "that will correct the question"),
-                               verbose_name=_('Function name'))
-
-    
-    multiple_answer_fields = models.JSONField("Experiment Student Parameter", 
+    multiple_answer_fields = models.JSONField("Student answeres names", 
                                           blank = True, null=True, 
                                           default=None)
 
@@ -200,16 +192,16 @@ class Essay_Question(Question):
         if user_answer is None:
             return False
         try:
-            if self.verif_function != '':
+            if self.correctness_verification_function != '':
                 module = importlib.import_module('FREE_quizes.quizes_code')
                 m = getattr(module, current_quiz.url)
-                f = getattr(m, self.verif_function)
+                f = getattr(m, self.correctness_verification_function)
                 if_correct = f(self , user_answer, decimal_places, current_quiz, last_execution, executions)
             else:
                 if_correct = True                                                  
         except KeyError:
             if_correct = False
-            print("Wrong verif_function name in question model")
+            print("Wrong correctness_verification_function name in question model")
 
         return if_correct
 

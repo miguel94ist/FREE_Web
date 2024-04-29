@@ -310,10 +310,10 @@
 					{% autoescape off %}{{ question_result.evaluated}}{% endautoescape %}
 					</td>-->
 					<td>
-					{{ question_result.answer | pretty_json  }}
+					{% autoescape off %} {{ question_result.answer | pretty_json  }}{% endautoescape %}
 					</td>
 					<td>
-					{{ question_result.expected_result | pretty_json }}
+						{% autoescape off %} {{ question_result.expected_result | pretty_json  }}{% endautoescape %}
 					</td>
 					<td>
 					{% autoescape off %}{{ question_result.weight}}{% endautoescape %}

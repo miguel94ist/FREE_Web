@@ -28,3 +28,4 @@ jsf
 serial
 django-semanticui-forms
 django-sortedm2m
+json2html
