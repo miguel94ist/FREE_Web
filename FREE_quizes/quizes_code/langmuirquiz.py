@@ -6,8 +6,13 @@ from scipy.optimize import curve_fit
 import math
 import json
 import random as rd 
+import logging
 
-def exexecution_parameters_random_langmuir():
+logger = logging.getLogger(__name__)
+logging.basicConfig(filename='/home/elab/elab-dev-lti/FREE_quizes/quizes_code/langmuir.log', encoding='utf-8', level=logging.DEBUG, format='%(asctime)s %(message)s')
+logger.debug("test")
+
+def exexecution_parameters_random_langmuir(*args):
     
     gas_label = ["Helium (He)","Nitrogen (N)","Argon (Ar)"]
     gas_type = [1,2,3]     
@@ -243,21 +248,21 @@ def Langmuir_temp(current_question, user_answer, decimal_places, current_quiz, e
              T_ev = T_ev_i 
         else:
              T_ev = T_ev_d
-        if abs((T_ev - float(user_answer))/T_ev) * 100 < error:
-             print("You are Correct!! Correct response: "+str(T_ev)+" eV")
+        if abs((T_ev - float(user_answer["T_plasma"]))/T_ev) * 100 < error:
+             logger.debug("You are Correct!! Correct response: "+str(T_ev)+" eV")
              return True
         else:
-             print("Incorrect... Correct response: "+str(T_ev)+" eV")
+             logger.debug("Incorrect... Correct response: "+str(T_ev)+" eV")
              return False
 
     elif Fit_state_i == True:
-         print("problem with the Fit of d")
+         logger.debug("problem with the Fit of d")
          return False
     elif Fit_state_d == True:
-         print("problem with the Fit of i")
+         logger.debug("problem with the Fit of i")
          return False
     else:
-         print("problem with the Fits")
+         logger.debug("problem with the Fits")
          return False
 
 
@@ -282,7 +287,7 @@ def Langmuir_i_sat(current_question, user_answer, decimal_places, current_quiz, 
              i_sat = i_sat_d
              T_ev = T_ev_d
 
-        if abs((i_sat - float(user_answer))/i_sat) * 100 < error:
+        if abs((i_sat - float(user_answer["i_sat"]))/i_sat) * 100 < error:
              print("You are Correct!! Correct response: "+str(i_sat)+" uA")
              return True
         else:
@@ -324,7 +329,7 @@ def Langmuir_density(current_question, user_answer, decimal_places, current_quiz
         
         ion_density_10_15 = ion_density*10**(-15)
         
-        if abs((ion_density_10_15 - float(user_answer))/ion_density_10_15) * 100 < error:
+        if abs((ion_density_10_15 - float(user_answer["ion_density"]))/ion_density_10_15) * 100 < error:
              print("You are Correct!! Correct response: "+str(ion_density_10_15)+" x10^15 m^3")
              return True
         else:
@@ -373,7 +378,7 @@ def Langmuir_radius(current_question, user_answer, decimal_places, current_quiz,
         
         d_length_mm = d_length *1000
         
-        if abs((d_length_mm - float(user_answer))/d_length_mm) * 100 < error:
+        if abs((d_length_mm - float(user_answer["d_length"]))/d_length_mm) * 100 < error:
              print("You are Correct!! Correct response: "+str(d_length)+" mm")
              return True
         else:
@@ -429,7 +434,7 @@ def Langmuir_new_density(current_question, user_answer, decimal_places, current_
 
         ion_density_new_10_15 = ion_density_new*10**(-15)
 
-        if abs((ion_density_new_10_15 - float(user_answer))/ion_density_new_10_15) * 100 < error:
+        if abs((ion_density_new_10_15 - float(user_answer["new_density"]))/ion_density_new_10_15) * 100 < error:
              print("You are Correct!! Correct response: "+str(ion_density_new_10_15)+" x10^15 m^3")
              return True
         else:
@@ -476,7 +481,7 @@ def Langmuir_new_temp(current_question, user_answer, decimal_places, current_qui
 
         T_ev_new = 2*elementary_charge *V_Float/(np.log(np.sqrt(((atom * atomic_mass_unit)/(4*math.pi*me))))*boltzmann*t_k)    
 
-        if abs((T_ev_new - float(user_answer))/T_ev_new) * 100 < error:
+        if abs((T_ev_new - float(user_answer["T_plasma_bohm"]))/T_ev_new) * 100 < error:
              print("You are Correct!! Correct response: "+str(T_ev_new))
              return True
         else:
