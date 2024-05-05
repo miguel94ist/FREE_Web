@@ -379,7 +379,7 @@ def ressonat_frequency_shift(current_question, user_answer, decimal_places, curr
     delta_f = mean - f0
 
 
-    if abs(delta_f - float(user_answer))/delta_f * 100 < error:
+    if abs(delta_f - float(user_answer["delta_f"]))/delta_f * 100 < error:
         print("You are Correct!! Correct response: "+str(delta_f))
         return True
     else:
@@ -406,7 +406,7 @@ def plasma_density_gauss(current_question, user_answer, decimal_places, current_
         print("nao fez plasma pregunta nao faz sentido")
         return False
 
-    if abs(ne - float(user_answer))/ne * 100 < error:
+    if abs(ne - float(user_answer["ne"]))/ne * 100 < error:
         print("You are Correct!! Correct response: "+str(ne)) 
         return True
     else:
@@ -429,7 +429,7 @@ def FWHM_gauss(current_question, user_answer, decimal_places, current_quiz, exec
     #FWHM = (1/np.sqrt(wid))*2 
     #FWHM = wid*2
 
-    if abs(FWHM  - float(user_answer))/FWHM*100 < error:
+    if abs(FWHM  - float(user_answer["FWMH"]))/FWHM*100 < error:
         print("You are Correct!! Correct response: "+str(FWHM )) 
         return True
     else:
@@ -458,7 +458,7 @@ def plasma_density_skew(current_question, user_answer, decimal_places, current_q
         print("nao fez plasma pregunta nao faz sentido")
         return False
 
-    if abs(ne - float(user_answer))/ne*100 < error:
+    if abs(ne - float(user_answer["ne_skew"]))/ne*100 < error:
         print("You are Correct!! Correct response: "+str(ne)+" and the new frequency is "+str(mean)) 
         return True
     else:
