@@ -8,9 +8,13 @@ import json
 import random as rd 
 import logging
 
-logger = logging.getLogger(__name__)
-logging.basicConfig(filename='/home/elab/elab-dev-lti/FREE_quizes/quizes_code/langmuir.log', encoding='utf-8', level=logging.DEBUG, format='%(asctime)s %(message)s')
-logger.debug("test")
+Debug = False
+
+if Debug == True:
+     logger = logging.getLogger(__name__)
+     logging.basicConfig(filename='/home/elab/elab-dev-lti/FREE_quizes/quizes_code/langmuir.log', encoding='utf-8', level=logging.DEBUG, format='%(asctime)s %(message)s')
+     logger.debug("test")
+
 
 def exexecution_parameters_random_langmuir(*args):
     
