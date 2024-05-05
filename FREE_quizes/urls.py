@@ -52,4 +52,11 @@ urlpatterns = [
     url(r'^(?P<quiz_name>[\w-]+)/take/$',
         view=QuizTake.as_view(),
         name='quiz_question'),
+
+    url(r'^(?P<quiz_name>[\w-]+)/submitLTIGrade/$',
+        view=QuizLTIPostGrade.as_view(),
+        name='quiz_submit_lti'),
+
+
+        
 ]

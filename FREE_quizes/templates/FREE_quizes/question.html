@@ -69,10 +69,8 @@
 	<div class="ui container">
 
 		<h1>Quiz {{quiz.title}}
-		{% if progress %}
-		(  {% trans "Step" %} {{ current_question }} {% trans "of" %} {{ quiz.get_max_score }})
-		{% endif %}
-			</h1>
+			(  {% trans "Step" %} {{ current_question }} {% trans "of" %} {{ quiz.get_max_score }})
+		</h1>
 	</div> 
 	<div class="ui  container ">
 			<div id="quiz_tab" class="ui top attached tabular menu">
@@ -95,41 +93,9 @@
 				<div class="ui grid" >
 					<div class="row">
 						<div class="ten wide column ">
-								{% autoescape off %}<p>{{ question.content }} </p> {% endautoescape %}
-								{% if execution_id %}
-								<div class="ui grid" >
-								<div class="four wide column ">
-									<form action="" method="POST" id="form">{% csrf_token %}
-										<input type=hidden name="question_id" value="{{ question.id }}">
-										<input type=hidden name="execution_id" id="form_execution_id" value="{{ execution_id }}">
-										<input type=hidden name="question_type" value="{{ question_type }}">
-										
-										<input type="submit" value="{% trans "Continue to Quiz" %}" class="ui disabled green button" id="continueButton" >
-
-									</form>
-								</div>
-								<div class="four wide column ">
-									<form action="" method="POST" id="form">{% csrf_token %}
-										<input type=hidden name="restart_execution" value="true">
-										<input type="submit" value="{% trans "Restart Execution" %}" class="ui disabled orange button" id="restartButton" >
-
-									</form>
-								</div>
-							</div>
-								{% else %}
-									<form action="" method="POST" id="form">{% csrf_token %}
-										<input type=hidden name="question_id" value="{{ question.id }}">
-										<input type=hidden name="execution_id" id="form_execution_id" value="{{ execution_id }}">
-										<input type=hidden name="question_type" value="{{ question_type }}">
-									</form>
-				
-									<script type='text/javascript'>
-										document.addEventListener("DOMContentLoaded", () => {
-											create_experiment();
-										});
-									</script>
-							{% endif %}	
+								{% autoescape off %}<p>{{ question.content }} </p> {% endautoescape %} 
 						</div>
+			
 						<div class="six wide column ">
 							{% if student_experiment_parameters %}
 								<h2> Required Experiment parameters</h2>
@@ -164,11 +130,38 @@
 								{% endif %}	
 						</div>
 					</div>
+					<div class="ui divider"></div>
 					<div class="row">
-						<div class="ten wide column ">
+						<div class="sixteen wide column ">
 							<p> Please configure the experiment below. dont forget to save, submit and wait for its completion.</p>
 							<p> If you configured the experiment execution incorrectly, or you did no get the expected results, you can restart a new execution.</p>
+			{% if execution_id %}
+							<div class="ui grid" >
+								<div class="five wide column ">
 
+									<form action="" method="POST" id="form">{% csrf_token %}
+										<input type=hidden name="restart_execution" value="true">
+										<input type="submit" value="{% trans "Restart Execution" %}" class="ui disabled orange button" id="restartButton" >
+									</form>
+								</div>
+								<div class="five wide column ">
+									<form action="" method="POST" id="form">{% csrf_token %}
+										<input type=hidden name="question_id" value="{{ question.id }}">
+										<input type=hidden name="execution_id" id="form_execution_id" value="{{ execution_id }}">
+										<input type=hidden name="question_type" value="{{ question_type }}">
+						
+										<input type=hidden name="confirm_execution" value="true">
+										<input type="submit" value="{% trans "Confirm Execution" %}" class="ui disabled green button" id="confirmExecutionButton" >
+						
+						<!--				<input type="submit" value="{% trans "Continue to Quiz" %}" class="ui disabled green button" id="continueButton" > -->
+						
+									</form>
+
+									
+								</div>
+							</div>
+
+			{% endif %}
 						</div>
 					</div>
 				</div>
@@ -182,11 +175,11 @@
 									<p>{{ question.content }} </p>
 								{% endautoescape %}
 								<form action="" method="POST" id="form">{% csrf_token %}
-								<input type=hidden name="question_id" value="{{ question.id }}">
-								<input type=hidden name="execution_id" id="form_execution_id" value="{{ execution_id }}">
-								<input type=hidden name="question_type" value="{{ question_type }}">
+									<input type=hidden name="question_id" value="{{ question.id }}">
+									<input type=hidden name="execution_id" id="form_execution_id" value="{{ execution_id }}">
+									<input type=hidden name="question_type" value="{{ question_type }}">
 								
-								<input type="submit" value="{% trans "Continue to Quiz" %}" class="ui disabled green button" id="continueButton" >
+<!--								<input type="submit" value="{% trans "Confirm Execution" %}" class="ui disabled green button" id="confirmExecutionButton" > -->
 								</form>
 						</div>
 					</div>
@@ -195,12 +188,12 @@
 			{% else %}
 			<div class="ui bottom attached tab segment active" data-tab="questions-tab" >
 				<div class="ui grid" >
-					<div class="ten wide column ">
+					<div class="ten wide column {% if answered_question %} disabled {% endif %} ">
 						{% autoescape off %}
 							<p>{{ question.content }} </p>
 						{% endautoescape %}
 
-						<form action="" method="POST" id="form">{% csrf_token %}
+						<form action="" method="POST" id="form" >{% csrf_token %}
 							<input type=hidden name="question_id" value="{{ question.id }}">
 							{% render_form form %}
 
@@ -208,7 +201,7 @@
 								<p>Answer with {{decimal_cases}} decimal cases</p>
 							{% endif %}
 
-							<input type="submit" value='{% trans "Submit answer" %}' class="ui green button" >
+							<input type="submit" value='{% trans "Submit answer" %}' class="ui green button {% if answered_question %} disabled {% endif %}" >
 						</form>
 					</div>
 					<div class="six wide column ">
@@ -243,6 +236,102 @@
 
 			
 	</div>
+	<div class="ui container segment">
+		<div class="ui grid">
+			<div class="four wide column">
+				<form class="ui form" action="" method="POST" id="form">{% csrf_token %}
+					<button class="ui green left labeled icon button {% if  not prev_button %} disabled {% endif %}">
+						<i class="left arrow icon"></i>
+						Previous Step
+					</button>
+					<input type=hidden name="previous_step" value="1">
+					<input type=hidden name="next_step" value="0">
+
+				</form>	
+			</div>			
+			<div class="four wide column">	
+				<form class="ui form" action="" method="POST" id="form">{% csrf_token %}
+					<button id="nextStepButton" class="ui green right labeled icon button {% if  question_type != 'FETCH' and not next_button  %} disabled {% endif %}">
+						<i class="right arrow icon"></i>
+						Next Step
+					</button>
+					<input type=hidden name="previous_step" value="0">
+					<input type=hidden name="next_step" value="1">
+				</form>	
+			</div>
+			{% if completed_quiz %}	
+			<div class="four wide column">	
+				<form class="ui form" action="" method="POST" id="form">{% csrf_token %}
+					<button id="completeQuizButton" class="ui green right labeled icon button">
+						Terminate Quiz
+					</button>
+					<input type=hidden name="terminate_quiz" value="true">
+				</form>	
+			</div>
+			{% endif %}
+
+
+		</div>
+	</div>
+	<div class="ui grid" >
+		<div class="four wide column ">
+			<form action="" method="POST" id="form">{% csrf_token %}
+				<input type=hidden name="question_id" value="{{ question.id }}">
+				<input type=hidden name="execution_id" id="form_execution_id" value="{{ execution_id }}">
+				<input type=hidden name="question_type" value="{{ question_type }}">
+
+				
+
+<!--				<input type="submit" value="{% trans "Continue to Quiz" %}" class="ui disabled green button" id="continueButton" > -->
+
+			</form>
+		</div>
+	</div>
+	{% if already_answered %}
+	<div class="ui  container segment">
+		<h1> Question already answered</h1>
+	{% if not question_result.evaluated %}
+		<h2> This question is not evaluated and will not count to the final grade</h2>
+	{% else %}
+		<table class="ui celled table">
+            <thead>
+              <tr>
+                <!-- <th>Evaluated</th> -->
+				<th>Answer</th>
+                <th>Expected result</th>
+                <th>Weight</th>
+                <th>Grade</th>
+                <th>Explanation</th>
+              </tr>
+			</thead>
+			<tbody>
+            	<tr>
+					<!--              <td>
+					{% autoescape off %}{{ question_result.evaluated}}{% endautoescape %}
+					</td>-->
+					<td>
+					{% autoescape off %} {{ question_result.answer | pretty_json  }}{% endautoescape %}
+					</td>
+					<td>
+						{% autoescape off %} {{ question_result.expected_result | pretty_json  }}{% endautoescape %}
+					</td>
+					<td>
+					{% autoescape off %}{{ question_result.weight}}{% endautoescape %}
+					</td>
+					<td>
+					{% autoescape off %}{{ question_result.grade}}{% endautoescape %}
+					</td>
+					<td>
+					{% autoescape off %}{{ question_result.explanation}}{% endautoescape %}
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	{% endif %}
+
+
+	</div>
+	{% endif %}
 	<div class="ui  container ">
 
 		{% if previous.answers %}
@@ -291,16 +380,14 @@
 
 	</div>
 		{% if question_type == 'CREATE' %}
-			{% if apparatus %}
 				{% if execution_id %}
 					<div class="ui  container ">
 						<iframe src="{% url 'free:stripped-execution' execution_id %}" title="execution" width="100%" height="900" id="iframe_execution" >
 						</iframe>
 					</div>
-				{% endif %}	
 			{% else %}
 				<div class="ui  container ">
-				<h1>Problem contacting and available apparatus</h1>
+				<h1>Problem contacting an available apparatus</h1>
 					<p> Unfortunately there is not apparatus available for running the experiments</p>
 					<p> Try returning the quiz later</p>
 				</iframe>
@@ -342,6 +429,8 @@
 
 
 	{% if question_type == 'CREATE' or  question_type == 'FETCH' %}
+		{% if not already_answered %}
+
 			const iframe = document.getElementById("iframe_execution");
 			if(iframe != null){
 				iframe.addEventListener("load", function(){
@@ -353,36 +442,13 @@
 				aux = window.frames[0].window.execution_status
 				console.log(window.frames[0].window.execution_status, window.frames[0].window.executionID)
 				if (aux == 'F'){
-					$("#continueButton").removeClass("disabled");
+					$("#confirmExecutionButton").removeClass("disabled");
 					$("#restartButton").removeClass("disabled");
 				}
 			}
 
-			function create_experiment(){
-				form_config = {{sample_config |safe}}
-				endpoint= "/api/v1/execution";
-				method_queue = 'post';
-				data_send = {"apparatus": apparatus_id, "protocol": protocol_id};
-				data_send["config"] = form_config;
-				data_send["name"] = "";
-				data_send["quiz"] = quiz_id;
-
-				HEADERS = {
-					"X-CSRFToken": X_CSRFToken,
-				}
-				
-				axios({
-					method: method_queue, //you can set what request you want to be
-					url: endpoint,
-					headers: HEADERS,
-					data: data_send,
-				}).then(response => {
-					console.log(response.data.id)
-					$("#form_execution_id").val(response.data.id)
-					$( "#form" ).submit();
-				}).catch(console); 
-			}
-
+		{% endif %}
+		
 	{% endif %}
 
 

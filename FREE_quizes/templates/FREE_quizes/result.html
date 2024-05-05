@@ -7,22 +7,9 @@
 
 {% block headscript%}
 	<script id="csrf_token" type="application/json">{{csrf_token}}</script>
-	{{apparatus.config|json_script:"apparatus-config"}}
-	{{apparatus.id|json_script:"apparatus-id"}}
-	{{protocol.config|json_script:"protocol-config"}}
-	{{protocol.id|json_script:"protocol-id"}}
-	{{execution_json|json_script:"execution-config"}}
-	{{final_result|json_script:"final-result"}}
-	{{quiz.id|json_script:"quiz-id"}}
 
 	<script>
 		X_CSRFToken = document.getElementById('csrf_token').textContent
-
-		var apparatus_id = JSON.parse(document.getElementById('apparatus-id').textContent);
-		var protocol_id = JSON.parse(document.getElementById('protocol-id').textContent);
-		var current_execution = JSON.parse(document.getElementById('execution-config').textContent);
-		var quiz_id = JSON.parse(document.getElementById('quiz-id').textContent);
-
 	</script>
 
 {% endblock %}
@@ -43,10 +30,6 @@
 
     <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.2.2/css/buttons.semanticui.min.css">
 
-
-    <!-- Video -->
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/webrtc-adapter/8.0.0/adapter.min.js" ></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/spin.js/2.3.2/spin.min.js"></script>
 
 
     {% block experiment_head %}
@@ -69,11 +52,6 @@
 	<div class="ui container">
 
 		<h1>Quiz: {{quiz.title}}</h1>
-		{% if progress %}
-		<H2>
-		{% trans "Question" %} {{ progress.0|add:1 }} {% trans "of" %} {{ progress.1 }}
-		</h2>
-		{% endif %}
 
 	</div> 
 	<div class="ui  container ">
@@ -95,36 +73,66 @@
 
 		<div class="ui bottom attached tab segment active" data-tab="result-tab" >
 			<div class="ui grid" >
-				<div class="ten wide column ">
+				<div class="ten sixteen column ">
 
 
 
-          {% if lti == True %}
-          <div class="ui raised very padded text container segment">
+{% if lti == True %}
+          <div class="ui container segment">
             <h2>
               Grade submission
             </h2>
-                      In order to submit the grade of this exercise, press the following button.
-                      <br>
-              <form action="{% url 'lti_provider:lti-post-grade'%}"  method="post">{% csrf_token %}
-                <label for="Submit Grade "></label>
-                <input type=hidden name="score" value="{{score_send|stringformat:".2f"}}">
-                <input type=hidden name="sitting_pk" value="{{sitting.pk}}">
-                <input type=hidden name="app_name" value="{{app_name}}">
-                <button class="ui button" type="submit">Submit grade</button>
-              </form>
-              <br>
-              Dont forget to reload your original course page to update your grade!
-              </div>
+  {% if lti_submited == 'OK'%}
+      <br>
+      <div class="ui green message">
+        <p>Grade sucessfully suibmited to the course platform<p>
+        <p>Press the foillowing button to continue youir course</p>
+      </div>
+
+      <a href=" {{redirect_url}}">               
+        <button class="ui green right labeled icon button">
+          continue to course
+        </button>
+      </a>
   {% else %}
-  <a href="{% url 'FREE_quizes:quiz_index'%}"><button class='ui button'>{% trans 'Return to Quiz list'%}</button></a> 
+    {% if lti_submited == 'ERROR'%}
+      <div class="ui red message">
+            <p>there was an error sumbitting your grade.</p>
+            <p>try resubmitting with the nexty button, or, if the problem remains, go the the Course web site, and restart your quizz from there. </p>
+      </div>
+    {% endif %}
+      <p>In order to submit the grade of this quiz, press the following button.</p>
+
+      <form class="ui form" action="{% url 'FREE_quizes:quiz_submit_lti'  quiz_name=quiz.title%}" method="POST" id="form">{% csrf_token %}
+        <button id="submitQuizGradeButton" class="ui green right labeled icon button">
+          Submit grades to course
+        </button>
+        <input type=hidden name="submit_lti_grade" value="true">
+        </form>	
+    {% endif %}
+  </div>
+{% else %}
+  {% if not sitting.archived %}
+              <div class="ui container segment">
+                <a href="{% url 'FREE_quizes:quiz_index'%}"><button class='ui button'>{% trans 'Return to Quiz list'%}</button></a> 
+                <h2> In order to repeat the quiz you need to archive this one first.
+                <form class="ui form" action="" method="POST" id="form">{% csrf_token %}
+                  <button id="archiveQuizButton" class="ui green right labeled icon button">
+                    Archive Quiz
+                  </button>
+                  <input type=hidden name="archive_quiz" value="true">
+                </form>	
+
+                
+            </div>
   {% endif %}
+{% endif %}
   
   
 
   
 
-           {% if max_score %}
+{% if max_score %}
         
           <div>
 
@@ -132,13 +140,14 @@
               Quizz outcome
             </h2>
             <p>
-              {% trans "You answered" %} {{correct_questions}} {% trans "questions correctly out of" %} {{ total_questions }}.
+              This quis comprised {{final_result.total_steps}} steps,  {{final_result.evaluated_questions}} of these steps were questions to be evaluated and graded.
+              {% trans "You answered" %} {{final_result.correct_questions}} correct questions.
             </p>
             <h2>
               Exercises score
             </h2>
             <p>
-              The score of this exercise (taking into consideration the weight of each question) is {{ percent_score|stringformat:".2f" }} {% trans "percent correct" %}
+              The score of this exercise (taking into consideration the weight of each question) is {{ final_result.grade_percent }} {% trans "percent correct" %}.
             </p>
             {% if quiz.pass_mark %}
             <p class="lead">{% autoescape off %}{{ sitting.result_message }}{% endautoescape %}</p>
@@ -150,78 +159,81 @@
                 <p>{% trans "The result of this exam will be stored in your progress section so you can review and monitor your progression" %}.</p>
             {% endif %}
           </div>
-        {% endif %}
+{% endif %}
       
-          {% if previous.answers %}
-
-              <p class="muted"><small>{% trans "The previous question" %}:</small></p>
-              <p>{{ previous.previous_question }}</p>
-              <p>Your answer was <strong> {{ previous.previous_outcome|yesno:"correct,incorrect" }}  </strong>  </p>
-              {% include 'FREE_quizes/correct_answer.html' %}
-              <p><strong>{% trans "Explanation" %}:</strong></p>
-              <div class="well " style="background-color: #fcf8e3;">
-                <p>{{ previous.previous_question.explanation }}</p>
-              </div>
         
-          {% endif %}
-        
-          {% if questions %}
+{% if questions %}
           <h2>
-            Answers
+            Answers overview
           </h2>
           <p>{% trans "Review the questions below and try the exam again in the future"%}.</p>
+          <div class="ui sixteen container">
+            <table class="ui celled table">
+              <thead>
+                <tr>
+                  <th>Question</th>
+                  <th>Answer</th>
+                  <th>Evaluated</th>
+                  <th>Question weight</th>
+                  <th>Question Grade</th>
+                  <th>Explanation</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for question in details %}
+                <tr>
+                  <td>
+                    {% autoescape off %}{{ question.question.content }}{% endautoescape %}
+                  </td>
+                  <td>
+                    {% autoescape off %} {{ question.answer.answer | pretty_json  }}{% endautoescape %}
+                  </td>
+                  <td>
+                    {{ question.answer.evaluated }}
+                  </td>
+                  {% if question.answer.evaluated %}
+                    <td>
+                      {{ question.answer.evaluationWeight }}
+                    </td>
+                    <td>
+                      {% if question.answer.grade > 0.5 %}
+                        <div class="well " style="background-color: #99edc3;">
+                      {% else %}
+                        <div class="well " style="background-color: #bc544b;">
+                      {% endif %}
 
-          <table class="ui celled table">
-            <thead>
-              <tr>
-                <th>Question</th>
-                <th>Answer</th>
-                <th>Evaluated</th>
-                <th>weight</th>
-                <th>Correct</th>
-                <th>Explanation</th>
-              </tr>
-          </thead>
-          <tbody>
-            {% for question in details %}
-            <tr>
-              <td>
-                {% autoescape off %}{{ question.question.content }}{% endautoescape %}
-              </td>
-              <td>
-                {% autoescape off %}{{ question.answer.answer }}{% endautoescape %}
-              </td>
-              <td>
-                {{ question.answer.evaluated }}
-              </td>
-              {% if question.answer.evaluated %}
-                <td>
-                  {{ question.answer.evaluationWeight }}
-                </td>
-                <td>
-                  {% if question.answer.grade %}
-                    <div class="well " style="background-color: #99edc3;">
-                  {% else %}
-                    <div class="well " style="background-color: #bc544b;">
-                  {% endif %}
+                        {{ question.answer.grade |stringformat:".2f"}}
+                        </div>
+                    </td>
+                    <td>
+                      {% autoescape off %} {{ question.answer.explanation }}{% endautoescape %}
+                    </td>
+                    {% else %}
+                    <td>  </td><td>  </td><td>  </td>
 
-                    {{ question.answer.grade }}
-                    </div>
-                </td>
-                <td>
-                  {% autoescape off %} {{ question.answer.explanation }}{% endautoescape %}
-                </td>
-                {% else %}
-                <td>  </td><td>  </td><td>  </td>
-
-                {% endif %}
-              <hr>
-            </tr>
-
-          {% endfor %}
-        </tbody>
-        </table>
-        {% endif %}
+                    {% endif %}
+                </tr>
+              {% endfor %}
+              </tbody>
+              <tfoot>
+                <tr>
+                  <th colspan="3">
+                  Quiz
+                  </th>
+                  <th>
+                    {{final_result.evaluated_weight}}
+                  </th>
+                  <th>  
+                    {{final_result.correct_weight}}
+                  </th>
+                  <th>   
+                    {{final_result.grade_percent|stringformat:"d%%"}}
+                  </th>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+{% endif %}
         
 
 

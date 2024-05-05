@@ -196,15 +196,6 @@ class Quiz(models.Model):
     def get_max_score(self):
         return len(self.orderedQuestions.all())
 
-    def anon_score_id(self):
-        return str(self.id) + "_score"
-
-    def anon_q_list(self):
-        return str(self.id) + "_q_list"
-
-    def anon_q_data(self):
-        return str(self.id) + "_data"
-
 
 class ProgressManager(models.Manager):
 
@@ -374,6 +365,10 @@ class SittingManager(models.Manager):
 )
         return new_sitting
 
+    def get_currrent_sitting(self, user, quiz):
+        quiz_list = self.get(user=user, quiz=quiz, archived=False)
+        return  quiz_list
+    
     def user_sitting(self, user, quiz):
         if quiz.single_attempt is True and self.filter(user=user,
                                                        quiz=quiz,
@@ -389,16 +384,16 @@ class SittingManager(models.Manager):
             sitting = self.filter(user=user, quiz=quiz, complete=False)[0]
         return sitting
 
-    def unsent_sitting(self,user,quiz):
-        try:
-            sitting = self.get(user=user, quiz=quiz,
-                               complete=True, sent_moodle=False)
-        except Sitting.MultipleObjectsReturned:
-            sitting = self.filter(user=user, quiz=quiz, complete=True, 
-                                  sent_moodle=False).last()
-        except Sitting.DoesNotExist:
-            return False
-        return sitting
+    #def unsent_sitting(self,user,quiz):
+    #    try:
+    #        sitting = self.get(user=user, quiz=quiz,
+    #                           complete=True, sent_moodle=False)
+    #    except Sitting.MultipleObjectsReturned:
+    #        sitting = self.filter(user=user, quiz=quiz, complete=True, 
+    #                              sent_moodle=False).last()
+    #    except Sitting.DoesNotExist:
+    #        return False
+    #    return sitting
         
 
 class Sitting(models.Model):
@@ -444,47 +439,59 @@ class Sitting(models.Model):
                                            default=0)
 
 
-    current_execution = models.ForeignKey(
-        Execution,
-        related_name='%(app_label)s_%(class)s_execution',
-        verbose_name=_("Current Execution"), 
-        blank = True, 
-        null=True, 
-        on_delete=models.SET_NULL)
+    #current_execution = models.ForeignKey(
+    #    Execution,
+    #    related_name='%(app_label)s_%(class)s_execution',
+    #    verbose_name=_("Current Execution"), 
+    #    blank = True, 
+    #    null=True, 
+    #    on_delete=models.SET_NULL)
     
-    last_execution = models.ForeignKey(
-        Execution,
-        related_name='%(app_label)s_%(class)s_last_execution',
+    #last_execution = models.ForeignKey(
+    #    Execution,
+    #    related_name='%(app_label)s_%(class)s_last_execution',
 
-        verbose_name=_("Last Execution"), 
-        blank = True, 
-        null=True, 
-        on_delete=models.SET_NULL)
+    #    verbose_name=_("Last Execution"), 
+    #    blank = True, 
+    #    null=True, 
+    #    on_delete=models.SET_NULL)
 
     user_answers = models.JSONField(default=list,
                                     verbose_name=_("User Answers"))
 
+    answered_questions_list = models.JSONField(default=list,
+                                    verbose_name=_("Answered questions"))
 
-    finished_executions = models.ManyToManyField(Execution)
+
+    #finished_executions = models.ManyToManyField(Execution)
 
     current_execution_req_parameters = models.JSONField("Experiment Student Parameter", 
                                           blank = True, null=True, 
                                           default=None)
 
-    incorrect_questions = models.JSONField(
+#    incorrect_questions = models.JSONField(
 #        max_length=1024,
 #        blank=True,
-        verbose_name=_("Incorrect questions"),
-        default=list,
+#        verbose_name=_("Incorrect questions"),
+#        default=list,
 #        validators=[validate_comma_separated_integer_list]
+#        )
+
+    final_result = models.JSONField(
+        blank=True,
+        verbose_name=_("Final results"),
+        default=dict,
         )
 
-    correct_answers = models.IntegerField(verbose_name=_("Current Score"), default=0)
+
+    correct_answers = models.IntegerField(verbose_name=_("Correct answers"), default=0)
     current_score = models.IntegerField(verbose_name=_("Current Score"), default=0)
-    total_weigth = models.IntegerField(verbose_name=_("Current Score"), default=0)
+    total_weigth = models.IntegerField(verbose_name=_("Total weight"), default=0)
 
     complete = models.BooleanField(default=False, blank=False,
                                    verbose_name=_("Complete"))
+    archived = models.BooleanField(default=False, blank=False,
+                                   verbose_name=_("Archived"))
 
 
     start = models.DateTimeField(auto_now_add=True,
@@ -492,8 +499,8 @@ class Sitting(models.Model):
 
     end = models.DateTimeField(null=True, blank=True, verbose_name=_("End"))
 
-    sent_moodle = models.BooleanField(default=False, blank=False,
-                                   verbose_name=_("Sent")) 
+    #sent_moodle = models.BooleanField(default=False, blank=False,
+    #                               verbose_name=_("Sent")) 
 
     objects = SittingManager()
 
@@ -548,15 +555,42 @@ class Sitting(models.Model):
     @property
     def get_percent_correct(self):
         return self.get_current_score *100;
-    
+
+    def archive_quiz(self):
+        self.archived = True
+        self.save()
+
     def mark_quiz_complete(self):
         self.complete = True
         self.end = now()
+
+        total_steps = 0
+        evaluated_questions = 0
+        evaluated_weight = 0
+        correct_questions = 0
+        correct_weight = 0
+        for ans in self.user_answers:
+            total_steps +=1
+            if ans['evaluated']:
+                evaluated_questions +=1
+                evaluated_weight += ans[ 'evaluationWeight']
+                if ans['grade']:
+                    correct_questions += 1
+                    correct_weight += ans[ 'evaluationWeight']*ans['grade']
+        
+        self.final_result['grade'] = correct_weight/evaluated_weight
+        self.final_result['grade_percent'] = int(100*correct_weight/evaluated_weight)
+        self.final_result['total_steps'] = total_steps
+        self.final_result['evaluated_questions'] = evaluated_questions
+        self.final_result['evaluated_weight'] = evaluated_weight
+        self.final_result['correct_questions'] = correct_questions
+        self.final_result['correct_weight'] = correct_weight
+        
         self.save()
 
-    def mark_quiz_sent_moodle(self):
-        self.sent_moodle = True
-        self.save()
+    #def mark_quiz_sent_moodle(self):
+    #    self.sent_moodle = True
+    #    self.save()
 
     def add_incorrect_question(self, question):
         """

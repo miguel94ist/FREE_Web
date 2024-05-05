@@ -93,16 +93,16 @@ class TFQuestionAdmin(SummernoteModelAdmin, TabbedTranslationAdmin):
 class EssayQuestionAdmin(SummernoteModelAdmin, TabbedTranslationAdmin):
     list_display = ('title', 'internal_title', 'content', )
     #list_filter = ('category',)
-    fields = ('title', 'internal_title', 'content',  'evaluated',  
-              'evaluationWeight',   'verif_function', 'multiple_answer_fields',
-              'explanation','decimal_precision')
+    #fields = ('title', 'internal_title', 'content',  'evaluated',  
+    #          'evaluationWeight',   'verif_function', 'multiple_answer_fields',
+    #          'explanation','decimal_precision')
     search_fields = ('content', 'explanation')
     summernote_fields = ('content',   'explanation')
 
 class  Experiment_ExecutionAdmin(SummernoteModelAdmin, TabbedTranslationAdmin):
     list_display = ('title', 'internal_title', 'content')
 #    list_filter = ('category',)
-    fields = ('title', 'internal_title','content','assessement_parameters_function', 'sub_category', 'config_function', 'evaluated',  'evaluationWeight', 'explanation', )
+    #fields = ('title', 'internal_title','content','assessement_parameters_function', 'sub_category', 'config_function', 'evaluated',  'evaluationWeight', 'explanation', )
     search_fields = ('content', 'explanation')
     summernote_fields = ('content',   'explanation')
 

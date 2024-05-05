@@ -101,12 +101,10 @@ class LTIRoutingView(LTIAuthMixin, View):
             pk = request.GET.get('pk')
             url = self.lookup_assignment_name(assignment_name, pk)
         elif request.POST.get('custom_category', None) is not None:
-            app_url = (f"{request.POST.get('custom_category')}:"
-                              "quiz_question")
+            app_url = (f"{request.POST.get('custom_category')}:quiz_question")
             print("assignment:", app_url)
             print("request:",request.POST.get('custom_quiz_url'))
-            url = reverse(app_url,args=(
-                request.POST.get('custom_quiz_url'),))
+            url = reverse(app_url,args=(request.POST.get('custom_quiz_url'),))
             print("url", url)
         elif request.POST.get('custom_experiment',None) is not None:
             current_apparatus = request.POST.get('custom_apparatus_id')
@@ -221,6 +219,12 @@ class LTIPostGrade(LTIAuthMixin, View):
         """
         try:
             score = float(request.POST.get('score'))
+            sitting_id = int(request.POST.get('sitting_pk'))
+            Sitting = apps.get_model("FREE_quizes",'Sitting')
+            s = Sitting.objects.get(pk=sitting_id)
+            db_final_grade = s.current_score/s.total_weigth
+            if (score!= db_final_grade):
+                score = 0
         except ValueError:
             score = 0
         redirect_url = request.POST.get('next', '/')
@@ -248,7 +252,7 @@ class LTIPostGrade(LTIAuthMixin, View):
             msg = ('Your score was submitted. Great job!')
             messages.add_message(request, messages.INFO, msg)
             #confirm submition:
-            Sitting = apps.get_model(request.POST.get('app_name'),'Sitting')
+            Sitting = apps.get_model("FREE_quizes",'Sitting')
             print("sitting pk",request.POST.get('sitting_pk'))
             sit = Sitting.objects.get(pk=request.POST.get('sitting_pk'))
             sit.mark_quiz_sent_moodle()
