@@ -83,8 +83,15 @@
         apparatus_location="{{stream_config.apparatus_location}}"
         apparatus_name="{{stream_config.apparatus_name}}"
         apparatus_id={{stream_config.apparatus_id}}
-      </pre>  
-    {%else%}
+
+        proxy_server_port={{stream_config.proxyPort}}
+      </pre>
+    <h1>Stub Application Private Key Certificate (Copy content to 'stub.key' file)</h1>
+    <textarea readonly rows="10" cols="80">{{stream_config.stubKey}}</textarea>
+    <h1>Stub Application Certificate (Copy content to 'stub.pem' file)</h1>
+    <textarea readonly rows="10" cols="80">{{stream_config.stubCert}}</textarea>
+
+  {%else%}
 
     {%endif%}
 

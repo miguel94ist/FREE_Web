@@ -1,3 +1,6 @@
+import logging
+import os
+
 from django.views.generic import TemplateView, View
 from rest_framework import serializers
 from django.conf import settings
@@ -8,8 +11,15 @@ from free.models import Apparatus
 import requests
 import random
 
+from ._utils import generate_certificate
+
 janus_server_address = settings.JANUS_SERVER_ADDRESS
 janus_stream_admin_key = settings.JANUS_STREAM_ADMIN_KEY
+
+
+current_directory = os.path.dirname(os.path.abspath(__file__))
+CERTIFICATES_PATH = os.path.join(current_directory, 'Certificates')
+
 
 def connect_janus_stream(server_address):
 
@@ -246,6 +256,10 @@ class VideoConfig(PermissionRequiredMixin,TemplateView):
                 'apparatus_location': ap.location,
                 'apparatus_name': ap.apparatus_type.slug,
                 'apparatus_id' :  ap.id,
+                'ProxyPort_hardcoded' : si['media'][0]['port']+2443,   # TODO MS 11062024
+                'stubKey' : ap.stubKey,                          # TODO MS 11062024
+                'stubCert' : ap.stubCert,                        # TODO MS 11062024
+                'proxyPort' : ap.proxyPort,
             }
         except:
             context['janus_warning'] = 'Video stream information mismatch between FREE and JANUS'
@@ -288,6 +302,34 @@ class VideoConfigAssignStream(PermissionRequiredMixin,View):
                                 'stream_server': janus_server_address,
                                 'secret':stream_secret}
             ap.save()
+
+
+        # TODO MS 11062024 - to persist the certificate and port on DB
+        # Generate certificates and start listener on ServerApp
+        key_text, cert_text = generate_certificate(ap.id)
+        janus_port = stream_info(janus_server_address, new_stream['id'])['media'][0]['port']
+        proxy_port = janus_port + 2443
+
+        server_app_response = requests.post(
+            'http://127.0.0.1:5000/add_proxy_config',
+            json={
+                'apparatus_id': ap.id,
+                'apparatus_cn': f"Apparatus_{ap.id}",
+                'proxy_port': proxy_port,
+                'janus_port': janus_port,
+                'expected_cert': cert_text
+            }
+        )
+
+        if server_app_response.status_code != 200:
+            return redirect('video-config-error', id=apparatus_id)
+
+        # TODO MS 11062024 - to persist the certificate and port on DB
+        ap.stubKey = key_text
+        ap.stubCert = cert_text
+        ap.proxyPort = proxy_port
+        ap.save()
+
         return redirect('video-config', id = apparatus_id)
 
 class VideoConfigRemoveStream(PermissionRequiredMixin,View):
@@ -308,10 +350,24 @@ class VideoConfigRemoveStream(PermissionRequiredMixin,View):
             )
         try:
             if destroyed_stream['streaming'] == 'destroyed':
-                ap.video_config = {} 
+                ap.video_config = {}
+                # TODO MS 12062024 => To remove from database the information
+                ap.stubKey = ''
+                ap.stubCert = ''
+                ap.proxyPort = None
+                # TODO MS 12062024 => End
                 ap.save()
-                return redirect('video-config', id = apparatus_id)
+                # Remove camera configuration from serverApp
+                server_app_response = requests.post(
+                    'http://127.0.0.1:5000/remove_proxy_config',
+                    json={'apparatus_id': apparatus_id}
+                )
+                if server_app_response.status_code != 200:
+                    return redirect('video-config-error', id=apparatus_id)
+                # TODO MS 12062024 => End
+
+                # ap.save()
+                return redirect('video-config', id=apparatus_id)
         except:
             pass
         return redirect('video-config-error', id = apparatus_id)
-

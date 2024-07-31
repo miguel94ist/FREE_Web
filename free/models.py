@@ -41,6 +41,12 @@ class Apparatus(models.Model):
     image = models.ImageField(upload_to='apparatus/', default='apparatus/missing_image.jpg')
     parameters = models.JSONField(_('Parameters'), default=dict, blank=True)
     visible = models.BooleanField(_('Visible'), default=False, blank=False)
+    # TODO MS
+    stubKey = models.TextField(_('Stub Key'), blank=True, default='')
+    stubCert = models.TextField(_('Stub Certificate'), blank=True, default='')
+    proxyPort = models.IntegerField(_('Proxy Port'), null=True, blank=True)
+
+
 
     def __str__(self):
         return _('%(apparatus_type)s in %(location)s') % {'apparatus_type': self.apparatus_type.name, 'location': self.location}
